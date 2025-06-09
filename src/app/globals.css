@@ -121,20 +121,12 @@
   }
 }
 
-.neon-text {
-    font-size: 2rem;
-    color: #fff;
-    text-shadow: 0 0 5px #ff005e, 0 0 10px #ff005e, 0 0 20px #ff005e, 0 0 40px #ff005e, 0 0 80px #ff005e;
-    animation: glow 1.5s infinite alternate;
-}
-
-@keyframes glow {
-    0% {
-        text-shadow: 0 0 5px #ff005e, 0 0 10px #ff005e, 0 0 20px #ff005e, 0 0 40px #ff005e, 0 0 80px #ff005e;
-    }
-    100% {
-        text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff, 0 0 40px #00d4ff, 0 0 80px #00d4ff, 0 0 160px #00d4ff;
-    }
+.fade-in {
+	overflow:hidden;
+	width:0%;
+	animation: widthize100 .8s 1 .3s cubic-bezier(.7, 0, .175, 1) forwards;
+  -webkit-animation: widthize100 .8s 1 .3s cubic-bezier(.7, 0, .175, 1) forwards;
+  white-space: nowrap;
 }
 
 @keyframes bounce-down {
@@ -144,4 +136,30 @@
   50% {
     transform: translateY(25%);
   }
+}
+
+@keyframes widthize70 {
+    0% { width: 0%; }
+    100% { width: 70%; }
+}
+@-webkit-keyframes widthize70 {
+    0% { width: 0%; }
+    100% { width: 70%; }
+}
+@keyframes widthize100 {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}
+@-webkit-keyframes widthize100 {
+    0% { width: 0%; }
+    100% { width: 100%; }
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+@-webkit-keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }

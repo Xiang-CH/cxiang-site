@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { getTranslations, getLocale } from 'next-intl/server';
 import { LocaleSwitcher } from "@/components/locale-switcher";
-import Title from "./title";
 import { locales } from "@/i18n/routing";
 import { Badge } from "@/components/ui/badge"
 import { GitHubLogoIcon, LinkedInLogoIcon, EnvelopeClosedIcon } from "@radix-ui/react-icons";
@@ -17,10 +16,11 @@ export default async function Intro() {
         <div className="flex flex-col justify-center items-center gap-4 h-screen p-10 md:p-20" id="intro">
             <section className="flex items-center justify-between w-full max-w-3xl">
                 <div className="flex flex-col items-start justify-center">
-                    {/* <h1 className="text-2xl font-bold transition-all neon-text" ref={titleRef}>{t('name')}</h1> */}
-                    <Title t={t('name')}/>
-                    <p className="text-lg">{t('role')}</p>
-                    <div className="flex flex-wrap mt-1 gap-2">
+                    <h1 className="text-3xl font-bold transition-all fade-in">
+                        {t('name')}
+                    </h1>
+                    <p className="text-lg fade-in">{t('role')}</p>
+                    <div className="flex flex-wrap mt-1 gap-2 opacity-0 animate-[fadeIn_1s_0.5s_ease_forwards]">
                         <Badge className="py-1 px-2">
                             <Link href="https://github.com/Xiang-CH" className="flex items-center">
                                 <GitHubLogoIcon className="mr-1" />
@@ -46,9 +46,9 @@ export default async function Intro() {
                 </div>
             </section>
             <section className="flex items-center justify-between w-full max-w-3xl">
-                <p>{t('about')}</p>
+                <p className="fade-in">{t('about')}</p>
             </section>
-            <section className="flex items-center justify-between w-full max-w-3xl gap-4 mt-2 mb-20">
+            <section className="flex items-center justify-between w-full max-w-3xl gap-4 mt-1 mb-20 opacity-0 animate-[fadeIn_1s_0.5s_ease_forwards]">
                 <LocaleSwitcher locale={locale}/>
             </section>
         </div>
