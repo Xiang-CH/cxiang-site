@@ -121,6 +121,14 @@
   }
 }
 
+.invisible-at-end {
+  visibility: visible;
+}
+
+main.at-page-end .invisible-at-end {
+  visibility: hidden;
+}
+
 .fade-in {
 	overflow:hidden;
 	width:0%;
@@ -138,21 +146,13 @@
   }
 }
 
-@keyframes widthize70 {
-    0% { width: 0%; }
-    100% { width: 70%; }
-}
-@-webkit-keyframes widthize70 {
-    0% { width: 0%; }
-    100% { width: 70%; }
-}
 @keyframes widthize100 {
     0% { width: 0%; }
     100% { width: 100%; }
 }
 @-webkit-keyframes widthize100 {
     0% { width: 0%; }
-    100% { width: 100%; }
+    100% { width: 100%;}
 }
 
 @keyframes fadeIn {
@@ -162,4 +162,14 @@
 @-webkit-keyframes fadeIn {
     0% { opacity: 0; }
     100% { opacity: 1; }
+}
+
+
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
 }
