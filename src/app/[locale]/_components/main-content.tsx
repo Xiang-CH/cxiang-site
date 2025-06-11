@@ -1,88 +1,56 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import TocWheel from "@/components/toc-wheel"
+import { useActiveSection } from "@/hooks/useActiveSection";
+import TocWheel from "@/components/toc-wheel";
 
 const menuItems = [
-    { href: "about", label: "About" },
-    { href: "experience", label: "Experience" },
-    { href: "projects", label: "Projects" },
-    { href: "contact", label: "Contact" }
+  { href: "about", label: "About" },
+  { href: "experience", label: "Experience" },
+  { href: "projects", label: "Projects" },
+  { href: "contact", label: "Contact" },
 ];
 
 export default function MainContent() {
-    const [currentSection, setCurrentSection] = useState("About");
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const currentSection = useActiveSection(".content-section");
 
-    useEffect(() => {
-        const scrollContainer = scrollContainerRef.current;
-        if (!scrollContainer) return;
-
-        const handleScroll = () => {
-            const sections = Array.from(scrollContainer.querySelectorAll('.snap-center'));
-            
-            // Find the section closest to the center of the viewport
-            const viewportCenter = scrollContainer.scrollTop + scrollContainer.clientHeight / 2;
-            
-            let closestSection = sections[0];
-            let closestDistance = Math.abs(closestSection.getBoundingClientRect().top + 
-                                          scrollContainer.scrollTop - viewportCenter);
-            
-            sections.forEach(section => {
-                const distance = Math.abs(section.getBoundingClientRect().top + 
-                                         scrollContainer.scrollTop - viewportCenter);
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closestSection = section;
-                }
-            });
-            
-            // Get the heading text from the closest section
-            const heading = closestSection.querySelector('h1');
-            if (heading && heading.textContent) {
-                setCurrentSection(heading.textContent.trim());
-            }
-        };
-
-        scrollContainer.addEventListener('scroll', handleScroll);
-        return () => scrollContainer.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    return (
-        <div className="flex items-center gap-4 h-screen p-6 md:p-20 transition-all bg-neutral-100 dark:bg-neutral-900 snap-start" id="about">
-            <TocWheel currentSection={currentSection} Sections={menuItems.map((item) => item.label)}/>
-            <div ref={scrollContainerRef} className="w-[50%] h-screen overflow-y-scroll snap-mandatory snap-y scrollbar-hide">
-                <ContentSection>
-                    <h1 className="text-3xl font-bold transition-all fade-in">
-                        About
-                    </h1>
-                </ContentSection>
-                <ContentSection>
-                    <h1 className="text-3xl font-bold transition-all fade-in">
-                        Experience
-                    </h1>
-                </ContentSection>
-                <ContentSection>
-                    <h1 className="text-3xl font-bold transition-all fade-in">
-                        Projects
-                    </h1>
-                </ContentSection>
-                <ContentSection>
-                    <h1 className="text-3xl font-bold transition-all fade-in">
-                        Contact
-                    </h1>
-                </ContentSection>
-            </div>
-        </div>
-    )
+  return (
+    <div
+      className="flex items-start gap-4 p-6 md:p-20 transition-all bg-neutral-100 dark:bg-neutral-900"
+      id="about"
+    >
+      <TocWheel
+        currentSection={currentSection}
+        Sections={menuItems}
+        onSectionClick={(section) => {
+          const index = menuItems.findIndex((item) => item.href === section);
+          if (index !== -1 && document) {
+            const targetSection = document.querySelectorAll(".snap-center")[index];
+            targetSection.scrollIntoView({ behavior: "smooth" });
+          }
+        }}
+      />
+      <div className="w-[50%]">
+        <ContentSection id="about">
+          <h1 className="text-3xl font-bold transition-all fade-in">About</h1>
+        </ContentSection>
+        <ContentSection id="experience">
+          <h1 className="text-3xl font-bold transition-all fade-in">Experience</h1>
+        </ContentSection>
+        <ContentSection id="projects">
+          <h1 className="text-3xl font-bold transition-all fade-in">Projects</h1>
+        </ContentSection>
+        <ContentSection id="contact">
+          <h1 className="text-3xl font-bold transition-all fade-in">Contact</h1>
+        </ContentSection>
+      </div>
+    </div>
+  );
 }
 
-function ContentSection({children}: {children: React.ReactNode}) {
-    return (
-        <div className="snap-center h-screen flex flex-col justify-center">
-            <div className="mt-4 transition-all fade-in">
-                {children}
-            </div>
-        </div>
-    )
+function ContentSection({ children, id }: { children: React.ReactNode; id: string }) {
+  return (
+    <div className="snap-start h-screen flex flex-col justify-center content-section" id={id}>
+      <div className="mt-4 transition-all fade-in">{children}</div>
+    </div>
+  );
 }
