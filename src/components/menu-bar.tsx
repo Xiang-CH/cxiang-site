@@ -4,15 +4,15 @@ import { RocketIcon, ReaderIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 
 const menuItems = [
-  { href: "projects", label: "Projects", icon: <RocketIcon /> },
-  { href: "blogs", label: "Blogs", icon: <ReaderIcon /> },
+  { href: "/projects", label: "Projects", icon: <RocketIcon /> },
+  { href: "/blogs", label: "Blogs", icon: <ReaderIcon /> },
 ];
 
 export default function MenuBar() {
   const currentSection = useActiveSection(".content-section");
 
   return (
-    <header className="w-[calc(100vw-0.9rem)] top-0 fixed flex items-center justify-between py-4 px-6 box-border z-100 header">
+    <header className="w-full top-0 fixed flex items-center justify-between py-4 px-6 box-border z-100 header transition-[top] backdrop-blur-[3px] h-14 bg-background">
       <div className="flex items-center gap-4">
         <Link
           href="/"

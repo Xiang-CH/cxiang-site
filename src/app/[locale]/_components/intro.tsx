@@ -13,7 +13,7 @@ export default async function Intro() {
       className="flex flex-col justify-center items-center h-screen p-4 md:p-6 transition-all snap-start content-section"
       id="intro"
     >
-      <div className="flex flex-col justify-center items-center gap-4 border-0 sm:border-2 rounded-2xl w-full max-w-4xl sm:p-20 p-0 transition-all">
+      <div className="flex flex-col justify-center items-center gap-4 border-0 sm:border-2 rounded-2xl w-full max-w-4xl sm:p-20 p-0 transition-all mb-16">
         <section className="flex items-start justify-between w-full max-w-3xl">
           <div className="flex flex-col items-start justify-center">
             <h1 className="text-3xl font-bold transition-all fade-in">{t("name")}</h1>

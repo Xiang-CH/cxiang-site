@@ -49,7 +49,7 @@ export default function MainContent() {
 
 function ContentSection({ children, id }: { children: React.ReactNode; id: string }) {
   return (
-    <div className="snap-start h-screen flex flex-col justify-center content-section" id={id}>
+    <div className="snap-start h-screen flex flex-col justify-center content-section mb-14" id={id}>
       <div className="mt-4 transition-all fade-in">{children}</div>
     </div>
   );

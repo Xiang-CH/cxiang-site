@@ -80,6 +80,7 @@
 
 .dark {
   --background: oklch(0.16 0 none);
+  --bg-color: oklch(0.16 0 none) !important;
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -180,3 +181,37 @@ main.at-page-end .invisible-at-end {
     opacity: 1;
   }
 }
+
+.notion-aside-table-of-contents {
+  background-color: transparent !important;
+}
+
+.notion-app {
+  background-color: transparent !important;
+  min-height: none !important;
+  width: 100%;
+}
+
+.notion-page-icon-hero{
+  left: 4rem !important;
+}
+
+.notion-aside-table-of-contents{
+  align-items: flex-start !important;
+}
+
+.notion-aside-table-of-contents-header{
+  padding: 0 4px !important;
+  display: none !important; 
+}
+
+a.notion-table-of-contents-active-item{
+  color: var(--accent) !important;
+}
+
+@media (width >= 1300px) and (height >= 300px) {
+  .notion-page-content-has-aside {
+    width: calc((100vw + var(--notion-max-width)) / 2 - 2rem) !important;
+  }
+}
+

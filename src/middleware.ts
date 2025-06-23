@@ -4,8 +4,8 @@ import { routing } from "./i18n/routing";
 export default createMiddleware(routing);
 
 export const config = {
-  // Match all pathnames except for
-  // - … if they start with `/api`, `/trpc`, `/_next` or `/_vercel`
-  // - … the ones containing a dot (e.g. `favicon.ico`)
-  matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
+  // Skip all paths that should not be internationalized. This example skips the
+  // folders "api", "trpc", "_next" and all files with an extension (e.g. favicon.ico)
+  // Also, don't match routes under blog
+  matcher: "/((?!api|trpc|_next|_vercel|blogs|relay-5woc|.*\\..*).*)",
 };
