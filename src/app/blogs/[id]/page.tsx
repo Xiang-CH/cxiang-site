@@ -11,8 +11,9 @@ import 'react-notion-x/src/styles.css'
 // used for rendering equations (optional)
 // import 'katex/dist/katex.min.css'
 
-export default async function Blog({ params }: { params: { id: string } }) {
-    const response = await getBlog(params.id)
+export default async function Blog({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const response = await getBlog(id)
 
     // console.log(response)
 
