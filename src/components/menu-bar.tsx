@@ -6,8 +6,9 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 const menuItems = [
-    { href: "/project", label: "Projects", icon: <RocketIcon /> },
-    { href: "/blog", label: "Blogs", icon: <ReaderIcon /> },
+    { href: "/", label: "Home", icon: <RocketIcon /> },
+    { href: "/project", label: "Project", icon: <RocketIcon /> },
+    { href: "/blog", label: "Blog", icon: <ReaderIcon /> },
 ];
 
 export default function MenuBar() {
@@ -18,19 +19,19 @@ export default function MenuBar() {
         <header
             className={cn(
                 "w-full top-0 fixed flex items-center justify-between py-4 px-6 box-border z-100 header transition-[top] backdrop-blur-[3px] h-14 bg-background",
-                currentSection &&
-                    currentSection !== "intro" &&
-                    "shadow-[inset_0_-1px_0_0_var(--accent)]"
+                // currentSection &&
+                //     currentSection !== "intro" &&
+                //     "shadow-[inset_0_-1px_0_0_var(--accent)]"
             )}
         >
             <div className="flex items-center gap-4">
-                <Link
+                {/* <Link
                     href="/"
                     className={`text-xl font-bold ${!currentSection || currentSection === "intro" ? "opacity-0" : "opacity-100"} transition-opacity duration-500`}
                     id="header-name"
                 >
                     Chen Xiang
-                </Link>
+                </Link> */}
             </div>
             <nav className="flex items-center gap-5">
                 {menuItems.map((item) => (
@@ -39,12 +40,13 @@ export default function MenuBar() {
                         href={item.href}
                         className={cn(
                             "flex items-center gap-1.5 text-card-foreground overflow-x-hidden",
-                            currentPath.includes(item.href)
+                            currentPath.startsWith(item.href) && item.href !== "/" ||
+                                item.href === "/" && ["/en", "/zh-CN", "/zh-HK"].includes(currentPath)
                                 ? "font-normal text-primary"
                                 : "text-muted-foreground hover:text-primary transition-colors"
                         )}
                     >
-                        {item.icon}
+                        {/* {item.icon} */}
                         {item.label}
                     </Link>
                 ))}

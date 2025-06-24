@@ -40,6 +40,16 @@ export const getBlogs = async () => {
     });
 };
 
+export const getBlogMetadata = async (id: string) => {
+    if (!id) {
+        throw new Error("Blog ID is required");
+    }
+
+    return notion.pages.retrieve({
+        page_id: id,
+    });
+};
+
 export const getBlog = async (id: string) => {
     if (!id) {
         throw new Error("Blog ID is required");
