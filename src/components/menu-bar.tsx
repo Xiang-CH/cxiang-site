@@ -40,7 +40,7 @@ export default function MenuBar() {
                         className={cn(
                             "flex items-center gap-1.5 text-card-foreground overflow-x-hidden",
                             currentPath.includes(item.href)
-                                ? "font-normal"
+                                ? "font-normal text-primary"
                                 : "text-muted-foreground hover:text-primary transition-colors"
                         )}
                     >

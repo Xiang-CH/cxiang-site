@@ -81,7 +81,7 @@
 .dark {
     --background: oklch(0.16 0 none);
     --bg-color: oklch(0.16 0 none) !important;
-    --foreground: oklch(0.985 0 0);
+    --foreground: oklch(0.99 0 none / 0.88);
     --card: oklch(0.205 0 0);
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.205 0 0);
@@ -213,6 +213,30 @@ a.notion-table-of-contents-active-item {
 @media (prefers-color-scheme: dark) {
     a.notion-table-of-contents-active-item {
         color: #afc0ee !important;
+    }
+
+    .notion {
+        color: var(--foreground) !important;
+    }
+
+    .notion-inline-code {
+        background-color: rgba(107, 105, 100, 0.257) !important;
+        color: #eb5757ea !important;
+    }
+
+    td {
+        border: 1px solid var(--accent) !important;
+    }
+
+    :not(pre) > code[class*="language-"],
+    pre[class*="language-"] {
+        background: var(--card) !important;
+    }
+
+    .notion-code-copy-button {
+        background-color: var(--muted) !important;
+        color: var(--foreground) !important;
+        box-shadow: none !important;
     }
 }
 

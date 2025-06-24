@@ -72,7 +72,7 @@ export default function NotionPageClient({
             disableHeader
             recordMap={recordMap}
             fullPage={fullPage}
-            darkMode={isMounted && resolvedTheme === "dark"}
+            // darkMode={isMounted && resolvedTheme === "dark"}
             showTableOfContents
             components={{
                 Code,

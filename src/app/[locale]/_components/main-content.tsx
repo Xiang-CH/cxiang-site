@@ -14,7 +14,7 @@ export default function MainContent() {
     const currentSection = useActiveSection(".content-section");
 
     return (
-        <div className="flex items-start gap-4 px-6 md:px-20 pb-20 pt-4 transition-all bg-neutral-100 dark:bg-neutral-900">
+        <div className="flex items-start gap-4 px-6 md:px-20 pb-20 pt-4 transition-all bg-neutral-50 dark:bg-neutral-950">
             <TocWheel
                 currentSection={currentSection}
                 Sections={menuItems}
