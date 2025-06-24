@@ -44,7 +44,7 @@ export default async function Blogs() {
 
                 return (
                     <Link
-                        href={`/blogs/${blog.id}`}
+                        href={`/blog/${blog.id}`}
                         className="w-full flex justify-between items-center group"
                         key={blog.id}
                     >
