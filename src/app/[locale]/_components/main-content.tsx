@@ -14,7 +14,7 @@ export default function MainContent() {
     const currentSection = useActiveSection(".content-section");
 
     return (
-        <div className="flex items-start gap-4 px-6 md:px-20 pb-20 pt-4 transition-all bg-neutral-50 dark:bg-neutral-950">
+        <div className="flex items-start gap-4 px-6 md:px-20 pb-20 pt-4 transition-all bg-background">
             <TocWheel
                 currentSection={currentSection}
                 Sections={menuItems}
@@ -47,7 +47,7 @@ export default function MainContent() {
 function ContentSection({ children, id }: { children: React.ReactNode; id: string }) {
     return (
         <div
-            className="snap-start h-[calc(100vh-3.5rem)] flex flex-col justify-center content-section mb-16"
+            className="snap-start h-[calc(100vh-3.5rem)] flex flex-col justify-center content-section pb-16"
             id={id}
         >
             <div className="mt-4 transition-all fade-in">{children}</div>
