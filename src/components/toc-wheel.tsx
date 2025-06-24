@@ -19,14 +19,14 @@ export default function TocWheel({
                         {section.href === currentSection ? (
                             <>
                                 <div className="w-20 h-2 bg-primary/80 transition-all duration-300 ease-in-out my-1" />
-                                <div className="mx-4 font-bold text-3xl text-primary/80 transition-all duration-300 ease-in-out">
+                                <div className="mx-4 font-bold text-3xl text-primary transition-all duration-300 ease-in-out">
                                     {section.label}
                                 </div>
                             </>
                         ) : (
                             <>
-                                <div className="w-12 h-2 bg-neutral-300 dark:bg-gray-600 transition-all duration-300 ease-in-out" />
-                                <div className="mx-4 text-md text-neutral-300 dark:text-gray-600 transition-all duration-300 ease-in-out">
+                                <div className="w-12 h-2 bg-neutral-300 dark:bg-neutral-600 transition-all duration-300 ease-in-out" />
+                                <div className="mx-4 text-md text-neutral-300 dark:text-neutral-600 transition-all duration-300 ease-in-out">
                                     {section.label}
                                 </div>
                             </>

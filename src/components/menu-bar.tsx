@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 const menuItems = [
-    { href: "/projects", label: "Projects", icon: <RocketIcon /> },
-    { href: "/blogs", label: "Blogs", icon: <ReaderIcon /> },
+    { href: "/project", label: "Projects", icon: <RocketIcon /> },
+    { href: "/blog", label: "Blogs", icon: <ReaderIcon /> },
 ];
 
 export default function MenuBar() {
@@ -18,7 +18,9 @@ export default function MenuBar() {
         <header
             className={cn(
                 "w-full top-0 fixed flex items-center justify-between py-4 px-6 box-border z-100 header transition-[top] backdrop-blur-[3px] h-14 bg-background",
-                currentSection && currentSection !== "intro" && "shadow-[inset_0_-1px_0_0_#eaeaea]"
+                currentSection &&
+                    currentSection !== "intro" &&
+                    "shadow-[inset_0_-1px_0_0_var(--accent)]"
             )}
         >
             <div className="flex items-center gap-4">

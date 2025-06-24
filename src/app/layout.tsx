@@ -23,7 +23,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     return (
         <html suppressHydrationWarning>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-[100dvh]`}
+                className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-[100dvh] flex flex-col`}
             >
                 <ThemeProvider
                     attribute="class"
