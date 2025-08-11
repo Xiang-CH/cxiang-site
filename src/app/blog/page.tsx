@@ -1,21 +1,23 @@
-import { getBlogs } from "@/lib/notion";
+import { getBlogs, getAllPostsMeta } from "@/lib/notion";
 import { type PageObjectResponse } from "@notionhq/client";
 import { Metadata } from "next";
-// import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
 export const metadata: Metadata = {
-    title: "Blogs | Chen Xiang",
+    title: "Blog | Chen Xiang",
     description: "Chen Xiang's Blogs",
 };
 
 
 export default async function Blogs() {
     let response;
+    let metas: any[] = [];
     try {
         response = await getBlogs();
+        metas = await getAllPostsMeta();
     } catch (error) {
         console.error("Error fetching blogs:", error);
         return (
@@ -45,23 +47,25 @@ export default async function Blogs() {
 
     return (
         <main className="w-full max-w-xl h-full flex flex-col justify-start items-start px-6 mx-auto mt-8">
-            <h1 className="text-5xl font-bold mb-1">Blogs</h1>
+            {/* <h1 className="text-xl font-bold mb-1">Blogs</h1>
             <p className="text-md mb-12 font-light">
                 Things that I have figured out and thought worth sharing.
             </p>
-            
+             */}
             {response.results.map((item) => {
                 if (item.object !== "page" || !("properties" in item)) return;
                 const blog = item as PageObjectResponse;
 
+                const slug = metas.find((m: any) => m.id === blog.id)?.slug || blog.id;
+
                 return (
                     <Link
-                        href={`/blog/${blog.id}`}
+                        href={`/blog/${slug}`}
                         className="w-full flex justify-between items-center group"
                         key={blog.id}
                     >
-                        <div className="flex flex-col gap-1.5 min-h-28 h-full justify-center">
-                            <h2 className="text-2xl font-semibold group-hover:underline text-wrap">
+                        <div className="flex flex-col gap-1 min-h-28 h-full justify-center">
+                            <h2 className="text-xl font-semibold group-hover:underline text-wrap">
                                 {blog.properties.Title.type === "title" &&
                                     blog.properties.Title.title[0]?.plain_text}
                             </h2>
@@ -74,7 +78,7 @@ export default async function Blogs() {
                                     blog.properties.Abstract.rich_text[0]?.plain_text}
                             </p>
                         </div>
-                        {/* {blog.cover && (
+                        {blog.cover && (
                             <div className="ml-2">
                                 <Image
                                     src={
@@ -88,7 +92,7 @@ export default async function Blogs() {
                                     className="rounded-md"
                                 />
                             </div>
-                        )} */}
+                        )}
                     </Link>
                 );
             })}

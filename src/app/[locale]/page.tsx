@@ -1,6 +1,7 @@
 import MainContent from "./_components/main-content";
 import Intro from "./_components/intro";
 import ScrollArrow from "@/components/scroll-arrow";
+import ScrollContainer from "./_components/scroll-container";
 
 import type { Metadata } from "next";
 
@@ -21,11 +22,11 @@ export function generateStaticParams() {
 export default function Home() {
     return (
         <div className="font-[family-name:var(--font-geist-sans)]">
-            <main className="w-full snap-mandatory snap-y overflow-y-auto relative h-[calc(100vh-3.5rem)] box-border main-content">
+            <ScrollContainer>
                 <Intro />
                 <MainContent />
                 <ScrollArrow />
-            </main>
+            </ScrollContainer>
         </div>
     );
 }

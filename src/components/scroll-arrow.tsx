@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import { ArrowDownIcon } from "@radix-ui/react-icons";
 
+const SECTIONS = ["intro", "#about", "#experience", "#projects", "#contact"];
+
 export default function ScrollArrow() {
-    const [nextSection, setNextSection] = useState("#projects");
+    const [nextSection, setNextSection] = useState("#about");
 
     useEffect(() => {
         const handleScroll = () => {
@@ -15,8 +17,12 @@ export default function ScrollArrow() {
 
             // Find the first section that's below the viewport
             const nextVisible = sections.find(
-                (section) => section.getBoundingClientRect().top > window.innerHeight * 0.5
+                (section) => section.getBoundingClientRect().top > window.innerHeight * 0.6
             );
+
+            if (!SECTIONS.includes(`#${nextVisible?.id}`)) {
+                return;
+            }
 
             if (nextVisible) {
                 setNextSection(`#${nextVisible.id}`);

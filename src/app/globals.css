@@ -245,3 +245,29 @@ a.notion-table-of-contents-active-item {
         width: calc((100vw + var(--notion-max-width)) / 2 - 2rem) !important;
     }
 }
+
+/* Global transparent scrollbar track across the site */
+@supports (scrollbar-color: auto transparent) {
+  /* Firefox */
+  * {
+    scrollbar-color: auto transparent;
+  }
+}
+
+/* Firefox */
+* {
+  scrollbar-color: auto transparent;
+}
+
+/* Chromium/Safari */
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
