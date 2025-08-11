@@ -1,7 +1,7 @@
 import { getBlog, getBlogMetadata, getPostBySlug, getAllPostsMeta, getSlugById } from "@/lib/notion";
 import NotionPageClient from "../_components/notion-page-client";
 import "react-notion-x/src/styles.css";
-import { type Metadata, type ResolvingMetadata } from "next";
+import { type Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { type PageObjectResponse } from "@notionhq/client";
 
@@ -19,7 +19,6 @@ type Props = {
 
 export async function generateMetadata(
   { params }: Props,
-  _parent: ResolvingMetadata
 ): Promise<Metadata> {
   const slug = (await params).slug;
   const post = await getPostBySlug(slug);

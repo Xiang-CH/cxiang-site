@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { Client } from "@notionhq/client";
 import { NotionAPI } from "notion-client";

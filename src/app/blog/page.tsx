@@ -1,4 +1,4 @@
-import { getBlogs, getAllPostsMeta } from "@/lib/notion";
+import { getBlogs, getAllPostsMeta, type PostMeta } from "@/lib/notion";
 import { type PageObjectResponse } from "@notionhq/client";
 import { Metadata } from "next";
 import Image from "next/image";
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default async function Blogs() {
     let response;
-    let metas: any[] = [];
+    let metas: PostMeta[] = [];
     try {
         response = await getBlogs();
         metas = await getAllPostsMeta();
@@ -56,7 +56,7 @@ export default async function Blogs() {
                 if (item.object !== "page" || !("properties" in item)) return;
                 const blog = item as PageObjectResponse;
 
-                const slug = metas.find((m: any) => m.id === blog.id)?.slug || blog.id;
+                const slug = metas.find((m) => m.id === blog.id)?.slug || blog.id;
 
                 return (
                     <Link
@@ -66,7 +66,7 @@ export default async function Blogs() {
                     >
                         <div className="flex flex-col gap-1 min-h-28 h-full justify-center">
                             <h2 className="text-xl font-semibold group-hover:underline text-wrap">
-                                {blog.properties.Title.type === "title" &&
+                                {blog.properties.Title?.type === "title" &&
                                     blog.properties.Title.title[0]?.plain_text}
                             </h2>
                             <p className="text-sm">
@@ -74,7 +74,7 @@ export default async function Blogs() {
                                     blog.properties["Publish Date"]?.date?.start}
                             </p>
                             <p className="text-md">
-                                {blog.properties.Abstract.type === "rich_text" &&
+                                {blog.properties.Abstract?.type === "rich_text" &&
                                     blog.properties.Abstract.rich_text[0]?.plain_text}
                             </p>
                         </div>
@@ -82,7 +82,7 @@ export default async function Blogs() {
                             <div className="ml-2">
                                 <Image
                                     src={
-                                        blog.cover.type === "external"
+                                        blog.cover?.type === "external"
                                             ? blog.cover.external.url
                                             : blog.cover.file.url
                                     }
