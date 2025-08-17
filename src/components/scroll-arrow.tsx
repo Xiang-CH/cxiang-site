@@ -20,6 +20,13 @@ export default function ScrollArrow() {
                 (section) => section.getBoundingClientRect().top > window.innerHeight * 0.6
             );
 
+
+            const main = document.querySelector("main");
+            if (main && main.scrollHeight - main.scrollTop <= window.innerHeight + 100) {
+                setNextSection("#intro");
+                main.classList.add("at-page-end");
+            }
+
             if (!SECTIONS.includes(`#${nextVisible?.id}`)) {
                 return;
             }
@@ -27,9 +34,6 @@ export default function ScrollArrow() {
             if (nextVisible) {
                 setNextSection(`#${nextVisible.id}`);
                 document.querySelector("main")?.classList.remove("at-page-end");
-            } else {
-                setNextSection("#intro");
-                document.querySelector("main")?.classList.add("at-page-end");
             }
         };
 
@@ -38,7 +42,10 @@ export default function ScrollArrow() {
 
         // Add scroll event listener
         document.querySelector("main")?.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+
+        return () => {
+            document.querySelector("main")?.removeEventListener("scroll", handleScroll);
+        };
     }, []);
 
     return (

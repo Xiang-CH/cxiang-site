@@ -4,7 +4,39 @@
         "role": "Software Developer",
         "about": "Transforming Ideas into Code, Code into Reality."
     },
-    "about": {
-        
+    "main": {
+        "about": {
+            "label": "About",
+            "content": "I am currently a <b>Computer Science</b> student pursuing my Master's degree at <a><em>The University of Hong Kong</em></a>. I love coding solutions to real-world problems, more recently through the use of AI.",
+            "href": "https://www.hku.hk"
+        },
+        "education": {
+            "label": "Education",
+            "programs": [{
+                    "institution": "The University of Hong Kong",
+                    "degree": "Master of Science in Computer Science",
+                    "duration": "2025 - Present",
+                    "logo": "/images/hku-logo-mono.png"
+                },
+                {
+                    "institution": "The University of Hong Kong",
+                    "degree": "Bachelor of Engineering in Computer Science with First Class Honours",
+                    "duration": "2021 - 2025",
+                    "logo": "/images/hku-logo-mono.png"
+                }
+            ]
+        },
+        "experience": {
+            "label": "Experience",
+            "content": "I have interned at ABC Company, where I worked on developing web applications using React and Node.js."
+        },
+        "projects": {
+            "label": "Projects",
+            "content": "I have worked on several personal projects, including a task management app and a weather forecasting tool."
+        },
+        "contact": {
+            "label": "Contact",
+            "content": "Feel free to reach out to me via email at chenxiang@example.com."
+        }
     }
 }

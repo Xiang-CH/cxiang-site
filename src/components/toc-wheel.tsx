@@ -1,12 +1,22 @@
+"use client";
+
+import { useActiveSection } from "@/hooks/useActiveSection";
+
 export default function TocWheel({
-    currentSection,
     Sections,
-    onSectionClick,
 }: {
-    currentSection: string;
     Sections: { href: string; label: string }[];
-    onSectionClick: (section: string) => void;
 }) {
+    const currentSection = useActiveSection(".content-section");
+
+    function onSectionClick(section: string) {
+        const index = Sections.findIndex((item) => item.href === section);
+        if (index !== -1 && document) {
+            const targetSection = document.querySelectorAll(".content-section")[index + 1];
+            targetSection.scrollIntoView({ behavior: "smooth" });
+        }
+    }
+
     return (
         <aside className="w-[50%] hidden md:flex flex-col justify-center items-start gap-2 md:gap-4 md:pl-[5%] lg:pl-[13%] sticky top-0 h-[calc(100vh-3.5rem)] transition-all">
             {Sections.map((section) => {
