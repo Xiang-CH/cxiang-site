@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import "@/app/globals.css";
 import MenuBar from "@/components/menu-bar";
 
@@ -34,6 +35,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     <MenuBar />
                     <div className="h-14" />
                     {children}
+                    <SpeedInsights />
                 </ThemeProvider>
             </body>
         </html>
