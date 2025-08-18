@@ -112,29 +112,25 @@ export default function ScrollContainer({ children }: ScrollContainerProps) {
             // Decide on switching with hysteresis thresholds
             if (canSwitch) {
                 if (scoreRef.current >= SCORE_TOUCH_THRESHOLD && inputMethod !== "touch") {
-                    // eslint-disable-next-line no-console
-                    console.debug("[input] wheel cadence => continuous (hysteresis: +score)", { count, med, maxGap, intervals, score: scoreRef.current });
+                    // console.debug("[input] wheel cadence => continuous (hysteresis: +score)", { count, med, maxGap, intervals, score: scoreRef.current });
                     setInputMethod("touch");
                     lastChangeRef.current = nowTs;
                     // leave small residual to avoid immediate flip
                     scoreRef.current = 1;
                 } else if (scoreRef.current <= SCORE_MOUSE_THRESHOLD && inputMethod !== "mouse") {
-                    // eslint-disable-next-line no-console
-                    console.debug("[input] wheel cadence => burst (hysteresis: -score)", { count, med, maxGap, intervals, score: scoreRef.current });
+                    // console.debug("[input] wheel cadence => burst (hysteresis: -score)", { count, med, maxGap, intervals, score: scoreRef.current });
                     setInputMethod("mouse");
                     lastChangeRef.current = nowTs;
                     scoreRef.current = -1;
                 }
             }
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [inputMethod]);
 
     useEffect(() => {
         const onTouchStart = () => {
             // Immediate switch to touch, override cooldown
-            // eslint-disable-next-line no-console
-            console.debug("[input] touchstart => touch (lock)");
+            // console.debug("[input] touchstart => touch (lock)");
             setInputMethod("touch");
             lastChangeRef.current = performance.now();
             // bias score toward touch
@@ -166,7 +162,6 @@ export default function ScrollContainer({ children }: ScrollContainerProps) {
                 wheelTimerRef.current = null;
             }
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [classifyFromWheelCadence]);
 
     // Log state transitions

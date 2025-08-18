@@ -8,7 +8,7 @@
         "about": {
             "label": "About",
             "content": "I am currently a <b>Computer Science</b> student pursuing my Master's degree at <a><em>The University of Hong Kong</em></a>. I love coding solutions to real-world problems, more recently through the use of AI.",
-            "href": "https://www.hku.hk"
+            "contentHref": "https://www.hku.hk"
         },
         "education": {
             "label": "Education",

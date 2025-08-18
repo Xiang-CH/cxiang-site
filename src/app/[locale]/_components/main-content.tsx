@@ -21,7 +21,7 @@ export default async function MainContent() {
             <div className="md:w-[50%]">
                 <ContentSection id="about">
                     <HeadingContent content={t("about.label")} />
-                    <TextContent key="about.content" />
+                    <TextContent localKey="about.content" />
                 </ContentSection>
                 <ContentSection id="education">
                     <HeadingContent content={t("education.label")} />
@@ -54,21 +54,21 @@ function ContentSection({ children, id }: { children: React.ReactNode; id: strin
     );
 }
 
-function HeadingContent({ content }: { content: String }){
+function HeadingContent({ content }: { content: string }){
     return <h1 className="text-3xl font-bold transition-all fade-in md:hidden">{content}</h1>
 }
 
 
-async function TextContent({ key }: { key: String }){
+async function TextContent({ localKey }: { localKey: string }){
     const t = await getTranslations("main");
 
-    return (<p className="leading-7 [&:not(:first-child)]:mt-6 whitespace-pre-wrap max-w-2xl">
-        {t.rich("about.content", {
-        b: (chunks) => <b>{chunks}</b>,
-        em: (chunks) => <em>{chunks}</em>,
-        a: (chunks) => <a href={t("about.href")}>{chunks}</a>
-    }) }
-    </p>)
+    return <p className="leading-7 [&:not(:first-child)]:mt-6 whitespace-pre-wrap max-w-2xl">
+        {t.rich(localKey, {
+            b: (chunks) => <b>{chunks}</b>,
+            em: (chunks) => <em>{chunks}</em>,
+            a: (chunks) => <a href={t(`${localKey}Href`)}>{chunks}</a>
+        }) }
+    </p>
 }
 
 type EducationDetails = {
