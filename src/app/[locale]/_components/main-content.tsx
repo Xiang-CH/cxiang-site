@@ -47,7 +47,7 @@ export default async function MainContent() {
 function ContentSection({ children, id }: { children: React.ReactNode; id: string }) {
     return (
         <div
-            className={`snap-center ${id === "skills" || id === "projects" ? "h-[60vh]" : "h-[calc(100vh-3.5rem)]"} flex flex-col justify-center content-section pb-10 min-h-fit`}
+            className={`snap-center ${id === "skills" || id === "projects" ? "h-[60dvh]" : "h-[calc(100dvh-3.5rem)]"} flex flex-col justify-center content-section pb-10 min-h-fit`}
             id={id}
         >
             <div className="mt-4 transition-all">{children}</div>

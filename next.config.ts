@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
                 protocol: "https",
                 hostname: "cdn.jsdelivr.net",
                 pathname: "/gh/devicons/devicon@latest/icons/**",
-            }
+            },
         ],
     },
     experimental: {
