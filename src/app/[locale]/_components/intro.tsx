@@ -10,7 +10,7 @@ export default async function Intro() {
 
     return (
         <div
-            className="flex flex-col justify-end items-center h-[calc(50%+16rem)] px-4 md:px-6 pb-8 pt-4 transition-all snap-start content-section"
+            className="flex flex-col justify-end items-center h-[calc(50%+16rem)] px-4 md:px-6 pb-8 pt-4 transition-all content-section snap-none"
             id="intro"
         >
             <div className="flex flex-col justify-center items-center gap-4 border-0 rounded-2xl w-full max-w-4xl sm:p-20 p-3 pb-20 transition-all mb-16">

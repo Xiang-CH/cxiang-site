@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     title: "Chen Xiang 陈想",
     description: "Chen Xiang's personal website",
+    icons: {
+        icon: "/logo.svg",
+    },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

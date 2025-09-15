@@ -18,7 +18,7 @@ export default async function MainContent() {
             <TocWheel
                 Sections={menuItems}
             />
-            <div className="md:w-[50%]">
+            <div className="md:w-[50%] pt-[40vh] py-[20vh]">
                 <ContentSection id="about">
                     <HeadingContent content={t("about.label")} />
                     <TextContent localKey="about.content" />
@@ -45,8 +45,12 @@ export default async function MainContent() {
 
 function ContentSection({ children, id }: { children: React.ReactNode; id: string }) {
     return (
+        // <div
+        //     className={`snap-center ${id === 'education' || id === 'projects' ? 'h-[60vh]' : 'h-[calc(100vh-3.5rem)]'} flex flex-col justify-center content-section pb-10 min-h-[25rem]`}
+        //     id={id}
+        // >
         <div
-            className={`snap-center ${id === 'education' || id === 'projects' ? 'h-[60vh]' : 'h-[calc(100vh-3.5rem)]'} flex flex-col justify-center content-section pb-10 min-h-[25rem]`}
+            className={`snap-center h-[60vh] flex flex-col justify-center content-section pb-10 min-h-[25rem]`}
             id={id}
         >
             <div className="mt-4 transition-all">{children}</div>
@@ -95,12 +99,12 @@ async function EducationCards({ programs }: { programs: EducationDetails[] }) {
                         </div>
                         <div className="overflow-hidden flex flex-col gap-1">
                             <h2 className="text-xl font-bold truncate">{program.institution}</h2>
-                            <p className="text-gray-600 whitespace-pre-wrap leading-5">{program.degree}</p>
-                            <p className="text-gray-600">{program.duration}</p>
+                            <p className="text-gray-600 dark:text-neutral-300 whitespace-pre-wrap leading-5">{program.degree}</p>
+                            <p className="text-gray-600 dark:text-neutral-300">{program.duration}</p>
                         </div>
                     </div>
                 );
             })}
-        </div>
+        </div>  
     );
 }
