@@ -49,13 +49,13 @@ function ContentSection({ children, id }: { children: React.ReactNode; id: strin
             className={`snap-center ${id === 'education' || id === 'projects' ? 'h-[60vh]' : 'h-[calc(100vh-3.5rem)]'} flex flex-col justify-center content-section pb-10 min-h-[25rem]`}
             id={id}
         >
-            <div className="mt-4 transition-all fade-in">{children}</div>
+            <div className="mt-4 transition-all">{children}</div>
         </div>
     );
 }
 
 function HeadingContent({ content }: { content: string }){
-    return <h1 className="text-3xl font-bold transition-all fade-in md:hidden">{content}</h1>
+    return <h1 className="text-3xl font-bold transition-all md:hidden">{content}</h1>
 }
 
 
