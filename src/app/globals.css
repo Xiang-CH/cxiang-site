@@ -79,7 +79,8 @@
 }
 
 .dark {
-    --background: oklch(0.21 0 none);
+    /* --background: oklch(0.21 0 none); */
+    --background: oklch(0.16 0 none);
     --bg-color: oklch(0.16 0 none) !important;
     --foreground: oklch(0.99 0 none / 0.88);
     --card: oklch(0.24 0 none);
@@ -215,6 +216,10 @@ a.notion-table-of-contents-active-item {
         color: #afc0ee !important;
     }
 
+    a.notion-table-of-contents-item {
+        color: #bcbec5;
+    }
+
     .notion {
         color: var(--foreground) !important;
     }
@@ -248,26 +253,26 @@ a.notion-table-of-contents-active-item {
 
 /* Global transparent scrollbar track across the site */
 @supports (scrollbar-color: auto transparent) {
-  /* Firefox */
-  * {
-    scrollbar-color: auto transparent;
-  }
+    /* Firefox */
+    * {
+        scrollbar-color: auto transparent;
+    }
 }
 
 /* Firefox */
 * {
-  scrollbar-color: auto transparent;
+    scrollbar-color: auto transparent;
 }
 
 /* Chromium/Safari */
 *::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
 }
 
 *::-webkit-scrollbar {
-  background: transparent;
+    background: transparent;
 }
 
 *::-webkit-scrollbar-corner {
-  background: transparent;
+    background: transparent;
 }

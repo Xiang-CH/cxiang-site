@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ArrowDownIcon } from "@radix-ui/react-icons";
 
-const SECTIONS = ["intro", "#about", "#experience", "#projects", "#contact"];
+const SECTIONS = ["#intro", "#about", "#skills", "#experience", "#projects", "#contact"];
 
 export default function ScrollArrow() {
     const [nextSection, setNextSection] = useState("#about");
@@ -19,7 +19,6 @@ export default function ScrollArrow() {
             const nextVisible = sections.find(
                 (section) => section.getBoundingClientRect().top > window.innerHeight * 0.6
             );
-
 
             const main = document.querySelector("main");
             if (main && main.scrollHeight - main.scrollTop <= window.innerHeight + 100) {

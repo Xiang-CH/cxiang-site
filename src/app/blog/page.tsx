@@ -11,7 +11,6 @@ export const metadata: Metadata = {
     description: "Chen Xiang's Blogs",
 };
 
-
 export default async function Blogs() {
     let response;
     let metas: PostMeta[] = [];

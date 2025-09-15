@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Geist, Geist_Mono } from "next/font/google";
-import { SpeedInsights } from '@vercel/speed-insights/next';
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "@/app/globals.css";
 import MenuBar from "@/components/menu-bar";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -38,6 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     <MenuBar />
                     <div className="h-14" />
                     {children}
+                    <Toaster />
                     <SpeedInsights />
                 </ThemeProvider>
             </body>

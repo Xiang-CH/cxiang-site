@@ -4,39 +4,65 @@
         "role": "Software Developer",
         "about": "Transforming Ideas into Code, Code into Reality."
     },
+    "contact": {
+        "email": {
+            "content": "xiiang.ch@gmail.com",
+            "href": "mailto:xiiang.ch@gmail.com"
+        },
+        "github": {
+            "content": "Xiang-CH",
+            "href": "https://github.com/Xiang-CH"
+        },
+        "linkedin": {
+            "content": "Xiang Chen",
+            "href": "https://www.linkedin.com/in/xiang-chen-62389526a/"
+        }
+    },
     "main": {
         "about": {
             "label": "About",
-            "content": "I am currently a <b>Computer Science</b> student pursuing my Master's degree at <a><em>The University of Hong Kong</em></a>. I love coding solutions to real-world problems, more recently through the use of AI.",
+            "content": "I am currently a <b>Computer Science</b> student pursuing my Master's degree at <a><em>The University of Hong Kong</em></a>. I love coding solutions to real-world problems, more recently through the use of AI.\n\nMost comfortable with full stack development in <b>Typescript</b> and coding data/ML tasks in <b>Python</b>.",
             "contentHref": "https://www.hku.hk"
         },
-        "education": {
-            "label": "Education",
-            "programs": [{
-                    "institution": "The University of Hong Kong",
-                    "degree": "Master of Science in Computer Science",
-                    "duration": "2025 - Present",
-                    "logo": "/images/hku-logo-mono.png"
-                },
-                {
-                    "institution": "The University of Hong Kong",
-                    "degree": "Bachelor of Engineering in Computer Science with First Class Honours",
-                    "duration": "2021 - 2025",
-                    "logo": "/images/hku-logo-mono.png"
-                }
-            ]
+        "skills": {
+            "label": "Skills",
+            "languages": "Programming Languages",
+            "frameworks": "Frameworks & Libraries",
+            "tools": "Tools & Platforms"
         },
         "experience": {
             "label": "Experience",
-            "content": "I have interned at ABC Company, where I worked on developing web applications using React and Node.js."
+            "organizations": [
+                {
+                    "position": "Research Assistant",
+                    "company": "The University of Hong Kong",
+                    "website": "https://www.hku.hk",
+                    "logo": "/images/hku-logo-mono.png",
+                    "duration": "June 2023 - May 2024, Sep 2024 - Present"
+                },
+                {
+                    "position": "Assistant Software Development Engineer (Intern)",
+                    "company": "iFLYTEK Co., Ltd.",
+                    "website": "https://www.iflytek.com",
+                    "logo": "/images/iflytek-logo-mono.png",
+                    "duration": "Jun 2024 - Aug 2024"
+                }
+            ]
         },
         "projects": {
             "label": "Projects",
-            "content": "I have worked on several personal projects, including a task management app and a weather forecasting tool."
+            "content": "Projects coming soon..."
         },
         "contact": {
             "label": "Contact",
-            "content": "Feel free to reach out to me via email at chenxiang@example.com."
+            "content": "Feel free to reach out to me via email at",
+            "accounts": "or connect with me on other platforms"
         }
+    },
+    "scroll-toast": {
+        "title": "Having trouble scrolling with scroll wheel?",
+        "description": "Would you like to disable scroll snapping for smoother navigation?",
+        "action": "Disable Scroll Snapping",
+        "success": "Scroll snapping disabled. You can re-enable it by refreshing the page."
     }
 }

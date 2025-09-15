@@ -10,77 +10,77 @@ import { type ExtendedRecordMap } from "notion-types";
 // Dynamically import components used by NotionRenderer, ensuring they are client-side
 const Code = dynamic(() => import("react-notion-x/build/third-party/code").then((m) => m.Code));
 const Collection = dynamic(() =>
-  import("react-notion-x/build/third-party/collection").then((m) => m.Collection)
+    import("react-notion-x/build/third-party/collection").then((m) => m.Collection)
 );
 const Equation = dynamic(() =>
-  import("react-notion-x/build/third-party/equation").then((m) => m.Equation)
+    import("react-notion-x/build/third-party/equation").then((m) => m.Equation)
 );
 const Modal = dynamic(() => import("react-notion-x/build/third-party/modal").then((m) => m.Modal));
 const Pdf = dynamic(() => import("react-notion-x/build/third-party/pdf").then((m) => m.Pdf));
 
 interface NotionPageClientProps {
-  recordMap: ExtendedRecordMap;
-  fullPage?: boolean;
+    recordMap: ExtendedRecordMap;
+    fullPage?: boolean;
 }
 
 export default function NotionPageClient({
-  recordMap,
-  fullPage = true, // Default to true as it's common for blog posts
+    recordMap,
+    fullPage = true, // Default to true as it's common for blog posts
 }: NotionPageClientProps) {
-  const [isMounted, setIsMounted] = useState(false);
-  const { resolvedTheme } = useTheme();
+    const [isMounted, setIsMounted] = useState(false);
+    const { resolvedTheme } = useTheme();
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
-  useEffect(() => {
-    if (!isMounted) return;
-    const lightThemeLink = document.getElementById("light-theme-link");
-    const darkThemeLink = document.getElementById("dark-theme-link");
+    useEffect(() => {
+        if (!isMounted) return;
+        const lightThemeLink = document.getElementById("light-theme-link");
+        const darkThemeLink = document.getElementById("dark-theme-link");
 
-    if (resolvedTheme == "dark") {
-      if (lightThemeLink) {
-        lightThemeLink.remove();
-      }
+        if (resolvedTheme == "dark") {
+            if (lightThemeLink) {
+                lightThemeLink.remove();
+            }
 
-      if (!darkThemeLink) {
-        const link = document.createElement("link");
-        link.id = "dark-theme-link";
-        link.rel = "stylesheet";
-        link.href = "/styles/prism-tomorrow.min.css";
-        document.head.appendChild(link);
-      }
-    } else {
-      if (darkThemeLink) {
-        darkThemeLink.remove();
-      }
+            if (!darkThemeLink) {
+                const link = document.createElement("link");
+                link.id = "dark-theme-link";
+                link.rel = "stylesheet";
+                link.href = "/styles/prism-tomorrow.min.css";
+                document.head.appendChild(link);
+            }
+        } else {
+            if (darkThemeLink) {
+                darkThemeLink.remove();
+            }
 
-      if (!lightThemeLink) {
-        const link = document.createElement("link");
-        link.id = "light-theme-link";
-        link.rel = "stylesheet";
-        link.href = "/styles/prism.min.css";
-        document.head.appendChild(link);
-      }
-    }
-  }, [resolvedTheme, isMounted]);
+            if (!lightThemeLink) {
+                const link = document.createElement("link");
+                link.id = "light-theme-link";
+                link.rel = "stylesheet";
+                link.href = "/styles/prism.min.css";
+                document.head.appendChild(link);
+            }
+        }
+    }, [resolvedTheme, isMounted]);
 
-  return (
-    <NotionRenderer
-      disableHeader
-      recordMap={recordMap}
-      fullPage={fullPage}
-      // darkMode={isMounted && resolvedTheme === "dark"}
-      showTableOfContents
-      components={{
-        Code,
-        Collection,
-        Equation,
-        Modal,
-        Pdf,
-        nextImage: Image,
-      }}
-    />
-  );
+    return (
+        <NotionRenderer
+            disableHeader
+            recordMap={recordMap}
+            fullPage={fullPage}
+            // darkMode={isMounted && resolvedTheme === "dark"}
+            showTableOfContents
+            components={{
+                Code,
+                Collection,
+                Equation,
+                Modal,
+                Pdf,
+                nextImage: Image,
+            }}
+        />
+    );
 }

@@ -7,10 +7,11 @@ import Link from "next/link";
 
 export default async function Intro() {
     const t = await getTranslations("intro");
+    const contactT = await getTranslations("contact");
 
     return (
         <div
-            className="flex flex-col justify-end items-center h-[calc(50%+16rem)] px-4 md:px-6 pb-8 pt-4 transition-all content-section snap-none"
+            className="flex flex-col justify-end items-center h-[calc(50%+16rem)] px-4 md:px-6 pb-8 pt-4 transition-all content-section snap-center"
             id="intro"
         >
             <div className="flex flex-col justify-center items-center gap-4 border-0 rounded-2xl w-full max-w-4xl sm:p-20 p-3 pb-20 transition-all mb-16">
@@ -21,8 +22,9 @@ export default async function Intro() {
                         <div className="flex flex-wrap mt-1 gap-2 opacity-0 animate-[fadeIn_1s_0.5s_ease_forwards]">
                             <Badge className="py-1 px-2">
                                 <Link
-                                    href="https://github.com/Xiang-CH"
+                                    href={contactT("github.href")}
                                     className="flex items-center"
+                                    target="_blank"
                                 >
                                     <GitHubLogoIcon className="mr-1" />
                                     Github
@@ -30,8 +32,9 @@ export default async function Intro() {
                             </Badge>
                             <Badge className="py-1 px-2 bg-[#0A66C2] dark:bg-[#0A66C2]/95 dark:text-white">
                                 <Link
-                                    href="https://www.linkedin.com/in/xiang-chen-62389526a/"
+                                    href={contactT("linkedin.href")}
                                     className="flex items-center"
+                                    target="_blank"
                                 >
                                     <LinkedInLogoIcon className="mr-1" />
                                     LinkedIn
@@ -39,8 +42,9 @@ export default async function Intro() {
                             </Badge>
                             <Badge className="py-1 px-2 bg-gray-600 dark:bg-gray-700 text-white">
                                 <Link
-                                    href="mailto:cxiang@connect.hku.hk"
+                                    href={contactT("email.href")}
                                     className="flex items-center"
+                                    target="_blank"
                                 >
                                     <EnvelopeClosedIcon className="mr-1" />
                                     Email

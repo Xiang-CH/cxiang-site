@@ -40,8 +40,9 @@ export default function MenuBar() {
                         href={item.href}
                         className={cn(
                             "flex items-center gap-1.5 text-card-foreground overflow-x-hidden",
-                            currentPath.startsWith(item.href) && item.href !== "/" ||
-                                item.href === "/" && ["/en", "/zh-CN", "/zh-HK"].includes(currentPath)
+                            (currentPath.startsWith(item.href) && item.href !== "/") ||
+                                (item.href === "/" &&
+                                    ["/en", "/zh-CN", "/zh-HK"].includes(currentPath))
                                 ? "font-normal text-primary"
                                 : "text-muted-foreground hover:text-primary transition-colors"
                         )}

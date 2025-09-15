@@ -2,11 +2,7 @@
 
 import { useActiveSection } from "@/hooks/useActiveSection";
 
-export default function TocWheel({
-    Sections,
-}: {
-    Sections: { href: string; label: string }[];
-}) {
+export default function TocWheel({ Sections }: { Sections: { href: string; label: string }[] }) {
     const currentSection = useActiveSection(".content-section");
 
     function onSectionClick(section: string) {
