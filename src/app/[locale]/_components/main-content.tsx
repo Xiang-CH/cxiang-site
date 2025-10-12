@@ -2,7 +2,13 @@ import { getTranslations } from "next-intl/server";
 import Skills from "./skills";
 import TocWheel from "@/components/toc-wheel";
 import Image from "next/image";
-import { EnvelopeClosedIcon, GitHubLogoIcon, LinkedInLogoIcon } from "@radix-ui/react-icons";
+import {
+    EnvelopeClosedIcon,
+    GitHubLogoIcon,
+    LinkedInLogoIcon,
+    InstagramLogoIcon,
+} from "@radix-ui/react-icons";
+import info from "@/lib/info";
 
 export default async function MainContent() {
     const t = await getTranslations("main");
@@ -118,8 +124,6 @@ async function ExperienceCards({ experiences }: { experiences: ExperienceDetails
 }
 
 async function ContactInfo() {
-    const contactT = await getTranslations("contact");
-
     return (
         <>
             <TextContent
@@ -127,27 +131,34 @@ async function ContactInfo() {
                 className="text-xl font-bold [&:not(:first-child)]:mt-6"
             />
             <a
-                href={contactT("email.href")}
+                href={info.email.href}
                 className="flex items-center mt-4 ml-2 py-4 px-6 w-fit hover:underline hover:text-xl transition-all"
             >
                 <EnvelopeClosedIcon className="mr-4" width={30} height={30} />
-                {contactT("email.content")}
+                {info.email.content}
             </a>
 
             <TextContent localKey="contact.accounts" className="text-xl font-bold" />
             <a
-                href={contactT("github.href")}
+                href={info.github.href}
                 className="flex items-center mt-4 ml-2 py-2 px-6 w-fit hover:underline hover:text-xl transition-all"
             >
                 <GitHubLogoIcon className="mr-4" width={30} height={30} />
-                {contactT("github.content")}
+                {info.github.content}
             </a>
             <a
-                href={contactT("linkedin.href")}
+                href={info.linkedin.href}
                 className="flex items-center mt-1 ml-2 py-2 px-6 w-fit hover:underline hover:text-xl transition-all"
             >
                 <LinkedInLogoIcon className="mr-4" width={30} height={30} />
-                {contactT("linkedin.content")}
+                {info.linkedin.content}
+            </a>
+            <a
+                href={info.instagram.href}
+                className="flex items-center mt-1 ml-2 py-2 px-6 w-fit hover:underline hover:text-xl transition-all"
+            >
+                <InstagramLogoIcon className="mr-4" width={30} height={30} />
+                {info.instagram.content}
             </a>
         </>
     );

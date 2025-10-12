@@ -1,7 +1,60 @@
 {
     "intro": {
         "name": "陈想 Chen Xiang",
-        "role": "软件工程师",
-        "about": "将灵感变为代码，让代码照进现实。"
+        "role": "软件开发者",
+        "about": "还没想好这里写什么...",
+        "links": {
+            "github": "GitHub",
+            "linkedin": "领英",
+            "email": "邮箱",
+            "resume": "简历"
+        }
+    },
+    "main": {
+        "about": {
+            "label": "关于",
+            "content": "我现在正在<a>香港大学</a>攻读<b>计算机科学</b>硕士研究生。我热爱编写代码来解决现实世界的问题，而近期更多地通过使用生成式AI来实现。\n\n最擅长使用 <b>Typescript</b> 进行全栈开发，以及使用 <b>Python</b> 编写数据/机器学习任务。",
+            "contentHref": "https://www.hku.hk"
+        },
+        "skills": {
+            "label": "技能",
+            "languages": "编程语言",
+            "frameworks": "框架和库",
+            "tools": "工具和平台"
+        },
+        "experience": {
+            "label": "经历",
+            "organizations": [
+                {
+                    "position": "科研助理",
+                    "company": "香港大学",
+                    "website": "https://www.hku.hk",
+                    "logo": "/images/hku-logo-mono.png",
+                    "duration": "2023年6月 - 2024年5月, 2024年9月 - 现在"
+                },
+                {
+                    "position": "软件开发工程师（实习）",
+                    "company": "科大讯飞",
+                    "website": "https://www.iflytek.com",
+                    "logo": "/images/iflytek-logo-mono.png",
+                    "duration": "2024年6月 - 2024年8月"
+                }
+            ]
+        },
+        "projects": {
+            "label": "项目",
+            "content": "装修中..."
+        },
+        "contact": {
+            "label": "联络",
+            "content": "欢迎通过电子邮件与我联系",
+            "accounts": "或在其他平台找到我"
+        }
+    },
+    "scroll-toast": {
+        "title": "Having trouble scrolling with scroll wheel?",
+        "description": "Would you like to disable scroll snapping for smoother navigation?",
+        "action": "Disable Scroll Snapping",
+        "success": "Scroll snapping disabled. You can re-enable it by refreshing the page."
     }
 }

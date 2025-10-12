@@ -21,12 +21,10 @@ export function generateStaticParams() {
 
 export default function Home() {
     return (
-        <div className="font-[family-name:var(--font-geist-sans)]">
-            <ScrollContainer>
-                <Intro />
-                <MainContent />
-                <ScrollArrow />
-            </ScrollContainer>
-        </div>
+        <ScrollContainer>
+            <Intro />
+            <MainContent />
+            <ScrollArrow />
+        </ScrollContainer>
     );
 }

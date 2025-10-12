@@ -2,12 +2,18 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Badge } from "@/components/ui/badge";
-import { GitHubLogoIcon, LinkedInLogoIcon, EnvelopeClosedIcon } from "@radix-ui/react-icons";
+import {
+    GitHubLogoIcon,
+    LinkedInLogoIcon,
+    EnvelopeClosedIcon,
+    FileTextIcon,
+} from "@radix-ui/react-icons";
 import Link from "next/link";
+import info from "@/lib/info";
+import Viewer from "@/components/viewer";
 
 export default async function Intro() {
     const t = await getTranslations("intro");
-    const contactT = await getTranslations("contact");
 
     return (
         <div
@@ -22,37 +28,47 @@ export default async function Intro() {
                         <div className="flex flex-wrap mt-1 gap-2 opacity-0 animate-[fadeIn_1s_0.5s_ease_forwards]">
                             <Badge className="py-1 px-2">
                                 <Link
-                                    href={contactT("github.href")}
+                                    href={info.github.href}
                                     className="flex items-center"
                                     target="_blank"
                                 >
                                     <GitHubLogoIcon className="mr-1" />
-                                    Github
+                                    {t("links.github")}
                                 </Link>
                             </Badge>
-                            <Badge className="py-1 px-2 bg-[#0A66C2] dark:bg-[#0A66C2]/95 dark:text-white">
+                            <Badge className="py-1 px-2 bg-[#0A66C2] dark:bg-[#0A66C2]/85 dark:text-white">
                                 <Link
-                                    href={contactT("linkedin.href")}
+                                    href={info.linkedin.href}
                                     className="flex items-center"
                                     target="_blank"
                                 >
                                     <LinkedInLogoIcon className="mr-1" />
-                                    LinkedIn
+                                    {t("links.linkedin")}
                                 </Link>
                             </Badge>
                             <Badge className="py-1 px-2 bg-gray-600 dark:bg-gray-700 text-white">
                                 <Link
-                                    href={contactT("email.href")}
+                                    href={info.email.href}
                                     className="flex items-center"
                                     target="_blank"
                                 >
                                     <EnvelopeClosedIcon className="mr-1" />
-                                    Email
+                                    {t("links.email")}
+                                </Link>
+                            </Badge>
+                            <Badge className="py-1 px-2 bg-neutral-800 dark:bg-neutral-600 text-white">
+                                <Link
+                                    href={`?viewer=${info.resume.href}`}
+                                    className="flex items-center"
+                                >
+                                    <FileTextIcon className="mr-1" />
+                                    {t("links.resume")}
                                 </Link>
                             </Badge>
                         </div>
                         <p className="fade-in ml-[1px] mt-4">{t("about")}</p>
                     </div>
+                    <Viewer />
                     <Image
                         src="https://avatars.githubusercontent.com/u/63144890?v=4"
                         alt="Chen Xiang"
@@ -65,7 +81,7 @@ export default async function Intro() {
                 {/* <section className="flex items-center justify-between w-full max-w-3xl">
                     <p className="fade-in ml-[1px]">{t('about')}</p>
                 </section> */}
-                <section className="flex items-center justify-between w-full max-w-3xl gap-4 mt-1 opacity-0 animate-[fadeIn_1s_0.5s_ease_forwards] transition-all">
+                <section className="flex items-center justify-between w-full max-w-3xl gap-4  opacity-0 animate-[fadeIn_1s_0.5s_ease_forwards] transition-all">
                     <LocaleSwitcher />
                 </section>
             </div>

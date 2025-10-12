@@ -11,10 +11,14 @@ export default async function Layout({
     params: Promise<{ locale: string }>;
 }) {
     // Ensure that the incoming `locale` is valid
-    const { locale } = await params;
+    const { locale } = (await params) as { locale: "en" | "zh-CN" | "zh-HK" };
     if (!hasLocale(routing.locales, locale)) {
         notFound();
     }
 
-    return <NextIntlClientProvider>{children}</NextIntlClientProvider>;
+    return (
+        <NextIntlClientProvider>
+            <div lang="{locale}">{children}</div>
+        </NextIntlClientProvider>
+    );
 }

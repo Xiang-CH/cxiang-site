@@ -2,7 +2,7 @@ import { defineRouting } from "next-intl/routing";
 
 export const locales = {
     en: "English",
-    // "zh-CN": "简体中文",
+    "zh-CN": "简体中文",
     // "zh-HK": "繁體中文",
 };
 

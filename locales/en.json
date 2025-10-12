@@ -2,20 +2,12 @@
     "intro": {
         "name": "Chen Xiang 陈想",
         "role": "Software Developer",
-        "about": "Transforming Ideas into Code, Code into Reality."
-    },
-    "contact": {
-        "email": {
-            "content": "xiiang.ch@gmail.com",
-            "href": "mailto:xiiang.ch@gmail.com"
-        },
-        "github": {
-            "content": "Xiang-CH",
-            "href": "https://github.com/Xiang-CH"
-        },
-        "linkedin": {
-            "content": "Xiang Chen",
-            "href": "https://www.linkedin.com/in/xiang-chen-62389526a/"
+        "about": "Transforming Ideas into Code, Code into Reality.",
+        "links": {
+            "github": "GitHub",
+            "linkedin": "LinkedIn",
+            "email": "Email",
+            "resume": "Résumé"
         }
     },
     "main": {

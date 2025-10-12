@@ -37,9 +37,9 @@ export function LocaleSwitcher() {
                         {localeName}
                     </SelectItem>
                 ))}
-                <SelectItem key="zh-CN" value="zh-CN" disabled>
+                {/* <SelectItem key="zh-CN" value="zh-CN" disabled>
                     简体中文 (翻译中...)
-                </SelectItem>
+                </SelectItem> */}
             </SelectContent>
         </Select>
     );

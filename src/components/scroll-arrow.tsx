@@ -56,9 +56,9 @@ export default function ScrollArrow() {
                         element.scrollIntoView({ behavior: "smooth" });
                     }
                 }}
-                className="rounded-full p-1 border-[1px] border-gray-300 dark:border-gray-600 animate-[bounce-down_1s_ease-in-out_infinite]"
+                className="rounded-full p-1 border-[1px] border-gray-300 dark:border-gray-600 animate-[bounce-down_1s_ease-in-out_infinite] hover:animate-none hover:scale-115 transition-transform"
             >
-                <ArrowDownIcon className="w-4 h-4" />
+                <ArrowDownIcon className="w-5 h-5" />
             </span>
         </div>
     );
