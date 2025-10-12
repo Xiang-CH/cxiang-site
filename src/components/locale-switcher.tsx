@@ -21,7 +21,7 @@ export function LocaleSwitcher() {
                 redirect({ href: "/", locale: value });
             }}
         >
-            <SelectTrigger>
+            <SelectTrigger className="hover:cursor-pointer">
                 <Image
                     src={`/translate.svg`}
                     alt={``}
