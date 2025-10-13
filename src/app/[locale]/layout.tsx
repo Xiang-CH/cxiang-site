@@ -18,7 +18,9 @@ export default async function Layout({
 
     return (
         <NextIntlClientProvider>
-            <div lang="{locale}">{children}</div>
+            <div lang="{locale}" className="ring-0 border-0">
+                {children}
+            </div>
         </NextIntlClientProvider>
     );
 }

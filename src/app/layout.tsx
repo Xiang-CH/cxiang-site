@@ -5,6 +5,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "@/app/globals.css";
 import MenuBar from "@/components/menu-bar";
 import { Toaster } from "@/components/ui/sonner";
+import Viewer from "@/components/viewer";
 
 const notoSans = Noto_Sans({
     variable: "--font-noto-sans",
@@ -36,6 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     enableSystem
                     disableTransitionOnChange
                 >
+                    <Viewer />
                     <MenuBar />
                     <div className="h-14" />
                     {children}

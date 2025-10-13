@@ -18,7 +18,7 @@ export default function MenuBar() {
     return (
         <header
             className={cn(
-                "w-full top-0 fixed flex items-center justify-between py-4 px-6 box-border z-100 header transition-[top] backdrop-blur-[3px] h-14 bg-background",
+                "w-full top-0 fixed flex items-center justify-between py-4 px-6 box-border z-1 header transition-[top] backdrop-blur-[3px] h-14 bg-background",
                 currentSection &&
                     currentSection !== "intro" &&
                     "shadow-[inset_0_-1px_0_0_var(--accent)]"

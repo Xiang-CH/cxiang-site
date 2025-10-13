@@ -1,4 +1,4 @@
-import Image from "next/image";
+// import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +10,6 @@ import {
 } from "@radix-ui/react-icons";
 import Link from "next/link";
 import info from "@/lib/info";
-import Viewer from "@/components/viewer";
 
 export default async function Intro() {
     const t = await getTranslations("intro");
@@ -20,7 +19,7 @@ export default async function Intro() {
             className="flex flex-col justify-end items-center h-[calc(50%+16rem)] px-4 md:px-6 pb-8 pt-4 transition-all content-section snap-center"
             id="intro"
         >
-            <div className="flex flex-col justify-center items-center gap-4 border-0 rounded-2xl w-full max-w-4xl sm:p-20 p-3 pb-20 transition-all mb-16">
+            <div className="flex flex-col justify-center items-center gap-4 border-0 rounded-2xl w-full max-w-4xl sm:p-20 p-3 pb-20 transition-all mb-16 z-1">
                 <section className="flex items-start justify-between w-full max-w-100vw">
                     <div className="flex flex-col items-start justify-center">
                         <h1 className="text-3xl font-bold transition-all fade-in">{t("name")}</h1>
@@ -68,15 +67,14 @@ export default async function Intro() {
                         </div>
                         <p className="fade-in ml-[1px] mt-4">{t("about")}</p>
                     </div>
-                    <Viewer />
-                    <Image
+                    {/* <Image
                         src="https://avatars.githubusercontent.com/u/63144890?v=4"
                         alt="Chen Xiang"
                         width={120}
                         height={120}
                         className="rounded-full hidden sm:block"
                         priority
-                    />
+                    /> */}
                 </section>
                 {/* <section className="flex items-center justify-between w-full max-w-3xl">
                     <p className="fade-in ml-[1px]">{t('about')}</p>

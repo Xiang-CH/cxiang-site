@@ -75,6 +75,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogBySlug({ params }: Props) {
     const slug = (await params).slug;
+
     // Legacy: if the path segment is actually an id, redirect to its canonical slug
     const legacySlug = await getSlugById(slug);
     if (legacySlug) {
@@ -100,7 +101,7 @@ export default async function BlogBySlug({ params }: Props) {
 
     return (
         <main className="w-full h-full flex flex-col justify-start items-center">
-            <NotionPageClient recordMap={recordMap} />
+            <NotionPageClient recordMap={recordMap} pageId={resolved.id} pageSlug={resolved.slug} />
         </main>
     );
 }
