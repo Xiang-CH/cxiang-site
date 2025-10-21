@@ -45,7 +45,7 @@ export default async function Blogs() {
     }
 
     return (
-        <main className="w-full max-w-xl h-full flex flex-col justify-start items-start px-6 mx-auto mt-8">
+        <main className="w-full max-w-xl h-full flex flex-col justify-start items-start px-6 mx-auto mt-8 gap-6">
             {/* <h1 className="text-xl font-bold mb-1">Blogs</h1>
             <p className="text-md mb-12 font-light">
                 Things that I have figured out and thought worth sharing.
@@ -78,7 +78,7 @@ export default async function Blogs() {
                             </p>
                         </div>
                         {blog.cover && (
-                            <div className="ml-2">
+                            <div className="ml-2.5">
                                 <Image
                                     src={
                                         blog.cover?.type === "external"
