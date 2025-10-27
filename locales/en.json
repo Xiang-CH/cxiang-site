@@ -26,17 +26,17 @@
             "label": "Experience",
             "organizations": [
                 {
-                    "position": "Research Assistant",
+                    "position": "Research Assistant (LLM Application)",
                     "company": "The University of Hong Kong",
                     "website": "https://www.hku.hk",
-                    "logo": "/images/hku-logo-mono.png",
+                    "logo": "/images/hku-logo.png",
                     "duration": "June 2023 - May 2024, Sep 2024 - Present"
                 },
                 {
                     "position": "Assistant Software Development Engineer (Intern)",
                     "company": "iFLYTEK Co., Ltd.",
                     "website": "https://www.iflytek.com",
-                    "logo": "/images/iflytek-logo-mono.png",
+                    "logo": "/images/iflytek-logo.png",
                     "duration": "Jun 2024 - Aug 2024"
                 }
             ]

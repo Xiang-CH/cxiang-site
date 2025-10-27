@@ -26,17 +26,17 @@
             "label": "经历",
             "organizations": [
                 {
-                    "position": "科研助理",
+                    "position": "科研助理（LLM 应用）",
                     "company": "香港大学",
                     "website": "https://www.hku.hk",
-                    "logo": "/images/hku-logo-mono.png",
+                    "logo": "/images/hku-logo.png",
                     "duration": "2023年6月 - 2024年5月, 2024年9月 - 现在"
                 },
                 {
                     "position": "软件开发工程师（实习）",
                     "company": "科大讯飞",
                     "website": "https://www.iflytek.com",
-                    "logo": "/images/iflytek-logo-mono.png",
+                    "logo": "/images/iflytek-logo.png",
                     "duration": "2024年6月 - 2024年8月"
                 }
             ]

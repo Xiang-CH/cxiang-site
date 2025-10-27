@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Noto_Sans, Geist_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Suspense } from 'react'
+import { Suspense } from "react";
 import "@/app/globals.css";
 import MenuBar from "@/components/menu-bar";
 import { Toaster } from "@/components/ui/sonner";

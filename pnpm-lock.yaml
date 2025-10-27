@@ -25,6 +25,9 @@ importers:
             "@vercel/speed-insights":
                 specifier: ^1.2.0
                 version: 1.2.0(next@15.3.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
+            aos:
+                specifier: 3.0.0-beta.6
+                version: 3.0.0-beta.6
             class-variance-authority:
                 specifier: ^0.7.1
                 version: 0.7.1
@@ -77,6 +80,9 @@ importers:
             "@tailwindcss/postcss":
                 specifier: ^4
                 version: 4.1.8
+            "@types/aos":
+                specifier: ^3.0.7
+                version: 3.0.7
             "@types/node":
                 specifier: ^20
                 version: 20.19.0
@@ -1248,6 +1254,12 @@ packages:
                 integrity: sha512-6+7nlbMVX/PVDCwaIQ8nTOPveOcFLSt8GcXdx8hD0bt39uWxYT88uXzqTd4fTvqta7oeUJqudepapKNt2DYJFw==,
             }
 
+    "@types/aos@3.0.7":
+        resolution:
+            {
+                integrity: sha512-sEhyFqvKauUJZDbvAB3Pggynrq6g+2PS4XB3tmUr+mDL1gfDJnwslUC4QQ7/l8UD+LWpr3RxZVR/rHoZrLqZVg==,
+            }
+
     "@types/estree@1.0.8":
         resolution:
             {
@@ -1566,6 +1578,12 @@ packages:
             }
         engines: { node: ">=8" }
 
+    aos@3.0.0-beta.6:
+        resolution:
+            {
+                integrity: sha512-VLWrpq8bfAWcetynVHMMrqdC+89Qq/Ym6UBJbHB4crIwp3RR8uq1dNGgsFzoDl03S43rlVMK+na3r5+oUCZsYw==,
+            }
+
     argparse@2.0.1:
         resolution:
             {
@@ -1791,6 +1809,12 @@ packages:
         resolution:
             {
                 integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==,
+            }
+
+    classlist-polyfill@1.2.0:
+        resolution:
+            {
+                integrity: sha512-GzIjNdcEtH4ieA2S8NmrSxv7DfEV5fmixQeyTmqmRmRJPGpRBaSnA2a0VrCjyT8iW8JjEdMbKzDotAJf+ajgaQ==,
             }
 
     client-only@0.0.1:
@@ -2986,10 +3010,22 @@ packages:
             }
         engines: { node: ">=10" }
 
+    lodash.debounce@4.0.8:
+        resolution:
+            {
+                integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==,
+            }
+
     lodash.merge@4.6.2:
         resolution:
             {
                 integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==,
+            }
+
+    lodash.throttle@4.1.1:
+        resolution:
+            {
+                integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==,
             }
 
     loose-envify@1.4.0:
@@ -4956,6 +4992,8 @@ snapshots:
             tslib: 2.8.1
         optional: true
 
+    "@types/aos@3.0.7": {}
+
     "@types/estree@1.0.8": {}
 
     "@types/json-schema@7.0.15": {}
@@ -5141,6 +5179,12 @@ snapshots:
         dependencies:
             color-convert: 2.0.1
 
+    aos@3.0.0-beta.6:
+        dependencies:
+            classlist-polyfill: 1.2.0
+            lodash.debounce: 4.0.8
+            lodash.throttle: 4.1.1
+
     argparse@2.0.1: {}
 
     aria-hidden@1.2.6:
@@ -5303,6 +5347,8 @@ snapshots:
     class-variance-authority@0.7.1:
         dependencies:
             clsx: 2.1.1
+
+    classlist-polyfill@1.2.0: {}
 
     client-only@0.0.1: {}
 
@@ -6137,7 +6183,11 @@ snapshots:
         dependencies:
             p-locate: 5.0.0
 
+    lodash.debounce@4.0.8: {}
+
     lodash.merge@4.6.2: {}
+
+    lodash.throttle@4.1.1: {}
 
     loose-envify@1.4.0:
         dependencies:

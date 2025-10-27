@@ -56,7 +56,9 @@ function ContentSection({ children, id }: { children: React.ReactNode; id: strin
             className={`snap-center ${id === "skills" || id === "projects" ? "h-[60dvh]" : "h-[calc(100dvh-3.5rem)]"} flex flex-col justify-center content-section pb-10 min-h-fit`}
             id={id}
         >
-            <div className="mt-4 transition-all">{children}</div>
+            <div className="mt-4 transition-all" data-aos="fade-left">
+                {children}
+            </div>
         </div>
     );
 }
@@ -95,19 +97,22 @@ async function ExperienceCards({ experiences }: { experiences: ExperienceDetails
             {experiences.map((experience, index) => {
                 return (
                     <div key={index} className="flex gap-4 border p-4 rounded-lg relative">
-                        <div className="flex items-center justify-center">
-                            <Image
-                                src={`${experience.logo}`}
-                                alt={experience.company}
-                                width={40}
-                                height={40}
-                                className="min-w-16 dark:invert-100"
-                            />
+                        <div className="flex min-w-16 items-center justify-center">
+                            <a href={experience.website}>
+                                <Image
+                                    src={`${experience.logo}`}
+                                    alt={experience.company}
+                                    width={40}
+                                    height={40}
+                                    className="min-w-16"
+                                    loading="lazy"
+                                />
+                            </a>
                         </div>
                         <div className="overflow-hidden flex flex-col gap-1">
                             <h2 className="text-xl font-bold">{experience.position}</h2>
                             <a
-                                className="text-gray-600 dark:text-neutral-300 whitespace-pre-wrap leading-5"
+                                className="text-gray-600 dark:text-neutral-300 whitespace-pre-wrap leading-5 hover:underline"
                                 href={experience.website}
                             >
                                 {experience.company}
