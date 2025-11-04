@@ -46,7 +46,7 @@ export default async function Projects() {
     }
 
     return (
-        <main className="w-full max-w-5xl h-full px-6 mx-auto mt-8">
+        <main className="w-full max-w-md sm:max-w-3xl lg:max-w-5xl h-full px-6 mx-auto mt-6">
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
                 {response.results.map((item) => {
                     if (item.object !== "page" || !("properties" in item)) return;
@@ -65,7 +65,7 @@ export default async function Projects() {
 
                     return (
                         <div
-                            className="flex flex-col break-inside-avoid mb-6 border rounded-xl pb-2.5 gap-2"
+                            className="flex flex-col break-inside-avoid mb-6 border rounded-xl pb-2.5 gap-2 bg-neutral-50/40 dark:bg-neutral-900"
                             key={project.id}
                         >
                             <Link
@@ -74,7 +74,7 @@ export default async function Projects() {
                                 className="group"
                             >
                                 {project.cover && (
-                                    <div className="overflow-hidden rounded-t-xl bg-gray-100 dark:bg-gray-800">
+                                    <div className="overflow-hidden rounded-t-xl bg-gray-100 dark:bg-neutral-900">
                                         <Image
                                             src={
                                                 project.cover?.type === "external"
@@ -82,8 +82,8 @@ export default async function Projects() {
                                                     : project.cover.file.url
                                             }
                                             alt="project cover"
-                                            width={600}
-                                            height={600}
+                                            width={500}
+                                            height={500}
                                             className="w-full h-auto transition-transform duration-200 group-hover:scale-[1.01]"
                                             priority
                                         />

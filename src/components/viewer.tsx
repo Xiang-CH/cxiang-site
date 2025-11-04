@@ -54,26 +54,27 @@ export default function Viewer() {
 
     return (
         <div
-            className={`fixed top-0 left-0 w-[100vw] h-[100vh] flex justify-center items-stretch z-100! ${isVisible ? "opacity-100" : "opacity-0 pointer-events-none"} transition-all border-0`}
+            className={`fixed top-0 left-0 w-[100vw] h-[100vh] flex justify-center items-stretch z-100! transition-all border-0 ${isVisible ? "" : "pointer-events-none"}`}
             onClick={closeViewer}
         >
+            <div className={`absolute inset-0 transition-opacity bg-black/20 ${isVisible ? "opacity-100" : "opacity-0"}`} />
             <div
-                className={`rounded-2xl border-[1px] border-gray-300 dark:border-neutral-700 shadow-lg shadow-gray-400/10 dark:shadow-gray-900/50 overflow-auto m-1 md:m-6 flex flex-col w-full max-w-[70rem] ${isVisible ? "scale-100 opacity-100" : "scale-0 opacity-0"} transition-all`}
+                className={`relative z-10 rounded-2xl border-[1px] border-gray-300 dark:border-neutral-700 shadow-lg shadow-gray-400/10 dark:shadow-gray-900/50 overflow-auto m-1 md:m-6 flex flex-col w-full max-w-[70rem] ${isVisible ? "scale-100 opacity-100" : "scale-0 opacity-0"} transition-all`}
             >
                 <div
-                    className="flex w-full justify-end  bg-background"
+                    className="flex w-full justify-end  bg-accent border-b"
                     onClick={(e) => e.stopPropagation()}
                 >
                     {searchParams.get("viewer")?.endsWith(".pdf") && (
                         <ViewerButton onClickFunction={downloadFile}>
-                            <DownloadIcon width={30} />
+                            <DownloadIcon width={25} />
                         </ViewerButton>
                     )}
                     <ViewerButton onClickFunction={goToPage}>
-                        <SizeIcon width={30} />
+                        <SizeIcon width={25} />
                     </ViewerButton>
                     <ViewerButton onClickFunction={closeViewer}>
-                        <Cross1Icon width={30} />
+                        <Cross1Icon width={25} />
                     </ViewerButton>
                 </div>
                 {isVisible && (
@@ -103,7 +104,7 @@ function ViewerButton({
     return (
         <button
             onClick={onClickFunction}
-            className="hover:pointer-cursor hover:bg-gray-200 dark:hover:bg-gray-700 px-2 py-3 transition-colors"
+            className="hover:pointer-cursor hover:bg-gray-200 dark:hover:bg-gray-700 px-2 py-2.5 transition-colors"
         >
             {children}
         </button>

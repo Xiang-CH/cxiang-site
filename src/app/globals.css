@@ -259,23 +259,28 @@ a.notion-table-of-contents-active-item {
     /* Firefox */
     * {
         scrollbar-color: auto transparent;
+        scrollbar-width: none;
     }
 }
 
 /* Firefox */
 * {
     scrollbar-color: auto transparent;
+    scrollbar-width: none;
 }
 
 /* Chromium/Safari */
 *::-webkit-scrollbar-track {
     background: transparent;
+    width: 0;
 }
 
 *::-webkit-scrollbar {
     background: transparent;
+    width: 0;
 }
 
 *::-webkit-scrollbar-corner {
     background: transparent;
+    width: 0;
 }

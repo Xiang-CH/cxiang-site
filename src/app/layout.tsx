@@ -38,7 +38,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <Suspense fallback={<div>Failed to load.. </div>}>
+                    <Suspense fallback={<div></div>}>
                         <Viewer />
                     </Suspense>
                     <MenuBar />
