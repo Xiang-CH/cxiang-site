@@ -103,6 +103,8 @@ export default function ScrollContainer({ children }: ScrollContainerProps) {
                     alt=""
                     width={371}
                     height={280}
+                    priority
+                    quality={70}
                     className={`z-0 block absolute bottom-0 right-2 md:right-10 max-w-[13rem] fade-in duration-400 transition-transform ${
                         scrollPosition > 100 ? "translate-y-20" : ""
                     } ${resolvedTheme === "light" ? "opacity-85" : "opacity-0"}`}

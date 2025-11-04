@@ -86,8 +86,9 @@ export default async function Blogs() {
                                             : blog.cover.file.url
                                     }
                                     alt="blog cover"
-                                    width={200}
-                                    height={100}
+                                    width={160}
+                                    height={90}
+                                    quality={60}
                                     className="rounded-md"
                                     priority
                                 />
