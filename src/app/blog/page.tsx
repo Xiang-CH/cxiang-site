@@ -89,6 +89,7 @@ export default async function Blogs() {
                                     width={200}
                                     height={100}
                                     className="rounded-md"
+                                    
                                 />
                             </div>
                         )}

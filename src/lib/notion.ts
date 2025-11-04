@@ -15,6 +15,22 @@ const api = new NotionAPI({
     authToken: process.env.NOTION_SECRET,
 });
 
+export const getProjects = async () => {
+    // if (process.env.NODE_ENV === 'production') {
+    //     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    //     'use cache'
+    // }
+    return notion.databases.query({
+        database_id: process.env.NOTION_PROJECTS_DATABASE_ID!,
+        sorts: [
+            {
+                property: "Date",
+                direction: "descending",
+            },
+        ],
+    });
+};
+
 export const getBlogs = async () => {
     // if (process.env.NODE_ENV === 'production') {
     //     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
