@@ -88,7 +88,7 @@ export default async function Blogs() {
                                     alt="blog cover"
                                     width={160}
                                     height={90}
-                                    quality={60}
+                                    quality={40}
                                     className="rounded-md"
                                     priority
                                 />

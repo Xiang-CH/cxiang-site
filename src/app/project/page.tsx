@@ -86,7 +86,7 @@ export default async function Projects() {
                                             parseInt(project.properties["Cover Width"].rich_text[0]?.plain_text) : 307}
                                             height={project.properties["Cover Height"].type === "rich_text" && project.properties["Cover Height"].rich_text[0]?.plain_text?
                                             parseInt(project.properties["Cover Height"].rich_text[0]?.plain_text) : 250}
-                                            quality={80}
+                                            quality={50}
                                             className="w-full h-auto transition-transform duration-200 group-hover:scale-[1.01]"
                                             priority
                                         />
