@@ -17,7 +17,8 @@ const info = {
     },
     resume: {
         content: "Résumé",
-        href: "https://l73nuimiozrooqdu.public.blob.vercel-storage.com/resume_chen_xiang.pdf",
+        // href: "https://l73nuimiozrooqdu.public.blob.vercel-storage.com/resume_chen_xiang.pdf",
+        href: "https://cdn.cxiang.site/resume_chen_xiang.pdf",
     },
 };
 

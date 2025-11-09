@@ -10,6 +10,7 @@ import {
 } from "@radix-ui/react-icons";
 import Link from "next/link";
 import info from "@/lib/info";
+import { OpenViewerLink } from "@/components/viewer";
 
 export default async function Intro() {
     const t = await getTranslations("intro");
@@ -56,13 +57,13 @@ export default async function Intro() {
                                 </Link>
                             </Badge>
                             <Badge className="py-1 px-2 bg-neutral-800 dark:bg-neutral-600 text-white">
-                                <Link
-                                    href={`?viewer=${info.resume.href}`}
+                                <OpenViewerLink
+                                    viewer={info.resume.href}
                                     className="flex items-center"
                                 >
                                     <FileTextIcon className="mr-1" />
                                     {t("links.resume")}
-                                </Link>
+                                </OpenViewerLink>
                             </Badge>
                         </div>
                         <p className="fade-in ml-[1px] mt-4">{t("about")}</p>
