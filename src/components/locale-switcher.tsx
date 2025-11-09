@@ -21,7 +21,7 @@ export function LocaleSwitcher() {
                 redirect({ href: "/", locale: value });
             }}
         >
-            <SelectTrigger className="hover:cursor-pointer">
+            <SelectTrigger className="hover:cursor-pointer" aria-label="Language switcher">
                 <Image
                     src={`/translate.svg`}
                     alt={``}
@@ -29,7 +29,7 @@ export function LocaleSwitcher() {
                     height={15}
                     className="inline-block mr-2 dark:invert"
                 />
-                <SelectValue placeholder="Select a language" aria-label="Language switcher" />
+                <SelectValue placeholder="Select a language" />
             </SelectTrigger>
             <SelectContent>
                 {Object.entries(locales).map(([localeCode, localeName]) => (
