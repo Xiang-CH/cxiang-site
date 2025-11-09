@@ -29,11 +29,11 @@ export function LocaleSwitcher() {
                     height={15}
                     className="inline-block mr-2 dark:invert"
                 />
-                <SelectValue placeholder="Select a language" />
+                <SelectValue placeholder="Select a language" aria-label="Language switcher" />
             </SelectTrigger>
             <SelectContent>
                 {Object.entries(locales).map(([localeCode, localeName]) => (
-                    <SelectItem key={localeCode} value={localeCode}>
+                    <SelectItem key={localeCode} value={localeCode} aria-label={localeName}>
                         {localeName}
                     </SelectItem>
                 ))}
