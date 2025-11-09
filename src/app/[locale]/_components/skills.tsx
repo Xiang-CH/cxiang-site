@@ -86,9 +86,17 @@ const skillsList = [
                 icon: "/azure/azure-original.svg",
             },
             {
+                name: "AWS",
+                icon: "amazonwebservices/amazonwebservices-original-wordmark.svg",
+            },
+            {
                 name: "Vercel",
                 icon: "/vercel/vercel-original.svg",
                 invertOnDark: true,
+            },
+            {
+                name: "Cloudflare",
+                icon: "/cloudflare/cloudflare-original.svg",
             },
             {
                 name: "Postman",
