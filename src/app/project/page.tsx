@@ -62,7 +62,7 @@ export default async function Projects() {
                             return url.includes(domain);
                         });
 
-                    console.log(url, redirect);
+                    // console.log(url, redirect);
 
                     return (
                         <div
