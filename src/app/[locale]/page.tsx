@@ -6,7 +6,7 @@ import ScrollContainer from "./_components/scroll-container";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Chen Xiang | Home",
+    title: "Chen Xiang (陈想) | Personal Website",
     description: "Personal website and portfolio of Chen Xiang, showcasing projects and experience",
     openGraph: {
         title: "Chen Xiang | Personal Website",

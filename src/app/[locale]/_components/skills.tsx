@@ -87,7 +87,8 @@ const skillsList = [
             },
             {
                 name: "AWS",
-                icon: "amazonwebservices/amazonwebservices-original-wordmark.svg",
+                icon: "/amazonwebservices/amazonwebservices-original-wordmark.svg",
+                darkIcon: "/amazonwebservices/amazonwebservices-plain-wordmark.svg",
             },
             {
                 name: "Vercel",
@@ -122,15 +123,32 @@ export default async function Skills() {
                                 key={skill.name}
                                 className="flex flex-col items-center w-14 sm:w-18"
                             >
-                                <img
-                                    src={
-                                        "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/" +
-                                        skill.icon
-                                    }
-                                    alt={skill.name}
-                                    className={`w-8 h-8 mb-1 ${skill.invertOnDark ? "dark:invert" : ""}`}
-                                    loading="lazy"
-                                />
+                                <picture>
+                                    <source
+                                        srcSet={
+                                            "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/" +
+                                            skill.icon
+                                        }
+                                        media="(prefers-color-scheme: light)"
+                                    />
+                                    <source
+                                        srcSet={
+                                            "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/" +
+                                            (skill.darkIcon ? skill.darkIcon : skill.icon)
+                                        }
+                                        media="(prefers-color-scheme: dark)"
+                                    />
+                                    <img
+                                        srcSet={
+                                            "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/" +
+                                            skill.icon
+                                        }
+                                        alt={skill.name}
+                                        className={`w-8 h-8 mb-1 ${skill.invertOnDark ? "dark:invert" : ""}`}
+                                        loading="lazy"
+                                    />
+                                </picture>
+
                                 <span className="text-sm text-center">{skill.name}</span>
                             </div>
                         ))}

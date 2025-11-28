@@ -9,6 +9,7 @@ import {
     InstagramLogoIcon,
 } from "@radix-ui/react-icons";
 import info from "@/lib/info";
+import { cn } from "@/lib/utils";
 
 export default async function MainContent() {
     const t = await getTranslations("main");
@@ -97,10 +98,15 @@ async function ExperienceCards({ experiences }: { experiences: ExperienceDetails
             {experiences.map((experience, index) => {
                 return (
                     <div key={index} className="flex gap-4 border p-4 rounded-lg relative">
-                        <div className="flex min-w-16 items-center justify-center">
+                        <div
+                            className={cn(
+                                "flex min-w-16 items-center justify-center",
+                                experience.logo.includes("mono") && "dark:invert"
+                            )}
+                        >
                             <a href={experience.website}>
                                 <Image
-                                    src={`${experience.logo}`}
+                                    src={experience.logo}
                                     alt={experience.company}
                                     width={40}
                                     height={40}
