@@ -29,11 +29,9 @@ export function OpenViewerLink({
 
 export default function Viewer() {
     const [isVisible, setIsVisible] = useState(false);
-    const [isMounted, setIsMounted] = useState(false);
     const [viewerUrl, setViewerUrl] = useState<string | null>(null);
 
     useEffect(() => {
-        setIsMounted(true);
         const updateFromUrl = () => {
             const v = new URL(window.location.href).searchParams.get("viewer")?.trim() || null;
             setViewerUrl(v);
@@ -87,10 +85,6 @@ export default function Viewer() {
                 .catch((err) => console.error(err));
         }
     };
-
-    if (!isMounted) {
-        return null;
-    }
 
     return (
         <div

@@ -7,11 +7,6 @@ const SECTIONS = ["#intro", "#about", "#skills", "#experience", "#projects", "#c
 
 export default function ScrollArrow() {
     const [nextSection, setNextSection] = useState("#about");
-    const [isMounted, setIsMounted] = useState(false);
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -51,10 +46,6 @@ export default function ScrollArrow() {
             document.querySelector("main")?.removeEventListener("scroll", handleScroll);
         };
     }, []);
-
-    if (!isMounted) {
-        return null;
-    }
 
     return (
         <div className="w-full fixed bottom-4 flex items-center justify-center invisible-at-end cursor-pointer">

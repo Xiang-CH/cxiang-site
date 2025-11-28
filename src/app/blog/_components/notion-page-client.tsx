@@ -4,7 +4,7 @@ import { useTheme } from "next-themes";
 import { NotionRenderer } from "react-notion-x";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { type ExtendedRecordMap } from "notion-types";
 import { usePostHog } from "posthog-js/react";
 
@@ -32,13 +32,8 @@ export default function NotionPageClient({
     pageId,
     pageSlug,
 }: NotionPageClientProps) {
-    const [isMounted, setIsMounted] = useState(false);
     const { resolvedTheme } = useTheme();
     const posthog = usePostHog();
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
 
     // Track blog view when component mounts
     useEffect(() => {
@@ -51,7 +46,7 @@ export default function NotionPageClient({
     }, [pageId, pageSlug, posthog]);
 
     useEffect(() => {
-        if (!isMounted) return;
+        // if (!isMounted) return;
         const lightThemeLink = document.getElementById("light-theme-link");
         const darkThemeLink = document.getElementById("dark-theme-link");
 
@@ -80,7 +75,7 @@ export default function NotionPageClient({
                 document.head.appendChild(link);
             }
         }
-    }, [resolvedTheme, isMounted]);
+    }, [resolvedTheme]);
 
     return (
         <NotionRenderer
