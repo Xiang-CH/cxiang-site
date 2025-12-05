@@ -26,6 +26,7 @@ const nextConfig: NextConfig = {
                 pathname: "/gh/devicons/devicon@latest/icons/**",
             },
         ],
+        qualities: [70, 75],
     },
     experimental: {
         useCache: true,
