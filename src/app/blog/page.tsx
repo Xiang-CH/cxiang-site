@@ -1,17 +1,28 @@
+"use cache";
+import { cacheLife } from "next/cache";
 import { getBlogs, getAllPostsMeta, type PostMeta } from "@/lib/notion";
 import { type PageObjectResponse } from "@notionhq/client";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-export const revalidate = 60; // Revalidate every 60 seconds
-
 export const metadata: Metadata = {
     title: "Blog | Chen Xiang",
     description: "Chen Xiang's Blogs",
 };
 
+function ErrorLoadingBlogs() {
+    return (
+        <div className="w-full h-full flex flex-col justify-center items-center">
+            <h1>Error</h1>
+            <p>😭Something went wrong when retrieving blogs.</p>
+        </div>
+    );
+}
+
 export default async function Blogs() {
+    cacheLife("days");
+
     let response;
     let metas: PostMeta[] = [];
     try {
@@ -19,22 +30,12 @@ export default async function Blogs() {
         metas = await getAllPostsMeta();
     } catch (error) {
         console.error("Error fetching blogs:", error);
-        return (
-            <div className="w-full h-full flex flex-col justify-center items-center">
-                <h1>Error</h1>
-                <p>😭Something went wrong when retrieving blogs.</p>
-            </div>
-        );
+        return <ErrorLoadingBlogs />;
     }
     // console.log(response)
 
     if (!response) {
-        return (
-            <div className="w-full h-full flex flex-col justify-center items-center">
-                <h1>Error</h1>
-                <p>😭Something went wrong when retrieving blogs.</p>
-            </div>
-        );
+        return <ErrorLoadingBlogs />;
     } else if (response.results.length === 0) {
         return (
             <main className="w-full h-screen flex flex-col justify-center items-center">

@@ -38,7 +38,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <Suspense fallback={<div></div>}>
+                    <Suspense fallback={<></>}>
                         <Viewer />
                     </Suspense>
                     <MenuBar />

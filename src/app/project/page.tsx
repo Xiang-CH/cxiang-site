@@ -1,3 +1,5 @@
+"use cache";
+import { cacheLife } from "next/cache";
 import { getProjects } from "@/lib/notion";
 import { type PageObjectResponse } from "@notionhq/client";
 import { Metadata } from "next";
@@ -7,14 +9,13 @@ import { Badge } from "@/components/ui/badge";
 import { OpenViewerLink } from "@/components/viewer";
 import { GitHubLogoIcon, GlobeIcon } from "@radix-ui/react-icons";
 
-export const revalidate = 60; // Revalidate every 60 seconds
-
 export const metadata: Metadata = {
     title: "Project | Chen Xiang",
     description: "Chen Xiang's Project Portfolio",
 };
 
 export default async function Projects() {
+    cacheLife("days");
     let response;
     try {
         response = await getProjects();
@@ -102,7 +103,7 @@ export default async function Projects() {
                                                           )
                                                         : 250
                                                 }
-                                                quality={50}
+                                                quality={40}
                                                 className="w-full h-auto transition-transform duration-200 group-hover:scale-[1.01]"
                                                 priority
                                             />

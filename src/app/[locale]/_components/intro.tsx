@@ -11,8 +11,9 @@ import {
 import Link from "next/link";
 import info from "@/lib/info";
 import { OpenViewerLink } from "@/components/viewer";
+import { locales } from "@/i18n/routing";
 
-export default async function Intro() {
+export default async function Intro({ locale }: { locale: string }) {
     const t = await getTranslations("intro");
 
     return (
@@ -81,7 +82,7 @@ export default async function Intro() {
                     <p className="fade-in ml-[1px]">{t('about')}</p>
                 </section> */}
                 <section className="flex items-center justify-between w-full max-w-3xl gap-4  opacity-0 animate-[fadeIn_1s_0.5s_ease_forwards] transition-all">
-                    <LocaleSwitcher />
+                    <LocaleSwitcher currentLocale={locale} locales={locales} />
                 </section>
             </div>
         </div>

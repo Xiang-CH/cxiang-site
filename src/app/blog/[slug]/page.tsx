@@ -1,3 +1,4 @@
+import { cacheLife } from "next/cache";
 import {
     getBlog,
     getBlogMetadata,
@@ -10,8 +11,6 @@ import "react-notion-x/src/styles.css";
 import { type Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { type PageObjectResponse } from "@notionhq/client";
-
-export const revalidate = 60;
 
 export async function generateStaticParams() {
     // Prebuild slugs for ISR; if dataset is large, consider reducing this or relying on dynamic rendering.
@@ -74,6 +73,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogBySlug({ params }: Props) {
+    "use cache";
+    cacheLife("days");
     const slug = (await params).slug;
 
     // Legacy: if the path segment is actually an id, redirect to its canonical slug

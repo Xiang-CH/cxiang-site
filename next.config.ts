@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
+    cacheComponents: true,
     images: {
         remotePatterns: [
             {
@@ -26,10 +27,7 @@ const nextConfig: NextConfig = {
                 pathname: "/gh/devicons/devicon@latest/icons/**",
             },
         ],
-        qualities: [70, 75],
-    },
-    experimental: {
-        useCache: true,
+        qualities: [40, 70, 75],
     },
     async rewrites() {
         return [

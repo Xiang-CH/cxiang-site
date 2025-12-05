@@ -23,7 +23,6 @@ export default function ScrollContainer({ children }: ScrollContainerProps) {
     useEffect(() => {
         AOS.init({
             once: true,
-            disable: "mobile",
         });
     }, []);
 
@@ -65,7 +64,7 @@ export default function ScrollContainer({ children }: ScrollContainerProps) {
                 height={280}
                 priority
                 quality={70}
-                className={`z-0 block absolute bottom-0 right-2 md:right-10 max-w-[13rem] fade-in duration-400 transition-transform ${scrollPosition > 100 ? "translate-y-20" : ""} opacity-85 dark:opacity-0`}
+                className={`z-0 block absolute bottom-0 right-2 md:right-10 max-w-52 fade-in duration-400 transition-transform ${scrollPosition > 100 ? "translate-y-20" : ""} opacity-85 dark:opacity-0`}
             />
             {children}
         </main>

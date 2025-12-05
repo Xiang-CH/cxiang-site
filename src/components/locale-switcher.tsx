@@ -1,5 +1,4 @@
 "use client";
-import { locales } from "@/i18n/routing";
 import {
     Select,
     SelectContent,
@@ -9,14 +8,17 @@ import {
 } from "@/components/ui/select";
 import { redirect } from "@/i18n/navigation";
 import Image from "next/image";
-import { useLocale } from "next-intl";
 
-export function LocaleSwitcher() {
-    const locale = useLocale();
-
+export function LocaleSwitcher({
+    currentLocale,
+    locales,
+}: {
+    currentLocale: string;
+    locales: Record<string, string>;
+}) {
     return (
         <Select
-            defaultValue={locale}
+            defaultValue={currentLocale}
             onValueChange={(value) => {
                 redirect({ href: "/", locale: value });
             }}
@@ -28,6 +30,8 @@ export function LocaleSwitcher() {
                     width={15}
                     height={15}
                     className="inline-block mr-2 dark:invert"
+                    priority
+                    quality={40}
                 />
                 <SelectValue placeholder="Select a language" />
             </SelectTrigger>
@@ -37,9 +41,6 @@ export function LocaleSwitcher() {
                         {localeName}
                     </SelectItem>
                 ))}
-                {/* <SelectItem key="zh-CN" value="zh-CN" disabled>
-                    简体中文 (翻译中...)
-                </SelectItem> */}
             </SelectContent>
         </Select>
     );
