@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
             },
             {
                 protocol: "https",
-                hostname: "www.notion.so",
+                hostname: "cdn.cxiang.site",
             },
             {
                 protocol: "https",
