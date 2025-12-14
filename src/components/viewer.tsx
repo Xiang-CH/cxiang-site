@@ -15,10 +15,22 @@ export function OpenViewerLink({
     const onClick = (e: MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault();
         if (!viewer) return;
-        const url = new URL(window.location.href);
-        url.searchParams.set("viewer", viewer);
-        window.history.replaceState(null, "", url.toString());
-        window.dispatchEvent(new Event("viewerchange"));
+
+        // Check if mobile device
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent
+        );
+
+        if (isMobile) {
+            // Open in new tab on mobile
+            window.open(viewer, "_blank");
+        } else {
+            // Update URL and dispatch event on desktop
+            const url = new URL(window.location.href);
+            url.searchParams.set("viewer", viewer);
+            window.history.replaceState(null, "", url.toString());
+            window.dispatchEvent(new Event("viewerchange"));
+        }
     };
     return (
         <a href={`?viewer=${viewer}`} className={className} onClick={onClick}>
@@ -88,14 +100,14 @@ export default function Viewer() {
 
     return (
         <div
-            className={`fixed top-0 left-0 w-screen h-vh flex justify-center items-stretch z-100! transition-all border-0 ${isVisible ? "" : "pointer-events-none"}`}
+            className={`fixed top-0 left-0 w-screen h-screen flex justify-center items-stretch z-100! transition-all border-0 ${isVisible ? "" : "pointer-events-none"}`}
             onClick={closeViewer}
         >
             <div
                 className={`absolute inset-0 transition-opacity bg-black/20 ${isVisible ? "opacity-100" : "opacity-0"}`}
             />
             <div
-                className={`relative z-10 rounded-2xl border border-gray-300 dark:border-neutral-700 shadow-lg shadow-gray-400/10 dark:shadow-gray-900/50 overflow-auto m-1 md:m-6 flex flex-col w-full max-w-280 ${isVisible ? "scale-100 opacity-100" : "scale-0 opacity-0"} transition-all`}
+                className={`max-h-dvh relative z-10 rounded-2xl border border-gray-300 dark:border-neutral-700 shadow-lg shadow-gray-400/10 dark:shadow-gray-900/50 overflow-auto m-1 md:m-6 flex flex-col w-full max-w-280 ${isVisible ? "scale-100 opacity-100" : "scale-0 opacity-0"} transition-all`}
             >
                 <div
                     className="flex w-full justify-end  bg-accent border-b"
