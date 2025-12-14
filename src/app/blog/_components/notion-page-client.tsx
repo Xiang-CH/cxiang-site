@@ -6,7 +6,6 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect } from "react";
 import { type ExtendedRecordMap } from "notion-types";
-import { usePostHog } from "posthog-js/react";
 
 // Dynamically import components used by NotionRenderer, ensuring they are client-side
 const Code = dynamic(() => import("react-notion-x/build/third-party/code").then((m) => m.Code));
@@ -22,28 +21,13 @@ const Pdf = dynamic(() => import("react-notion-x/build/third-party/pdf").then((m
 interface NotionPageClientProps {
     recordMap: ExtendedRecordMap;
     fullPage?: boolean;
-    pageId?: string;
-    pageSlug?: string;
 }
 
 export default function NotionPageClient({
     recordMap,
     fullPage = true, // Default to true as it's common for blog posts
-    pageId,
-    pageSlug,
 }: NotionPageClientProps) {
     const { resolvedTheme } = useTheme();
-    const posthog = usePostHog();
-
-    // Track blog view when component mounts
-    useEffect(() => {
-        if (pageId && pageSlug && posthog) {
-            posthog.capture("blog_view", {
-                page_id: pageId,
-                page_slug: pageSlug,
-            });
-        }
-    }, [pageId, pageSlug, posthog]);
 
     useEffect(() => {
         // if (!isMounted) return;
