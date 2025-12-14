@@ -101,8 +101,8 @@ export default async function BlogBySlug({ params }: Props) {
     }
 
     return (
-        <main className="w-full h-full flex flex-col justify-start items-center">
-            <NotionPageClient recordMap={recordMap} pageId={resolved.id} pageSlug={resolved.slug} />
-        </main>
+        <div className="w-full h-full flex flex-col justify-start items-center">
+            <NotionPageClient recordMap={recordMap} />
+        </div>
     );
 }
