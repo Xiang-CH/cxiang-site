@@ -18,14 +18,14 @@ export default async function Intro({ locale }: { locale: string }) {
 
     return (
         <div
-            className="flex flex-col justify-end items-center h-[calc(50%+16rem)] px-4 md:px-6 pb-8 pt-4 transition-all content-section snap-center"
+            className="flex flex-col justify-end items-center h-[calc(50%+16rem)] px-2 sm:px-4 md:px-6 pb-8 pt-4 transition-all content-section snap-center"
             id="intro"
         >
             <div className="flex flex-col justify-center items-center gap-4 border-0 rounded-2xl w-full max-w-4xl sm:p-20 p-3 pb-20 transition-all mb-16 z-1">
                 <section className="flex items-start justify-between w-full max-w-100vw">
                     <div className="flex flex-col items-start justify-center">
                         <h1 className="text-3xl font-bold transition-all fade-in">{t("name")}</h1>
-                        <p className="text-lg fade-in ml-[1px]">{t("role")}</p>
+                        <p className="text-lg fade-in ml-px">{t("role")}</p>
                         <div className="flex flex-wrap mt-1 gap-2 opacity-0 animate-[fadeIn_1s_0.5s_ease_forwards]">
                             <Badge className="py-1 px-2">
                                 <Link
@@ -67,7 +67,7 @@ export default async function Intro({ locale }: { locale: string }) {
                                 </OpenViewerLink>
                             </Badge>
                         </div>
-                        <p className="fade-in ml-[1px] mt-4">{t("about")}</p>
+                        <p className="fade-in ml-px mt-4">{t("about")}</p>
                     </div>
                     {/* <Image
                         src="https://avatars.githubusercontent.com/u/63144890?v=4"

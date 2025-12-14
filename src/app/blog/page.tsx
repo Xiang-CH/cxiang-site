@@ -46,7 +46,7 @@ export default async function Blogs() {
     }
 
     return (
-        <main className="w-full max-w-xl h-full flex flex-col justify-start items-start px-6 mx-auto mt-8 gap-6">
+        <div className="w-full max-w-xl h-full flex flex-col justify-start items-start sm:px-6 mx-auto mt-8 gap-6">
             {/* <h1 className="text-xl font-bold mb-1">Blogs</h1>
             <p className="text-md mb-12 font-light">
                 Things that I have figured out and thought worth sharing.
@@ -98,6 +98,6 @@ export default async function Blogs() {
                     </Link>
                 );
             })}
-        </main>
+        </div>
     );
 }

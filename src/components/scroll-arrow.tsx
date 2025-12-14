@@ -48,7 +48,7 @@ export default function ScrollArrow() {
     }, []);
 
     return (
-        <div className="w-full fixed bottom-4 flex items-center justify-center invisible-at-end cursor-pointer">
+        <div className="pointer-coarse:hidden flex w-full fixed bottom-4 items-center justify-center invisible-at-end cursor-pointer">
             <span
                 onClick={() => {
                     const element = document.querySelector(nextSection);
@@ -56,7 +56,7 @@ export default function ScrollArrow() {
                         element.scrollIntoView({ behavior: "smooth" });
                     }
                 }}
-                className="rounded-full p-1 border-[1px] border-gray-300 dark:border-gray-600 animate-[bounce-down_1s_ease-in-out_infinite] hover:animate-none hover:scale-115 transition-transform"
+                className="rounded-full p-1 bg-background opacity-90 border border-gray-200 dark:border-gray-600 animate-[bounce-down_1s_ease-in-out_infinite] hover:animate-none hover:scale-115 transition-transform"
             >
                 <ArrowDownIcon className="w-5 h-5" />
             </span>

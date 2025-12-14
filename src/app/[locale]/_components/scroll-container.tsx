@@ -50,7 +50,7 @@ export default function ScrollContainer({ children }: ScrollContainerProps) {
 
     return (
         <main
-            className={`w-full overflow-y-auto overflow-x-hidden relative h-[calc(100dvh-3.5rem)] box-border main-content snap-y snap-mandatory pointer-coarse:snap-mandatory border-none ring-0 outline-none`}
+            className={`w-full overflow-y-auto overflow-x-hidden relative h-[calc(100vh-3.5rem)] box-border main-content snap-y snap-mandatory pointer-coarse:snap-mandatory border-none ring-0 outline-none`}
             onScroll={(e) => {
                 const target = e.currentTarget as HTMLElement;
                 setScrollPosition(target.scrollTop);

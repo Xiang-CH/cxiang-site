@@ -88,14 +88,14 @@ export default function Viewer() {
 
     return (
         <div
-            className={`fixed top-0 left-0 w-[100vw] h-[100vh] flex justify-center items-stretch z-100! transition-all border-0 ${isVisible ? "" : "pointer-events-none"}`}
+            className={`fixed top-0 left-0 w-screen h-dvh flex justify-center items-stretch z-100! transition-all border-0 ${isVisible ? "" : "pointer-events-none"}`}
             onClick={closeViewer}
         >
             <div
                 className={`absolute inset-0 transition-opacity bg-black/20 ${isVisible ? "opacity-100" : "opacity-0"}`}
             />
             <div
-                className={`relative z-10 rounded-2xl border-[1px] border-gray-300 dark:border-neutral-700 shadow-lg shadow-gray-400/10 dark:shadow-gray-900/50 overflow-auto m-1 md:m-6 flex flex-col w-full max-w-[70rem] ${isVisible ? "scale-100 opacity-100" : "scale-0 opacity-0"} transition-all`}
+                className={`relative z-10 rounded-2xl border border-gray-300 dark:border-neutral-700 shadow-lg shadow-gray-400/10 dark:shadow-gray-900/50 overflow-auto m-1 md:m-6 flex flex-col w-full max-w-[70rem] ${isVisible ? "scale-100 opacity-100" : "scale-0 opacity-0"} transition-all`}
             >
                 <div
                     className="flex w-full justify-end  bg-accent border-b"

@@ -48,7 +48,7 @@ export default async function Projects() {
     }
 
     return (
-        <main className="w-full max-w-md sm:max-w-3xl lg:max-w-5xl h-full px-6 mx-auto mt-6">
+        <main className="w-full max-w-md sm:max-w-3xl lg:max-w-5xl h-full p-6 mx-auto">
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
                 {response.results.map((item) => {
                     if (item.object !== "page" || !("properties" in item)) return;

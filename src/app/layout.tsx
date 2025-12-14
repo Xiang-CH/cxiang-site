@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Noto_Sans, Geist_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
 import { Suspense } from "react";
 import "@/app/globals.css";
 import MenuBar from "@/components/menu-bar";
@@ -31,7 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <meta name="apple-mobile-web-app-title" content="CXiang" />
             </head>
             <body
-                className={`${notoSans.variable} ${geistMono.variable} antialiased min-h-[100dvh] flex flex-col`}
+                className={`${notoSans.variable} ${geistMono.variable} antialiased min-h-full pb-[env(safe-area-inset-bottom)] flex flex-col`}
             >
                 <ThemeProvider
                     attribute="class"
