@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { locales } from "@/i18n/routing";
+import { skills } from "./skills"
 
 export type TerminalContent = {
     locale: string;
@@ -40,23 +41,6 @@ export type TerminalContent = {
         website: string;
         commit: string;
     }>;
-};
-
-const skills = {
-    languages: ["TypeScript", "JavaScript", "Python", "SQL"],
-    frameworks: [
-        "React",
-        "Next.js",
-        "Tailwind CSS",
-        "Node.js",
-        "Prisma",
-        "Flask",
-        "FastAPI",
-        "NumPy",
-        "Pandas",
-        "PyTorch",
-    ],
-    tools: ["Git", "Docker", "Linux", "Azure", "AWS", "Vercel", "Cloudflare", "Postman"],
 };
 
 function Box({ label, children }: { label: string; children: React.ReactNode }) {

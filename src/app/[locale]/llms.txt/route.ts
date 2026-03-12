@@ -1,27 +1,17 @@
 import { getTranslations } from "next-intl/server";
+import { routing } from "@/i18n/routing";
+import { skills } from "@/app/[locale]/_components/skills";
 
-export async function GET() {
-    const t = await getTranslations();
+export function generateStaticParams() {
+    return routing.locales.map((locale) => ({ locale }));
+}
+
+async function buildLlmsText(locale: string): Promise<string> {
+    "use cache";
+    const t = await getTranslations({ locale });
 
     type OrgEntry = { position: string; company: string; website: string; duration: string };
     const orgs = t.raw("main.experience.organizations") as OrgEntry[];
-
-    const skills = {
-        languages: ["TypeScript", "JavaScript", "Python", "SQL"],
-        frameworks: [
-            "React",
-            "Next.js",
-            "Tailwind CSS",
-            "Node.js",
-            "Prisma",
-            "Flask",
-            "FastAPI",
-            "NumPy",
-            "Pandas",
-            "PyTorch",
-        ],
-        tools: ["Git", "Docker", "Linux", "Azure", "AWS", "Vercel", "Cloudflare", "Postman"],
-    };
 
     const name = t("intro.name");
     const nameSecondary = t("intro.nameSecondary");
@@ -77,6 +67,12 @@ ${contactIntro}
 - [My Blog](/blog)
 `;
 
+    return text;
+}
+
+export async function GET(_req: Request, { params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
+    const text = await buildLlmsText(locale);
     return new Response(text, {
         headers: {
             "Content-Type": "text/plain; charset=utf-8",
