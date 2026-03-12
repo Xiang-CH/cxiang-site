@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
                 pathname: "/gh/devicons/devicon@latest/icons/**",
             },
         ],
-        qualities: [40, 70, 75],
+        qualities: [40, 50, 70, 75],
     },
     async rewrites() {
         return [
@@ -42,6 +42,17 @@ const nextConfig: NextConfig = {
             {
                 source: "/relay-5woc/flags",
                 destination: `${process.env.NEXT_PUBLIC_POSTHOG_HOST}/flags`,
+            },
+            {
+                source: "/:locale(en|zh-CN)",
+                destination: "/:locale/llms.txt",
+                has: [
+                    {
+                        type: "header",
+                        key: "accept",
+                        value: "(.*)text/plain(.*)",
+                    },
+                ],
             },
         ];
     },

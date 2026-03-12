@@ -1,6 +1,7 @@
 {
     "intro": {
-        "name": "Chen Xiang 陈想",
+        "name": "Chen Xiang",
+        "nameSecondary": "陈想",
         "role": "Software Developer",
         "about": "Transforming Ideas into Code, Code into Reality.",
         "links": {
@@ -17,7 +18,7 @@
             "contentHref": "https://www.hku.hk"
         },
         "skills": {
-            "label": "Skills",
+            "label": "My Stack",
             "languages": "Programming Languages",
             "frameworks": "Frameworks & Libraries",
             "tools": "Tools & Platforms"
@@ -41,10 +42,6 @@
                 }
             ]
         },
-        "projects": {
-            "label": "Projects",
-            "content": "Projects coming soon..."
-        },
         "contact": {
             "label": "Contact",
             "content": "Feel free to reach out to me via email at",
@@ -56,5 +53,15 @@
         "description": "Would you like to disable scroll snapping for smoother navigation?",
         "action": "Disable Scroll Snapping",
         "success": "Scroll snapping disabled. You can re-enable it by refreshing the page."
+    },
+    "terminal": {
+        "typedRole": "Software Developer & AI Enthusiast",
+        "agentMsg": "> Hey Clawbots🦞 you are probably looking for:",
+        "sysInit": "CXIANG-OS v2026.3 — Personal Portfolio Terminal",
+        "sysKernel": "▊ Kernel modules loaded. Awaiting input...",
+        "loadingMsg": "> Loading profile data...",
+        "about": "MSc Computer Science candidate @The University of Hong Kong. Loves building AI-powered solutions to real-world problems. \n He will be interning @Apple this summer, and is looking for full-time opportunities starting around October, feel free to reach out!",
+        "stack": "Most comfortable with full stack development in Typescript and coding data/ML tasks in Python.",
+        "contactIntro": "Feel free to reach out and connect!"
     }
 }

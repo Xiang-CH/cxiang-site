@@ -43,7 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         <Viewer />
                     </Suspense>
                     <MenuBar />
-                    <div className="h-14" />
+                    {/* <div className="h-14" /> */}
                     {children}
                     <Toaster />
                     <SpeedInsights />

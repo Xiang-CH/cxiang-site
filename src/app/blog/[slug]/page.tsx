@@ -102,6 +102,7 @@ export default async function BlogBySlug({ params }: Props) {
 
     return (
         <div className="w-full h-full flex flex-col justify-start items-center">
+            <div className="h-12" />
             <NotionPageClient recordMap={recordMap} />
         </div>
     );
