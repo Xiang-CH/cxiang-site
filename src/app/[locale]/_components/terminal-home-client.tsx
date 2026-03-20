@@ -3,10 +3,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { locales } from "@/i18n/routing";
-import { skills } from "./skills"
+import { skills } from "./skills";
+import {
+    GitHubLogoIcon,
+    LinkedInLogoIcon,
+    EnvelopeClosedIcon,
+    FileTextIcon,
+} from "@radix-ui/react-icons";
 
 export type TerminalContent = {
     locale: string;
+    onboarding: string;
+    systemInfo: string;
     agentMsg: string;
     name: string;
     nameSecondary: string;
@@ -19,7 +27,6 @@ export type TerminalContent = {
         email: string;
         resume: string;
     };
-    loadingMsg: string;
     about: string;
     stack: string;
     contactIntro: string;
@@ -126,14 +133,8 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
 
             <div className="relative z-1 max-w-215 mx-auto">
                 {/* ── Locale Onboarding ───────────────── */}
-                <Box label="ONBOARDING">
-                    <p className="text-[0.7rem] text-(--th-dim) mb-[0.4rem]">
-                        {content.agentMsg}{" "}
-                        <Link href="/llms.txt" className="text-(--th-dim)! th-link">
-                            /llms.txt
-                        </Link>
-                    </p>
-                    <Cmd>$ select --language</Cmd>
+                <Box label={content.onboarding}>
+                    {/*<Cmd>$ select --language</Cmd>*/}
                     <div className="flex gap-4 flex-wrap">
                         {Object.entries(locales).map(([code, name]) => {
                             const isActive = code === content.locale;
@@ -144,11 +145,11 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                                     locale={code}
                                     className={`no-underline text-[0.88rem] transition-[color,border-color] duration-150 border-b ${
                                         isActive
-                                            ? "text-(--th-accent) font-bold border-b-(--th-accent)"
-                                            : "text-(--th-text) font-normal border-b-(--th-link-ul)"
+                                            ? "text-(--th-text) font-bold border-b-(--th-accent)"
+                                            : "text-(--th-dim) font-normal border-b-(--th-link-ul)"
                                     }`}
                                 >
-                                    [{name}]{isActive ? " ←" : ""}
+                                    {name}
                                 </Link>
                             );
                         })}
@@ -156,8 +157,14 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                 </Box>
 
                 {/* ── Boot / Identity ─────────────────── */}
-                <Box label="SYSTEM INFO">
+                <Box label={content.systemInfo}>
                     <p className="text-[0.7rem] text-(--th-dim) mb-[0.4rem]">{content.sysInit}</p>
+                    <p className="text-[0.7rem] text-(--th-dim) mb-[0.4rem]">
+                        {content.agentMsg}{" "}
+                        <Link href="/llms.txt" className="text-(--th-dim)! th-link">
+                            /llms.txt
+                        </Link>
+                    </p>
                     <p className="text-[0.7rem] text-(--th-dim) mb-4">{content.sysKernel}</p>
                     <Cmd>$ whoami</Cmd>
                     <div className="pl-4 border-l-2 border-l-[rgba(200,164,90,0.22)]">
@@ -175,20 +182,24 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                     <div className="flex gap-3 flex-wrap mt-5 text-sm sm:text-base">
                         {[
                             {
-                                label: `[${content.links.github}]`,
+                                label: content.links.github,
                                 href: "https://github.com/Xiang-CH",
+                                icon: <GitHubLogoIcon width={13} />,
                             },
                             {
-                                label: `[${content.links.linkedin}]`,
+                                label: content.links.linkedin,
                                 href: "https://www.linkedin.com/in/xiang-chen-62389526a/",
+                                icon: <LinkedInLogoIcon width={13} />,
                             },
                             {
-                                label: `[${content.links.email}]`,
+                                label: content.links.email,
                                 href: "mailto:xiiang.ch@gmail.com",
+                                icon: <EnvelopeClosedIcon width={13} />,
                             },
                             {
-                                label: `[${content.links.resume}]`,
+                                label: content.links.resume,
                                 href: "https://cdn.cxiang.site/resume_chen_xiang.pdf",
+                                icon: <FileTextIcon width={13} />,
                             },
                         ].map((l) => (
                             <a
@@ -196,9 +207,9 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                                 href={l.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="th-link"
+                                className="th-link flex items-center gap-1"
                             >
-                                {l.label}
+                                {l.icon} <span>{l.label}</span>
                             </a>
                         ))}
                     </div>
@@ -207,9 +218,6 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                 {/* ── About ────────────────────────────── */}
                 <Box label={content.sectionLabels.about}>
                     <Cmd>$ cat about.txt</Cmd>
-                    <p className="text-[0.78rem] text-(--th-dim) mb-[0.6rem]">
-                        {content.loadingMsg}
-                    </p>
                     {content.about.split("\n").map((line, i) => (
                         <p
                             key={i}
@@ -284,10 +292,14 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                 {/* ── Contact ──────────────────────────── */}
                 <Box label={content.sectionLabels.contact}>
                     <Cmd>$ cat contact.json</Cmd>
-                    <p className="text-[0.78rem] text-(--th-dim) mb-3">{content.contactIntro}</p>
+                    {/*<p className="text-[0.78rem] text-(--th-dim) mb-3">{content.contactIntro}</p>*/}
                     <div className="text-[clamp(0.78rem,1.6vw,0.9rem)] leading-loose">
                         <p className="text-(--th-dim)">{"{"}</p>
                         {[
+                            {
+                                key: "_comment",
+                                value: content.contactIntro,
+                            },
                             {
                                 key: "email",
                                 value: "xiiang.ch@gmail.com",
@@ -315,9 +327,9 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                                 <span className="text-(--th-dim)">&quot;: &quot;</span>
                                 <a
                                     href={c.href}
-                                    target="_blank"
+                                    target={c.href ? "_blank" : undefined}
                                     rel="noopener noreferrer"
-                                    className="th-link"
+                                    className={c.href ? "th-link" : ""}
                                 >
                                     {c.value}
                                 </a>
@@ -328,12 +340,6 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                         <p className="text-(--th-dim)">{"}"}</p>
                     </div>
                 </Box>
-
-                {/* ── Footer ───────────────────────────── */}
-                <div className="mt-4 pt-4 border-t border-t-(--th-border) flex justify-between items-center flex-wrap gap-3">
-                    <p className="text-[0.65rem] text-(--th-dim)">CXIANG-OS — session active</p>
-                    <p className="text-[0.65rem] text-(--th-dim)">2026 · Chen Xiang</p>
-                </div>
             </div>
         </main>
     );

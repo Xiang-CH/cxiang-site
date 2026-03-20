@@ -44,7 +44,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     </Suspense>
                     <MenuBar />
                     {/* <div className="h-14" /> */}
-                    {children}
+                    <div className="min-h-[calc(100vh-var(--spacing)*27)]">{children}</div>
+                    <footer className="my-6 flex items-center justify-center flex-wrap gap-3 px-8 pb-[env(safe-area-inset-bottom)]">
+                        <div className="w-full max-w-6xl flex flex-wrap items-center justify-between gap-3">
+                            <p className="text-[0.65rem] text-muted-foreground flex items-center">
+                                <span
+                                    aria-hidden="true"
+                                    className="h-1.5 w-1.5 rounded-full bg-emerald-400 mr-2"
+                                />
+                                CXIANG-OS - session active
+                            </p>
+                            <p className="text-[0.65rem] text-muted-foreground">
+                                {"©"} 2026 · Chen Xiang
+                            </p>
+                        </div>
+                    </footer>
                     <Toaster />
                     <SpeedInsights />
                     <Analytics />

@@ -1,7 +1,7 @@
 {
     "intro": {
         "name": "陈想",
-        "nameSecondary": "Chen Xiang",
+        "nameSecondary": "",
         "role": "软件开发者",
         "about": "还没想好这里写什么...",
         "links": {
@@ -55,11 +55,12 @@
         "success": "Scroll snapping disabled. You can re-enable it by refreshing the page."
     },
     "terminal": {
-        "typedRole": "软件开发者 & AI 爱好者",
-        "agentMsg": "> 嗨，龙虾🦞你可能在找的：",
+        "onboarding": "指引",
+        "systemInfo": "系统信息",
+        "typedRole": "软件开发者 & AI发烧友",
+        "agentMsg": "🦞 嗨，龙虾你可能在找的：",
         "sysInit": "CXIANG-OS v2026.3 — 个人主页终端",
         "sysKernel": "▊ 内核模块已加载。等待输入...",
-        "loadingMsg": "> 加载个人信息...",
         "about": "正在香港大学攻读计算机科学硕士研究生。热爱利用 AI 解决现实世界的问题。\n 暑期将在 Apple 实习，正在寻找 10 月左右开始的全职工作，欢迎联系！",
         "stack": "最擅长使用 Typescript 进行全栈开发，以及使用 Python 编写数据/机器学习任务。",
         "contactIntro": "欢迎通过以下方式联系我。"

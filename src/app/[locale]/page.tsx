@@ -5,10 +5,10 @@ import type { TerminalContent } from "./_components/terminal-home-client";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Chen Xiang (陈想) | Personal Website",
+    title: "Chen Xiang 陈想",
     description: "Personal website and portfolio of Chen Xiang, showcasing projects and experience",
     openGraph: {
-        title: "Chen Xiang | Personal Website",
+        title: "Chen Xiang (陈想) | Personal Website",
         description: "Portfolio and personal website of Chen Xiang",
         type: "website",
     },
@@ -29,6 +29,8 @@ export default async function Home({ params }: Props) {
 
     const content: TerminalContent = {
         locale,
+        onboarding: t("terminal.onboarding"),
+        systemInfo: t("terminal.systemInfo"),
         agentMsg: t("terminal.agentMsg"),
         name: t("intro.name"),
         nameSecondary: t("intro.nameSecondary"),
@@ -36,7 +38,6 @@ export default async function Home({ params }: Props) {
         sysInit: t("terminal.sysInit"),
         sysKernel: t("terminal.sysKernel"),
         links: t.raw("intro.links"),
-        loadingMsg: t("terminal.loadingMsg"),
         about: t("terminal.about"),
         stack: t("terminal.stack"),
         contactIntro: t("terminal.contactIntro"),
