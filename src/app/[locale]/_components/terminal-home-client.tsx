@@ -1,9 +1,8 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import "./terminal-home-client.css";
 import { Link } from "@/i18n/navigation";
 import { locales } from "@/i18n/routing";
 import { skills } from "./skills";
+import { TypewriterText } from "./typewriter-text-client";
 import {
     GitHubLogoIcon,
     LinkedInLogoIcon,
@@ -70,67 +69,13 @@ function Cmd({ children }: { children: React.ReactNode }) {
 }
 
 export default function TerminalHomeClient({ content }: { content: TerminalContent }) {
-    const [cursorVisible, setCursorVisible] = useState(true);
-    const [typed, setTyped] = useState("");
     const fullText = content.typedRole;
-
-    useEffect(() => {
-        const id = setInterval(() => setCursorVisible((v) => !v), 530);
-        return () => clearInterval(id);
-    }, []);
-
-    useEffect(() => {
-        setTyped("");
-        let i = 0;
-        const id = setInterval(() => {
-            if (i <= fullText.length) {
-                setTyped(fullText.slice(0, i));
-                i++;
-            } else {
-                clearInterval(id);
-            }
-        }, 55);
-        return () => clearInterval(id);
-    }, [fullText]);
 
     return (
         <main
             className="terminal-page min-h-screen bg-(--th-bg) text-(--th-text) pt-2 pb-8 px-4"
             style={{ fontFamily: "'JetBrains Mono', 'Geist Mono', 'Fira Mono', monospace" }}
         >
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap');
-
-                /* ── Dark palette (default) ── */
-                .terminal-page {
-                    --th-bg: var(--background);
-                    --th-text: #cccfc8;
-                    --th-dim: rgba(205, 192, 168, 0.534);
-                    --th-bright: #e8e4de;
-                    --th-accent: #c8a45a;
-                    --th-border: rgba(183,179,170,0.28);
-                    --th-skill-hover: rgba(245,208,128,0.07);
-                    --th-link-ul: rgba(245,208,128,0.32);
-                }
-
-                /* ── Light palette ── */
-                :root:not(.dark) .terminal-page {
-                    --th-bg: var(--background);
-                    --th-text: #3b3328;
-                    --th-dim: rgba(90,75,55,0.55);
-                    --th-bright: #1a1208;
-                    --th-accent: #8b5e1a;
-                    --th-border: rgba(120,100,70,0.28);
-                    --th-skill-hover: rgba(139,94,26,0.07);
-                    --th-link-ul: rgba(139,94,26,0.35);
-                }
-
-                .th-skill { display: inline-block; border: 1px solid var(--th-border); padding: 0.15em 0.5em; font-size: 0.75rem; margin: 0.15em; transition: all 0.15s; cursor: default; }
-                .th-skill:hover { border-color: var(--th-bright); background: var(--th-skill-hover); color: var(--th-bright); }
-                .th-link { color: var(--th-bright); text-decoration: none; border-bottom: 1px solid var(--th-link-ul); transition: border-color 0.15s; }
-                .th-link:hover { border-color: var(--th-accent); }
-            `}</style>
-
             <div className="relative z-1 max-w-215 mx-auto">
                 {/* ── Locale Onboarding ───────────────── */}
                 <Box label={content.onboarding}>
@@ -175,8 +120,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                             </span>
                         </p>
                         <p className="text-[clamp(0.8rem,1.8vw,1rem)] text-(--th-accent) mt-[0.3rem]">
-                            {typed}
-                            <span className={cursorVisible ? "opacity-100" : "opacity-0"}>▌</span>
+                            <TypewriterText key={fullText} text={fullText} />
                         </p>
                     </div>
                     <div className="flex gap-3 flex-wrap mt-5 text-sm sm:text-base">
