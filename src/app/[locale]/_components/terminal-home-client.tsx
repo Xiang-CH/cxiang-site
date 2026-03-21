@@ -130,13 +130,9 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                             textAlign="left"
                             className="text-[3rem] tracking-tighter"
                         />
-                        {content.nameSecondary && (
+                        {content.locale != "en" && (
                             <p className="text-[clamp(1.5rem,2vw,2.5rem)] opacity-40 leading-none">
-                                <TypewriterText
-                                    key={content.nameSecondary}
-                                    text={content.nameSecondary}
-                                    noCursor
-                                />
+                                <TypewriterText key={content.name} text={content.name} noCursor />
                             </p>
                         )}
                         <p className="text-[clamp(0.8rem,1.8vw,1rem)] text-(--th-accent) mt-1">
@@ -197,7 +193,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
 
                 {/* ── Experience ───────────────────────── */}
                 <Box label={content.sectionLabels.experience}>
-                    <Cmd>$ git log --oneline --experience</Cmd>
+                    <Cmd>$ git log --experience</Cmd>
                     {content.experience.map((e) => (
                         <div
                             key={e.commit}
@@ -206,7 +202,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                             <p className="text-[0.65rem] text-(--th-accent) mb-[0.15rem]">
                                 commit {e.commit}
                             </p>
-                            <p className="text-[clamp(0.85rem,1.8vw,0.97rem)] font-bold text-(--th-bright) mb-[0.15rem]">
+                            <p className="text-[clamp(0.85rem,1.8vw,0.97rem)] font-bold text-(--th-bright)">
                                 {e.role}
                             </p>
                             <a

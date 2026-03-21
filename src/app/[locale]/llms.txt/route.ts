@@ -28,6 +28,7 @@ async function buildLlmsText(locale: string): Promise<string> {
     const toolsLabel = t("main.skills.tools");
 
     const text = `# ${name} (${nameSecondary})
+    
 
 > ${role}
 
@@ -41,13 +42,13 @@ ${stack}
 ## ${skillsLabel}
 
 ### ${langLabel}
-${skills.languages.join(", ")}
+${skills.languages.map((l) => l.name).join(", ")}
 
 ### ${fwLabel}
-${skills.frameworks.join(", ")}
+${skills.frameworks.map((f) => f.name).join(", ")}
 
 ### ${toolsLabel}
-${skills.tools.join(", ")}
+${skills.tools.map((t) => t.name).join(", ")}
 
 ## ${experienceLabel}
 
@@ -63,7 +64,7 @@ ${contactIntro}
 - Instagram: https://www.instagram.com/chen.xiiang/
 
 ## Site Map
-- [My Projects](/projects)
+- [My Projects](/project)
 - [My Blog](/blog)
 `;
 
