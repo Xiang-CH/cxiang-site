@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Noto_Sans, Geist_Mono } from "next/font/google";
+import { Noto_Sans, JetBrains_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import { Suspense } from "react";
@@ -14,7 +14,7 @@ const notoSans = Noto_Sans({
     subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
+const jetbrainsMono = JetBrains_Mono({
     variable: "--font-geist-mono",
     subsets: ["latin"],
 });
@@ -31,7 +31,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <meta name="apple-mobile-web-app-title" content="CXiang" />
             </head>
             <body
-                className={`${notoSans.variable} ${geistMono.variable} antialiased min-h-full pb-[env(safe-area-inset-bottom)] flex flex-col`}
+                className={`${notoSans.variable} ${jetbrainsMono.variable} antialiased min-h-full pb-[env(safe-area-inset-bottom)] flex flex-col`}
             >
                 <ThemeProvider
                     attribute="class"

@@ -73,8 +73,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
 
     return (
         <main
-            className="terminal-page min-h-screen bg-(--th-bg) text-(--th-text) pt-2 pb-8 px-4"
-            style={{ fontFamily: "'JetBrains Mono', 'Geist Mono', 'Fira Mono', monospace" }}
+            className={`font-mono terminal-page min-h-screen bg-(--th-bg) text-(--th-text) pt-2 pb-8 px-4`}
         >
             <div className="relative z-1 max-w-215 mx-auto">
                 {/* ── Locale Onboarding ───────────────── */}
@@ -113,7 +112,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                     <p className="text-[0.7rem] text-(--th-dim) mb-4">{content.sysKernel}</p>
                     <Cmd>$ whoami</Cmd>
                     <div className="pl-4 border-l-2 border-l-[rgba(200,164,90,0.22)]">
-                        <p className="text-[clamp(2.4rem,5vw,3.2rem)] font-bold leading-none text-(--th-bright) tracking-[-0.02em]">
+                        <p className="text-[clamp(2.4rem,5vw,3.2rem)] font-bold leading-none text-(--th-bright) ">
                             {content.name}{" "}
                             <span className="opacity-35 font-light text-[0.55em]">
                                 {content.nameSecondary}
