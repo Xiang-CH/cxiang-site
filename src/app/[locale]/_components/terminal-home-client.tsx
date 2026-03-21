@@ -221,9 +221,15 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                                     <div className="ml-[0.2rem] pl-5 border-l border-(--th-border)" />
                                     <div className="flex flex-wrap">
                                         {s.items.map((sk) => (
-                                            <span key={sk} className="th-skill">
-                                                {sk}
-                                            </span>
+                                            <a
+                                                key={sk.name}
+                                                href={sk.href}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="th-skill"
+                                            >
+                                                {sk.name}
+                                            </a>
                                         ))}
                                     </div>
                                 </div>
