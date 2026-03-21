@@ -70,8 +70,8 @@
 .th-cursor {
     display: inline-block;
     margin-left: 0.1em;
-    line-height: 1;
-    transform: translateY(-0.05em);
+    font-size: 0.65em;
+    transform: translateY(-0.13em);
     animation: th-blink 1s steps(1, end) infinite;
 }
 
@@ -94,13 +94,12 @@
     pointer-events: none;
     opacity: 0;
     mix-blend-mode: screen;
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255, 240, 210, 0.16) 0%,
-            rgba(255, 240, 210, 0.06) 30%,
-            rgba(0, 0, 0, 0) 55%
-        );
+    background: linear-gradient(
+        180deg,
+        rgba(255, 240, 210, 0.16) 0%,
+        rgba(255, 240, 210, 0.06) 30%,
+        rgba(0, 0, 0, 0) 55%
+    );
     animation: th-scan 520ms ease-out both;
 }
 

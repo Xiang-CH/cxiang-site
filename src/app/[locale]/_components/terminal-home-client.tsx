@@ -9,6 +9,7 @@ import {
     EnvelopeClosedIcon,
     FileTextIcon,
 } from "@radix-ui/react-icons";
+import Shuffle from "@/components/shuffle";
 
 export type TerminalContent = {
     locale: string;
@@ -111,14 +112,34 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                     </p>
                     <p className="text-[0.7rem] text-(--th-dim) mb-4">{content.sysKernel}</p>
                     <Cmd>$ whoami</Cmd>
-                    <div className="pl-4 border-l-2 border-l-[rgba(200,164,90,0.22)]">
-                        <p className="text-[clamp(2.4rem,5vw,3.2rem)] font-bold leading-none text-(--th-bright) ">
-                            {content.name}{" "}
-                            <span className="opacity-35 font-light text-[0.55em]">
-                                {content.nameSecondary}
-                            </span>
-                        </p>
-                        <p className="text-[clamp(0.8rem,1.8vw,1rem)] text-(--th-accent) mt-[0.3rem]">
+                    <div className="pl-4 border-l-2 border-l-[rgba(200,164,90,0.22)] pt-2">
+                        <Shuffle
+                            text="Chen Xiang"
+                            shuffleDirection="right"
+                            duration={0.35}
+                            animationMode="evenodd"
+                            shuffleTimes={1}
+                            ease="power3.out"
+                            stagger={0.03}
+                            threshold={0.1}
+                            triggerOnce={true}
+                            triggerOnHover
+                            respectReducedMotion={true}
+                            loop={false}
+                            loopDelay={10}
+                            textAlign="left"
+                            className="text-[3rem] tracking-tighter"
+                        />
+                        {content.nameSecondary && (
+                            <p className="text-[clamp(1.5rem,2vw,2.5rem)] opacity-40 leading-none">
+                                <TypewriterText
+                                    key={content.nameSecondary}
+                                    text={content.nameSecondary}
+                                    noCursor
+                                />
+                            </p>
+                        )}
+                        <p className="text-[clamp(0.8rem,1.8vw,1rem)] text-(--th-accent) mt-1">
                             <TypewriterText key={fullText} text={fullText} />
                         </p>
                     </div>

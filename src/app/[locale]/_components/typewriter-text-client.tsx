@@ -4,9 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 
 type TypewriterTextProps = {
     text: string;
+    noCursor?: boolean;
 };
 
-export function TypewriterText({ text }: TypewriterTextProps) {
+export function TypewriterText({ text, noCursor = false }: TypewriterTextProps) {
     const typeUnits = useMemo(() => Array.from(text), [text]);
     const [typedLength, setTypedLength] = useState(0);
 
@@ -34,7 +35,7 @@ export function TypewriterText({ text }: TypewriterTextProps) {
     return (
         <span className="th-typewrap">
             <span className="th-typed">{typedText}</span>
-            <span className="th-cursor">▌</span>
+            {!noCursor && <span className="th-cursor">▌</span>}
         </span>
     );
 }
