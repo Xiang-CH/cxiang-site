@@ -112,7 +112,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                     </p>
                     <p className="text-[0.7rem] text-(--th-dim) mb-4">{content.sysKernel}</p>
                     <Cmd>$ whoami</Cmd>
-                    <div className="pl-4 border-l-2 border-l-[rgba(200,164,90,0.22)] pt-2">
+                    <div className="pl-4 border-l-2 border-l-[rgba(200,164,90,0.22)] pt-3">
                         <Shuffle
                             text="Chen Xiang"
                             shuffleDirection="right"
@@ -128,7 +128,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                             loop={false}
                             loopDelay={10}
                             textAlign="left"
-                            className="text-[3rem] tracking-tighter"
+                            className="text-[3rem] tracking-tighter scale-y-115"
                         />
                         {content.locale != "en" && (
                             <p className="text-[clamp(1.5rem,2vw,2.5rem)] opacity-40 leading-none">
@@ -194,30 +194,32 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                 {/* ── Experience ───────────────────────── */}
                 <Box label={content.sectionLabels.experience}>
                     <Cmd>$ git log --experience</Cmd>
-                    {content.experience.map((e) => (
-                        <div
-                            key={e.commit}
-                            className="pl-4 border-l-2 border-l-[rgba(200,164,90,0.22)] mb-5"
-                        >
-                            <p className="text-[0.65rem] text-(--th-accent) mb-[0.15rem]">
-                                commit {e.commit}
-                            </p>
-                            <p className="text-[clamp(0.85rem,1.8vw,0.97rem)] font-bold text-(--th-bright)">
-                                {e.role}
-                            </p>
-                            <a
-                                href={e.website}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="th-link text-[0.82rem]"
+                    <div className="flex flex-col gap-4">
+                        {content.experience.map((e) => (
+                            <div
+                                key={e.commit}
+                                className="pl-4 border-l-2 border-l-[rgba(200,164,90,0.22)]"
                             >
-                                {e.org}
-                            </a>
-                            <p className="text-[0.72rem] text-(--th-dim) mt-[0.15rem]">
-                                {e.period}
-                            </p>
-                        </div>
-                    ))}
+                                <p className="text-[0.65rem] text-(--th-accent) mb-[0.15rem]">
+                                    commit {e.commit}
+                                </p>
+                                <p className="text-[clamp(0.85rem,1.8vw,0.97rem)] font-bold text-(--th-bright) ">
+                                    {e.role}
+                                </p>
+                                <a
+                                    href={e.website}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="th-link text-[0.82rem]"
+                                >
+                                    {e.org}
+                                </a>
+                                <p className="text-[0.72rem] text-(--th-dim) mt-[0.15rem]">
+                                    {e.period}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
                 </Box>
 
                 {/* ── Skills ───────────────────────────── */}
@@ -257,7 +259,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
 
                 {/* ── Contact ──────────────────────────── */}
                 <Box label={content.sectionLabels.contact}>
-                    <Cmd>$ cat contact.json</Cmd>
+                    <Cmd>$ vim contact.json</Cmd>
                     {/*<p className="text-[0.78rem] text-(--th-dim) mb-3">{content.contactIntro}</p>*/}
                     <div className="text-[clamp(0.78rem,1.6vw,0.9rem)] leading-loose">
                         <p className="text-(--th-dim)">{"{"}</p>
@@ -304,6 +306,8 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                             </p>
                         ))}
                         <p className="text-(--th-dim)">{"}"}</p>
+                        <p className="text-(--th-dim)">{"~"}</p>
+                        <p className="text-(--th-dim)">{`"contact.json" 7L, 174B`}</p>
                     </div>
                 </Box>
             </div>
