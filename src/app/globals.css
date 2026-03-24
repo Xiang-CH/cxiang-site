@@ -186,10 +186,6 @@ main.at-page-end .invisible-at-end {
     }
 }
 
-.notion-aside-table-of-contents {
-    background-color: transparent !important;
-}
-
 .notion-app {
     background-color: transparent !important;
     min-height: none !important;
@@ -204,12 +200,17 @@ main.at-page-end .invisible-at-end {
     left: 4rem !important;
 }
 
+.notion-aside {
+    padding-left: min(2rem, 2%) !important;
+    align-items: flex-start !important;
+}
+
 .notion-aside-table-of-contents {
+    background-color: transparent !important;
     align-items: flex-start !important;
 }
 
 .notion-aside-table-of-contents-header {
-    padding: 0 4px !important;
     display: none !important;
 }
 
