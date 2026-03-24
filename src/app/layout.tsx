@@ -44,8 +44,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     </Suspense>
                     <MenuBar />
                     {/* <div className="h-14" /> */}
-                    <div className="min-h-[calc(100vh-var(--spacing)*28)] max-w-244 mx-auto">
-                        {children}
+                    <div className="px-4">
+                        <div className="min-h-[calc(100vh-var(--spacing)*34)] max-w-244 mx-auto">
+                            {children}
+                        </div>
                     </div>
                     <footer className="my-6 flex items-center justify-center px-8 pb-[env(safe-area-inset-bottom)]">
                         <div className="text-[0.65rem] text-muted-foreground w-full flex flex-wrap items-center justify-center gap-3">

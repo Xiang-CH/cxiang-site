@@ -74,7 +74,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
 
     return (
         <main
-            className={`font-mono terminal-page min-h-screen bg-(--th-bg) text-(--th-text) pt-2 pb-4 px-4`}
+            className={`font-mono terminal-page min-h-screen bg-(--th-bg) text-(--th-text) pt-2 pb-4`}
         >
             <div className="relative z-1 max-w-215 mx-auto">
                 {/* ── Locale Onboarding ───────────────── */}
