@@ -20,7 +20,7 @@
 :root:not(.dark) .terminal-page {
     --th-bg: var(--background);
     --th-text: #3b3328;
-    --th-dim: rgba(90, 75, 55, 0.55);
+    --th-dim: rgba(85, 71, 53, 0.638);
     --th-bright: #1a1208;
     --th-accent: #8b5e1a;
     --th-border: rgba(120, 100, 70, 0.28);

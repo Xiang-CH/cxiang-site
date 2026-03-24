@@ -54,6 +54,14 @@ const nextConfig: NextConfig = {
                     },
                 ],
             },
+            {
+                source: "/projects",
+                destination: "/project",
+            },
+            {
+                source: "/blogs",
+                destination: "/blog",
+            },
         ];
     },
     skipTrailingSlashRedirect: true,

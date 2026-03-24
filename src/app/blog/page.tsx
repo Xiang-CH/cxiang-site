@@ -7,8 +7,23 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-    title: "Blog | Chen Xiang",
-    description: "Chen Xiang's Blogs",
+    title: "Blogs",
+    description: "My personal blog, sharing thoughts and experiences.",
+    alternates: {
+        canonical: process.env.NEXT_PUBLIC_SITE_URL
+            ? `${process.env.NEXT_PUBLIC_SITE_URL}/blog`
+            : "https://cxiang.site/blog",
+    },
+    openGraph: {
+        title: "Blogs | Chen Xiang",
+        siteName: "Chen Xiang",
+        url: process.env.NEXT_PUBLIC_SITE_URL
+            ? `${process.env.NEXT_PUBLIC_SITE_URL}/blog`
+            : "https://cxiang.site/blog",
+        images: [{ url: "https://cdn.cxiang.site/default-og-image.svg" }],
+        description: "My personal blog, sharing thoughts and experiences.",
+        type: "website",
+    },
 };
 
 function ErrorLoadingBlogs() {

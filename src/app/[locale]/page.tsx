@@ -2,18 +2,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import TerminalHomeClient from "./_components/terminal-home-client";
 import type { TerminalContent } from "./_components/terminal-home-client";
 
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-    title: "Chen Xiang 陈想",
-    description: "Personal website and portfolio of Chen Xiang, showcasing projects and experience",
-    openGraph: {
-        title: "Chen Xiang (陈想) | Personal Website",
-        description: "Portfolio and personal website of Chen Xiang",
-        type: "website",
-    },
-};
-
 type Props = {
     params: Promise<{ locale: string }>;
 };

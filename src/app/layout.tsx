@@ -20,9 +20,29 @@ const jetbrainsMono = JetBrains_Mono({
     subsets: ["latin"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
+
 export const metadata: Metadata = {
-    title: "Chen Xiang 陈想",
-    description: "Chen Xiang's personal website",
+    title: {
+        default: "Chen Xiang 陈想",
+        template: "%s | Chen Xiang",
+    },
+    description: "Personal website and portfolio of Chen Xiang, showcasing projects and experience",
+    alternates: {
+        canonical: SITE_URL,
+        languages: {
+            en: `${SITE_URL}/en`,
+            "zh-CN": `${SITE_URL}/zh-CN`,
+        },
+    },
+    openGraph: {
+        title: "Chen Xiang 陈想 | Personal Website",
+        siteName: "Chen Xiang",
+        url: SITE_URL,
+        images: [{ url: "https://cdn.cxiang.site/default-og-image.svg" }],
+        description: "Portfolio and personal website of Chen Xiang",
+        type: "website",
+    },
 };
 
 const jsonLd: WithContext<WebSite> = {
@@ -30,7 +50,7 @@ const jsonLd: WithContext<WebSite> = {
     "@type": "WebSite",
     name: "Chen Xiang",
     alternateName: ["CXiang", "陈想"],
-    url: "https://cxiang.site",
+    url: SITE_URL,
     description: "Chen Xiang's personal website",
 };
 

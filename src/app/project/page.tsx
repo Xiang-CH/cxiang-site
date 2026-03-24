@@ -10,8 +10,23 @@ import { OpenViewerLink } from "@/components/viewer";
 import { GitHubLogoIcon, GlobeIcon } from "@radix-ui/react-icons";
 
 export const metadata: Metadata = {
-    title: "Project | Chen Xiang",
-    description: "Chen Xiang's Project Portfolio",
+    title: "Projects",
+    description: "Projects I have worked on",
+    alternates: {
+        canonical: process.env.NEXT_PUBLIC_SITE_URL
+            ? `${process.env.NEXT_PUBLIC_SITE_URL}/project`
+            : "https://cxiang.site/project",
+    },
+    openGraph: {
+        title: "Projects | Chen Xiang",
+        siteName: "Chen Xiang",
+        url: process.env.NEXT_PUBLIC_SITE_URL
+            ? `${process.env.NEXT_PUBLIC_SITE_URL}/project`
+            : "https://cxiang.site/project",
+        images: [{ url: "https://cdn.cxiang.site/default-og-image.svg" }],
+        description: "Projects I have worked on",
+        type: "website",
+    },
 };
 
 export default async function Projects() {

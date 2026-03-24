@@ -114,14 +114,14 @@ export default function Viewer() {
                     onClick={(e) => e.stopPropagation()}
                 >
                     {viewerUrl?.endsWith(".pdf") && (
-                        <ViewerButton onClickFunction={downloadFile}>
+                        <ViewerButton onClickFunction={downloadFile} ariaLabel="Download PDF">
                             <DownloadIcon width={25} />
                         </ViewerButton>
                     )}
-                    <ViewerButton onClickFunction={goToPage}>
+                    <ViewerButton onClickFunction={goToPage} ariaLabel="Go to Page">
                         <SizeIcon width={25} />
                     </ViewerButton>
-                    <ViewerButton onClickFunction={closeViewer}>
+                    <ViewerButton onClickFunction={closeViewer} ariaLabel="Close Viewer">
                         <Cross1Icon width={25} />
                     </ViewerButton>
                 </div>
@@ -146,14 +146,17 @@ export default function Viewer() {
 function ViewerButton({
     onClickFunction,
     children,
+    ariaLabel,
 }: {
     onClickFunction: () => void;
     children: React.ReactNode;
+    ariaLabel?: string;
 }) {
     return (
         <button
             onClick={onClickFunction}
             className="hover:pointer-cursor hover:bg-gray-200 dark:hover:bg-gray-700 px-2 py-2.5 transition-colors"
+            aria-label={ariaLabel}
         >
             {children}
         </button>

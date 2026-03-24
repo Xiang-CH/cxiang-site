@@ -24,6 +24,8 @@ type Props = {
     params: Promise<{ slug: string }>;
 };
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const slug = (await params).slug;
     const post = await getPostBySlug(slug);
@@ -55,7 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
               ? response.cover.file.url
               : "/images/default-og-image.svg";
 
-    const canonical = `https://www.cxiang.site/blog/${post.slug}`;
+    const canonical = `${SITE_URL}/blog/${post.slug}`;
 
     return {
         title,
@@ -68,7 +70,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             url: canonical,
             title,
             description: abstract,
-            siteName: "Chen Xiang's Blog",
+            siteName: "Chen Xiang",
             images: [{ url: coverImage }],
         },
     };
@@ -106,10 +108,10 @@ export default async function BlogBySlug({ params }: Props) {
         "@context": "https://schema.org",
         "@type": "Blog",
         name: resolved.title + " | Chen Xiang's Blog",
-        url: `https://cxiang.site/blog/${resolved.slug}`,
+        url: `${SITE_URL}/blog/${resolved.slug}`,
         image:
             recordMap.block[resolved.id].value.format.page_cover ||
-            "https://cxiang.site/images/default-og-image.svg",
+            "https://cdn.cxiang.site/default-og-image.svg",
         description: "Chen Xiang's personal blog, sharing thoughts and experiences.",
     };
 
