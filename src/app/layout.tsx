@@ -29,10 +29,10 @@ export const metadata: Metadata = {
     },
     description: "Personal website and portfolio of Chen Xiang, showcasing projects and experience",
     alternates: {
-        canonical: SITE_URL,
         languages: {
             en: `${SITE_URL}/en`,
             "zh-CN": `${SITE_URL}/zh-CN`,
+            "x-default": SITE_URL,
         },
     },
     openGraph: {

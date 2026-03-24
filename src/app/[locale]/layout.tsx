@@ -6,8 +6,29 @@ import { setRequestLocale } from "next-intl/server";
 import "@/app/globals.css";
 import "aos/dist/aos.css";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
+
 export function generateStaticParams() {
     return routing.locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
+  return {
+    alternates: {
+      canonical: `${SITE_URL}/${locale}`,
+      languages: {
+        en: `${SITE_URL}/en`,
+        "zh-CN": `${SITE_URL}/zh-CN`,
+        "x-default": SITE_URL,
+      },
+    },
+  };
 }
 
 const pressStart = Press_Start_2P({
