@@ -36,13 +36,19 @@ export const metadata: Metadata = {
         },
     },
     openGraph: {
-        title: "Chen Xiang 陈想 | Personal Website",
+        title: "Chen Xiang",
         siteName: "Chen Xiang",
         url: SITE_URL,
         images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
-        description: "Portfolio and personal website of Chen Xiang",
+        description: "My personal portfolio website",
         type: "website",
     },
+    twitter: {
+        card: "summary_large_image",
+        title: "Chen Xiang",
+        description: "My personal portfolio website",
+        images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
+    }
 };
 
 const jsonLd: WithContext<WebSite> = {
