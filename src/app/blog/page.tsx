@@ -20,7 +20,7 @@ export const metadata: Metadata = {
         url: process.env.NEXT_PUBLIC_SITE_URL
             ? `${process.env.NEXT_PUBLIC_SITE_URL}/blog`
             : "https://cxiang.site/blog",
-        images: [{ url: "https://cdn.cxiang.site/default-og-image.svg" }],
+        images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
         description: "My personal blog, sharing thoughts and experiences.",
         type: "website",
     },

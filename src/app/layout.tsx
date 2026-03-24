@@ -39,7 +39,7 @@ export const metadata: Metadata = {
         title: "Chen Xiang 陈想 | Personal Website",
         siteName: "Chen Xiang",
         url: SITE_URL,
-        images: [{ url: "https://cdn.cxiang.site/default-og-image.svg" }],
+        images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
         description: "Portfolio and personal website of Chen Xiang",
         type: "website",
     },

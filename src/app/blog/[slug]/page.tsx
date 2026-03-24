@@ -55,7 +55,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             ? response.cover.external.url
             : response?.cover?.type === "file"
               ? response.cover.file.url
-              : "/images/default-og-image.svg";
+              : "/images/default-og-image.jpg";
 
     const canonical = `${SITE_URL}/blog/${post.slug}`;
 
@@ -111,7 +111,7 @@ export default async function BlogBySlug({ params }: Props) {
         url: `${SITE_URL}/blog/${resolved.slug}`,
         image:
             recordMap.block[resolved.id].value.format.page_cover ||
-            "https://cdn.cxiang.site/default-og-image.svg",
+            "https://cdn.cxiang.site/default-og-image.jpg",
         description: "Chen Xiang's personal blog, sharing thoughts and experiences.",
     };
 
