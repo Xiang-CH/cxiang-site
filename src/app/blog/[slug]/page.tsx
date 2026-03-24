@@ -12,6 +12,7 @@ import { type Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { type PageObjectResponse } from "@notionhq/client";
 import SponsorCard from "@/components/sponser-card";
+import { Blog, WithContext } from "schema-dts";
 
 export async function generateStaticParams() {
     // Prebuild slugs for ISR; if dataset is large, consider reducing this or relying on dynamic rendering.
@@ -101,8 +102,25 @@ export default async function BlogBySlug({ params }: Props) {
         notFound();
     }
 
+    const blogJsonLd: WithContext<Blog> = {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        name: resolved.title + " | Chen Xiang's Blog",
+        url: `https://cxiang.site/blog/${resolved.slug}`,
+        image:
+            recordMap.block[resolved.id].value.format.page_cover ||
+            "https://cxiang.site/images/default-og-image.svg",
+        description: "Chen Xiang's personal blog, sharing thoughts and experiences.",
+    };
+
     return (
         <div className="w-full h-full flex flex-col justify-start items-stretch">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(blogJsonLd),
+                }}
+            />
             <div className="h-12" />
             <div className="relative left-1/2 w-screen max-w-none -translate-x-1/2">
                 <NotionPageClient recordMap={recordMap} />
