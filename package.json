@@ -8,6 +8,7 @@
         "start": "bun --bun next start",
         "lint": "eslint .",
         "format": "prettier --write .",
+        "check": "prettier --write . && eslint .",
         "format:check": "prettier --check .",
         "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
         "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",

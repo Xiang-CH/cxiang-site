@@ -196,6 +196,10 @@ main.at-page-end .invisible-at-end {
     width: 100%;
 }
 
+.notion-full-page {
+    padding-bottom: calc(max(8vh, 90px)) !important;
+}
+
 .notion-page-icon-hero {
     left: 4rem !important;
 }
