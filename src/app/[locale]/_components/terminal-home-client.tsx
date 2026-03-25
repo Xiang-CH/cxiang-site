@@ -126,14 +126,15 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                             triggerOnHover
                             respectReducedMotion={true}
                             loop={false}
+                            tag="h1"
                             loopDelay={10}
                             textAlign="left"
                             className="text-[3rem] tracking-tighter scale-y-115"
                         />
                         {content.locale != "en" && (
-                            <p className="text-[clamp(1.5rem,2vw,2.5rem)] opacity-40 leading-none">
+                            <h2 className="text-[clamp(1.5rem,2vw,2.5rem)] opacity-40 leading-none">
                                 <TypewriterText key={content.name} text={content.name} noCursor />
-                            </p>
+                            </h2>
                         )}
                         <p className="text-[clamp(0.8rem,1.8vw,1rem)] text-(--th-accent) mt-1">
                             <TypewriterText key={fullText} text={fullText} />
