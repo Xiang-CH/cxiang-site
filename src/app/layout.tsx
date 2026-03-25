@@ -64,6 +64,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     return (
         <html lang="en" suppressHydrationWarning>
             <head>
+                <meta name="baidu-site-verification" content="codeva-mxRqrYyNJ1" />
                 <meta name="apple-mobile-web-app-title" content="CXiang" />
                 <script
                     type="application/ld+json"
