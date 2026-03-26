@@ -1,8 +1,8 @@
 <!-- BEGIN:nextjs-agent-rules -->
 
-# Next.js: ALWAYS read docs before coding
+# Next.js: Read docs for structural or framework-specific work
 
-Before any Next.js work, find and read the relevant doc in `node_modules/next/dist/docs/`. Your training data is outdated — the docs are the source of truth.
+Before large structural modifications or Next.js-specific changes, find and read the relevant doc in `node_modules/next/dist/docs/`. For small, isolated changes that do not depend on Next.js framework behavior, this docs check is not required.
 
 <!-- END:nextjs-agent-rules -->
 

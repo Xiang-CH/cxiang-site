@@ -9,6 +9,7 @@ import MenuBar from "@/components/menu-bar";
 import { Toaster } from "@/components/ui/sonner";
 import { WebSite, WithContext } from "schema-dts";
 import Viewer from "@/components/viewer";
+import ConsoleArtLogger from "@/components/console-art-logger";
 
 const notoSans = Noto_Sans({
     variable: "--font-noto-sans",
@@ -85,6 +86,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     <Suspense fallback={<></>}>
                         <Viewer />
                     </Suspense>
+                    <ConsoleArtLogger />
                     <MenuBar />
                     {/* <div className="h-14" /> */}
                     <div className="px-4">
