@@ -6,23 +6,30 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
+
 export const metadata: Metadata = {
-    title: "Blogs",
-    description: "My personal blog, sharing thoughts and experiences.",
+    title: "Blog",
+    description:
+        "Technical writing by Chen Xiang on software engineering, projects, and lessons learned.",
     alternates: {
-        canonical: process.env.NEXT_PUBLIC_SITE_URL
-            ? `${process.env.NEXT_PUBLIC_SITE_URL}/blog`
-            : "https://cxiang.site/blog",
+        canonical: `${SITE_URL}/blog`,
     },
     openGraph: {
-        title: "Blogs | Chen Xiang",
+        title: "Blog | Chen Xiang",
         siteName: "Chen Xiang",
-        url: process.env.NEXT_PUBLIC_SITE_URL
-            ? `${process.env.NEXT_PUBLIC_SITE_URL}/blog`
-            : "https://cxiang.site/blog",
+        url: `${SITE_URL}/blog`,
         images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
-        description: "My personal blog, sharing thoughts and experiences.",
+        description:
+            "Technical writing by Chen Xiang on software engineering, projects, and lessons learned.",
         type: "website",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Blog | Chen Xiang",
+        description:
+            "Technical writing by Chen Xiang on software engineering, projects, and lessons learned.",
+        images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
     },
 };
 
@@ -62,14 +69,14 @@ export default async function Blogs() {
 
     return (
         <main className="w-full max-w-xl h-full flex flex-col justify-start items-start mx-auto mt-4 sm:mt-6 gap-8">
-            {/* <h1 className="text-xl font-bold mb-1">Blogs</h1>
-            <p className="text-md mb-12 font-light">
-                Things that I have figured out and thought worth sharing.
-            </p>
-             */}
+            <h1 className="sr-only">Blog</h1>
             {response.results.map((item) => {
                 if (item.object !== "page" || !("properties" in item)) return;
                 const blog = item as PageObjectResponse;
+                const title =
+                    blog.properties.Title?.type === "title"
+                        ? (blog.properties.Title.title[0]?.plain_text ?? "Untitled")
+                        : "Untitled";
 
                 const slug = metas.find((m) => m.id === blog.id)?.slug || blog.id;
 
@@ -81,8 +88,7 @@ export default async function Blogs() {
                     >
                         <div className="flex flex-col gap-1 min-h-28 h-full justify-center">
                             <h2 className="text-xl font-semibold group-hover:underline text-wrap">
-                                {blog.properties.Title?.type === "title" &&
-                                    blog.properties.Title.title[0]?.plain_text}
+                                {title}
                             </h2>
                             <p className="text-sm">
                                 {blog.properties["Publish Date"]?.type === "date" &&
@@ -101,7 +107,7 @@ export default async function Blogs() {
                                             ? blog.cover.external.url
                                             : blog.cover.file.url
                                     }
-                                    alt="blog cover"
+                                    alt={`${title} cover image`}
                                     width={160}
                                     height={90}
                                     quality={40}

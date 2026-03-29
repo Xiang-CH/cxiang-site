@@ -9,23 +9,30 @@ import { Badge } from "@/components/ui/badge";
 import { OpenViewerLink } from "@/components/viewer";
 import { GitHubLogoIcon, GlobeIcon } from "@radix-ui/react-icons";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
+
 export const metadata: Metadata = {
     title: "Projects",
-    description: "Projects I have worked on",
+    description:
+        "Selected software engineering projects built by Chen Xiang across web, product, and creative development.",
     alternates: {
-        canonical: process.env.NEXT_PUBLIC_SITE_URL
-            ? `${process.env.NEXT_PUBLIC_SITE_URL}/project`
-            : "https://cxiang.site/project",
+        canonical: `${SITE_URL}/project`,
     },
     openGraph: {
         title: "Projects | Chen Xiang",
         siteName: "Chen Xiang",
-        url: process.env.NEXT_PUBLIC_SITE_URL
-            ? `${process.env.NEXT_PUBLIC_SITE_URL}/project`
-            : "https://cxiang.site/project",
+        url: `${SITE_URL}/project`,
         images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
-        description: "Projects I have worked on",
+        description:
+            "Selected software engineering projects built by Chen Xiang across web, product, and creative development.",
         type: "website",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Projects | Chen Xiang",
+        description:
+            "Selected software engineering projects built by Chen Xiang across web, product, and creative development.",
+        images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
     },
 };
 
@@ -64,10 +71,15 @@ export default async function Projects() {
 
     return (
         <main className="w-full max-w-md sm:max-w-3xl lg:max-w-5xl h-full py-6 mx-auto">
+            <h1 className="sr-only">Projects</h1>
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
                 {response.results.map((item) => {
                     if (item.object !== "page" || !("properties" in item)) return;
                     const project = item as PageObjectResponse;
+                    const title =
+                        project.properties.Title?.type === "title"
+                            ? (project.properties.Title.title[0]?.plain_text ?? "Untitled")
+                            : "Untitled";
 
                     const url =
                         project.properties["URL"]?.type === "url" && project.properties["URL"]?.url;
@@ -95,7 +107,7 @@ export default async function Projects() {
                                                         ? project.cover.external.url
                                                         : project.cover.file.url
                                                 }
-                                                alt="project cover"
+                                                alt={`${title} project cover image`}
                                                 width={
                                                     project.properties["Cover Width"].type ===
                                                         "rich_text" &&
@@ -126,8 +138,7 @@ export default async function Projects() {
                                     )}
                                     <div className="flex flex-col gap-1 px-4 pt-2 border-t">
                                         <h2 className="text-lg sm:text-xl font-semibold group-hover:underline break-words">
-                                            {project.properties.Title?.type === "title" &&
-                                                project.properties.Title.title[0]?.plain_text}
+                                            {title}
                                         </h2>
                                         <p className="text-sm">
                                             {project.properties.Abstract?.type === "rich_text" &&
@@ -146,7 +157,7 @@ export default async function Projects() {
                                                         ? project.cover.external.url
                                                         : project.cover.file.url
                                                 }
-                                                alt="project cover"
+                                                alt={`${title} project cover image`}
                                                 width={
                                                     project.properties["Cover Width"].type ===
                                                         "rich_text" &&
@@ -177,8 +188,7 @@ export default async function Projects() {
                                     )}
                                     <div className="flex flex-col gap-1 px-4 pt-2 border-t">
                                         <h2 className="text-lg sm:text-xl font-semibold group-hover:underline break-words">
-                                            {project.properties.Title?.type === "title" &&
-                                                project.properties.Title.title[0]?.plain_text}
+                                            {title}
                                         </h2>
                                         <p className="text-sm">
                                             {project.properties.Abstract?.type === "rich_text" &&

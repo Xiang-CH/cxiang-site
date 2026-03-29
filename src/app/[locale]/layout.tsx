@@ -12,23 +12,19 @@ export function generateStaticParams() {
     return routing.locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
 
-  return {
-    alternates: {
-      canonical: `${SITE_URL}/${locale}`,
-      languages: {
-        en: `${SITE_URL}/en`,
-        "zh-CN": `${SITE_URL}/zh-CN`,
-        "x-default": SITE_URL,
-      },
-    },
-  };
+    return {
+        alternates: {
+            canonical: `${SITE_URL}/${locale}`,
+            languages: {
+                en: `${SITE_URL}/en`,
+                "zh-CN": `${SITE_URL}/zh-CN`,
+                "x-default": `${SITE_URL}/${routing.defaultLocale}`,
+            },
+        },
+    };
 }
 
 const pressStart = Press_Start_2P({

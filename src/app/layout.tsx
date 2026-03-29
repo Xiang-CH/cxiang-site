@@ -7,7 +7,7 @@ import { Suspense } from "react";
 import "@/app/globals.css";
 import MenuBar from "@/components/menu-bar";
 import { Toaster } from "@/components/ui/sonner";
-import { WebSite, WithContext } from "schema-dts";
+import { Person, WebSite, WithContext } from "schema-dts";
 import Viewer from "@/components/viewer";
 import ConsoleArtLogger from "@/components/console-art-logger";
 
@@ -24,20 +24,24 @@ const jetbrainsMono = JetBrains_Mono({
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
 
 export const metadata: Metadata = {
+    metadataBase: new URL(SITE_URL),
     title: {
         default: "Chen Xiang 陈想",
         template: "%s | Chen Xiang",
     },
     description: "Personal website and portfolio of Chen Xiang, showcasing projects and experience",
+    authors: [{ name: "Chen Xiang", url: SITE_URL }],
+    creator: "Chen Xiang",
+    publisher: "Chen Xiang",
     alternates: {
         languages: {
             en: `${SITE_URL}/en`,
             "zh-CN": `${SITE_URL}/zh-CN`,
-            "x-default": SITE_URL,
+            "x-default": `${SITE_URL}/en`,
         },
     },
     openGraph: {
-        title: "Chen Xiang",
+        title: "Chen Xiang 陈想",
         siteName: "Chen Xiang",
         url: SITE_URL,
         images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
@@ -46,19 +50,34 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Chen Xiang",
+        title: "Chen Xiang 陈想",
         description: "My personal portfolio website",
         images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
-    }
+    },
 };
 
-const jsonLd: WithContext<WebSite> = {
+const websiteJsonLd: WithContext<WebSite> = {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Chen Xiang",
     alternateName: ["CXiang", "陈想"],
     url: SITE_URL,
     description: "Chen Xiang's personal website",
+};
+
+const personJsonLd: WithContext<Person> = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Chen Xiang",
+    alternateName: ["CXiang", "陈想"],
+    url: SITE_URL,
+    image: "https://cdn.cxiang.site/default-og-image.jpg",
+    jobTitle: "Full-Stack Software Developer",
+    sameAs: [
+        "https://github.com/Xiang-CH",
+        "https://www.linkedin.com/in/xiang-chen-62389526a/",
+        "https://www.instagram.com/chen.xiiang/",
+    ],
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -70,7 +89,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(jsonLd),
+                        __html: JSON.stringify(websiteJsonLd),
+                    }}
+                />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(personJsonLd),
                     }}
                 />
             </head>

@@ -37,8 +37,15 @@ function getProjectLastModified(project: PageObjectResponse): Date | undefined {
 }
 
 function getLocaleAlternates() {
+    return getLocalizedAlternates("/");
+}
+
+function getLocalizedAlternates(pathname: string) {
     return Object.fromEntries(
-        routing.locales.map((locale) => [locale, absoluteUrl(`/${locale}`)])
+        routing.locales.map((locale) => [
+            locale,
+            absoluteUrl(`/${locale}${pathname === "/" ? "" : pathname}`),
+        ])
     ) as Record<string, string>;
 }
 
@@ -61,22 +68,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         )
     );
     const siteLastModified = latestDate([blogLastModified, projectLastModified]);
-    const localeAlternates = getLocaleAlternates();
+    const homeAlternates = getLocaleAlternates();
 
     const sitemapEntries: MetadataRoute.Sitemap = [
         ...routing.locales.map((locale) => ({
             url: absoluteUrl(`/${locale}`),
             lastModified: siteLastModified,
-            changeFrequency: "weekly" as const,
+            changeFrequency: "monthly" as const,
             priority: 1,
             alternates: {
-                languages: localeAlternates,
+                languages: homeAlternates,
             },
         })),
         {
             url: absoluteUrl("/blog"),
             lastModified: blogLastModified,
-            changeFrequency: "weekly" as const,
+            changeFrequency: "monthly" as const,
             priority: 0.8,
         },
         {
@@ -88,7 +95,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...posts.map((post) => ({
             url: absoluteUrl(`/blog/${post.slug}`),
             lastModified: toValidDate(post.date),
-            changeFrequency: "monthly" as const,
+            changeFrequency: "never" as const,
             priority: 0.7,
         })),
     ];
