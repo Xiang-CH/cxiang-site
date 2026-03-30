@@ -20,8 +20,8 @@ export const getProjects = async () => {
     //     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     //     'use cache'
     // }
-    return notion.databases.query({
-        database_id: process.env.NOTION_PROJECTS_DATABASE_ID!,
+    return notion.dataSources.query({
+        data_source_id: process.env.NOTION_PROJECTS_DATA_SOURCE_ID!,
         sorts: [
             {
                 property: "Date",
@@ -36,8 +36,8 @@ export const getBlogs = async () => {
     //     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     //     'use cache'
     // }
-    return notion.databases.query({
-        database_id: process.env.NOTION_BLOG_DATABASE_ID!,
+    return notion.dataSources.query({
+        data_source_id: process.env.NOTION_BLOG_DATA_SOURCE_ID!,
         filter: {
             or: [
                 {

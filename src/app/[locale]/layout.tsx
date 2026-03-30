@@ -4,7 +4,6 @@ import { Press_Start_2P } from "next/font/google";
 import { routing } from "@/i18n/routing";
 import { setRequestLocale } from "next-intl/server";
 import "@/app/globals.css";
-import "aos/dist/aos.css";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
 
