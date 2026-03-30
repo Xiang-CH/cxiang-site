@@ -5,7 +5,6 @@
     "scripts": {
         "dev": "bun --bun next dev",
         "build": "bun --bun next build",
-        "analyze": "bunx next experimental-analyze",
         "start": "bun --bun next start",
         "lint": "eslint .",
         "format": "prettier --write .",
