@@ -71,7 +71,7 @@ const personJsonLd: WithContext<Person> = {
     name: "Chen Xiang",
     alternateName: ["CXiang", "陈想"],
     url: SITE_URL,
-    image: "https://cdn.cxiang.site/default-og-image.jpg",
+    image: "https://avatars.githubusercontent.com/u/63144890?s=96&v=4",
     jobTitle: "Full-Stack Software Developer",
     sameAs: [
         "https://github.com/Xiang-CH",

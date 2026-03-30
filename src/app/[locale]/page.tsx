@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
+import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import TerminalHomeClient from "./_components/terminal-home-client";
 import type { TerminalContent } from "./_components/terminal-home-client";
 
@@ -89,5 +91,12 @@ export default async function Home({ params }: Props) {
         })),
     };
 
-    return <TerminalHomeClient content={content} />;
+    return (
+        <>
+            <BreadcrumbJsonLd
+                entries={[{ name: "Home", item: BREADCRUMB_SITE_URL }, { name: t("intro.name") }]}
+            />
+            <TerminalHomeClient content={content} />
+        </>
+    );
 }

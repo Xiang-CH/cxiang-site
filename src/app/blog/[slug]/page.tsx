@@ -12,6 +12,8 @@ import { type Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { type PageObjectResponse } from "@notionhq/client";
 import SponsorCard from "@/components/sponser-card";
+import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
+import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { BlogPosting, WithContext } from "schema-dts";
 
 export async function generateStaticParams() {
@@ -27,15 +29,26 @@ type Props = {
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
 const AUTHOR = "Chen Xiang";
 
+/** Notion date properties are often YYYY-MM-DD; add UTC so schema gets a timezone. */
+function normalizeNotionDateTime(value: string): string {
+    const v = value.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+        return `${v}T00:00Z`;
+    }
+    return v;
+}
+
 function getPostDates(post: PageObjectResponse) {
-    const publishedTime =
+    const publishedRaw =
         post.properties["Publish Date"]?.type === "date"
             ? (post.properties["Publish Date"].date?.start ?? post.created_time)
             : post.created_time;
 
+    const modifiedRaw = post.last_edited_time ?? publishedRaw;
+
     return {
-        publishedTime,
-        modifiedTime: post.last_edited_time ?? publishedTime,
+        publishedTime: normalizeNotionDateTime(publishedRaw),
+        modifiedTime: normalizeNotionDateTime(modifiedRaw),
     };
 }
 
@@ -172,6 +185,13 @@ export default async function BlogBySlug({ params }: Props) {
 
     return (
         <div className="w-full h-full flex flex-col justify-start items-stretch">
+            <BreadcrumbJsonLd
+                entries={[
+                    { name: "Home", item: BREADCRUMB_SITE_URL },
+                    { name: "Blog", item: `${BREADCRUMB_SITE_URL}/blog` },
+                    { name: title },
+                ]}
+            />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{

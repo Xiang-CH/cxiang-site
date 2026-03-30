@@ -294,14 +294,18 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                                 <span className="text-(--th-dim)">&quot;</span>
                                 <span className="text-(--th-accent)">{c.key}</span>
                                 <span className="text-(--th-dim)">&quot;: &quot;</span>
-                                <a
-                                    href={c.href}
-                                    target={c.href ? "_blank" : undefined}
-                                    rel="noopener noreferrer"
-                                    className={c.href ? "th-link" : ""}
-                                >
-                                    {c.value}
-                                </a>
+                                {c.href ? (
+                                    <a
+                                        href={c.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="th-link"
+                                    >
+                                        {c.value}
+                                    </a>
+                                ) : (
+                                    <span className="text-(--th-text)">{c.value}</span>
+                                )}
                                 <span className="text-(--th-dim)">&quot;</span>
                                 {i < arr.length - 1 && <span className="text-(--th-dim)">,</span>}
                             </p>
