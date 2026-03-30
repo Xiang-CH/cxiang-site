@@ -1,24 +1,22 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Noto_Sans, JetBrains_Mono } from "next/font/google";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next";
-import { Suspense } from "react";
 import "@/app/globals.css";
 import MenuBar from "@/components/menu-bar";
 import { Toaster } from "@/components/ui/sonner";
 import { Person, WebSite, WithContext } from "schema-dts";
-import Viewer from "@/components/viewer";
 import ConsoleArtLogger from "@/components/console-art-logger";
+import LazyViewer from "@/components/lazy-viewer";
+import LazyTelemetry from "@/components/lazy-telemetry";
 
 const notoSans = Noto_Sans({
     variable: "--font-noto-sans",
-    subsets: ["latin"],
+    subsets: ["latin", "latin-ext"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
     variable: "--font-geist-mono",
-    subsets: ["latin"],
+    subsets: ["latin", "latin-ext"],
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
@@ -108,9 +106,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <Suspense fallback={<></>}>
-                        <Viewer />
-                    </Suspense>
+                    <LazyViewer />
                     <ConsoleArtLogger />
                     <MenuBar />
                     {/* <div className="h-14" /> */}
@@ -127,8 +123,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         </div>
                     </footer>
                     <Toaster />
-                    <SpeedInsights />
-                    <Analytics />
+                    <LazyTelemetry />
                 </ThemeProvider>
             </body>
         </html>
