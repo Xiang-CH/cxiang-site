@@ -35,39 +35,13 @@ const ASCII_TEXT_ART: string = String.raw`
             |_|
 `;
 
-function isConsoleLikelyOpen() {
-    if (typeof window === "undefined") {
-        return false;
-    }
-
-    const widthDelta = window.outerWidth - window.innerWidth;
-    const heightDelta = window.outerHeight - window.innerHeight;
-
-    return widthDelta > 160 || heightDelta > 160;
-}
-
 export default function ConsoleArtLogger() {
     const hasLogged = useRef(false);
 
     useEffect(() => {
-        const logArt = () => {
-            if (hasLogged.current || !isConsoleLikelyOpen()) {
-                return;
-            }
-
-            hasLogged.current = true;
-            console.log(`${ASCII_ART}${ASCII_TEXT_ART}`);
-        };
-
-        logArt();
-
-        window.addEventListener("resize", logArt);
-        const interval = window.setInterval(logArt, 500);
-
-        return () => {
-            window.removeEventListener("resize", logArt);
-            window.clearInterval(interval);
-        };
+        if (hasLogged.current) return;
+        hasLogged.current = true;
+        console.log(`${ASCII_ART}${ASCII_TEXT_ART}`);
     }, []);
 
     return null;
