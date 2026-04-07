@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Client } from "@notionhq/client";
-import { cacheLife, cacheTag } from "next/cache";
 import { NotionAPI } from "notion-client";
-import { CACHE_TAGS, getBlogTag } from "@/lib/cache-tags";
 
 if (!process.env.NOTION_SECRET) {
     throw new Error("NOTION_SECRET environment variable is not set");
@@ -17,9 +15,6 @@ const api = new NotionAPI({
 });
 
 export const getProjects = async () => {
-    "use cache";
-    cacheLife("days");
-    cacheTag(CACHE_TAGS.projects);
     return notion.dataSources.query({
         data_source_id: process.env.NOTION_PROJECTS_DATA_SOURCE_ID!,
         sorts: [
@@ -32,9 +27,6 @@ export const getProjects = async () => {
 };
 
 export const getBlogs = async () => {
-    "use cache";
-    cacheLife("days");
-    cacheTag(CACHE_TAGS.blogs);
     return notion.dataSources.query({
         data_source_id: process.env.NOTION_BLOG_DATA_SOURCE_ID!,
         filter: {
@@ -57,26 +49,20 @@ export const getBlogs = async () => {
 };
 
 export const getBlogMetadata = async (id: string) => {
-    "use cache";
-    cacheLife("days");
     if (!id) {
         throw new Error("Blog ID is required");
     }
 
-    cacheTag(getBlogTag(id));
     return notion.pages.retrieve({
         page_id: id,
     });
 };
 
 export const getBlog = async (id: string) => {
-    "use cache";
-    cacheLife("days");
     if (!id) {
         throw new Error("Blog ID is required");
     }
 
-    cacheTag(getBlogTag(id));
     return api.getPage(id);
 };
 
@@ -171,9 +157,6 @@ function readPreviousSlugsProperty(prop: any): string[] | undefined {
  * - Duplicate handling: suffix later duplicates with "-{shortId}" (first 8 chars of page id without dashes)
  */
 export async function getAllPostsMeta(): Promise<PostMeta[]> {
-    "use cache";
-    cacheLife("days");
-    cacheTag(CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs);
     const res = await getBlogs();
     const metas: PostMeta[] = [];
     const usedSlugs = new Set<string>();
@@ -234,9 +217,6 @@ export async function getAllPostsMeta(): Promise<PostMeta[]> {
 export async function getPostBySlug(
     slug: string
 ): Promise<{ id: string; title: string; slug: string; previousSlugs: string[] } | null> {
-    "use cache";
-    cacheLife("days");
-    cacheTag(CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs);
     const all = await getAllPostsMeta();
     const direct = all.find((p) => p.slug === slug);
     if (direct) {
@@ -263,9 +243,6 @@ export async function getPostBySlug(
  * Resolve the canonical slug for a given Notion page id.
  */
 export async function getSlugById(id: string): Promise<string | null> {
-    "use cache";
-    cacheLife("days");
-    cacheTag(CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs);
     const all = await getAllPostsMeta();
     const found = all.find((p) => p.id === id);
     return found?.slug ?? null;
