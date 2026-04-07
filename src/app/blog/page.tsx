@@ -1,5 +1,4 @@
-"use cache";
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { getBlogs, getAllPostsMeta, type PostMeta } from "@/lib/notion";
 import { type PageObjectResponse } from "@notionhq/client";
 import { Metadata } from "next";
@@ -7,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
 
@@ -50,7 +50,9 @@ function ErrorLoadingBlogs() {
 }
 
 export default async function Blogs() {
+    "use cache";
     cacheLife("days");
+    cacheTag(CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs);
 
     let response;
     let metas: PostMeta[] = [];
