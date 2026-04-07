@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use server";
 import { Client } from "@notionhq/client";
 import { cacheLife, cacheTag } from "next/cache";
 import { NotionAPI } from "notion-client";
