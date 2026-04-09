@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use server";
+import "server-only";
 import { Client } from "@notionhq/client";
 import { NotionAPI } from "notion-client";
 
@@ -16,10 +16,6 @@ const api = new NotionAPI({
 });
 
 export const getProjects = async () => {
-    // if (process.env.NODE_ENV === 'production') {
-    //     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    //     'use cache'
-    // }
     return notion.dataSources.query({
         data_source_id: process.env.NOTION_PROJECTS_DATA_SOURCE_ID!,
         sorts: [
@@ -32,10 +28,6 @@ export const getProjects = async () => {
 };
 
 export const getBlogs = async () => {
-    // if (process.env.NODE_ENV === 'production') {
-    //     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    //     'use cache'
-    // }
     return notion.dataSources.query({
         data_source_id: process.env.NOTION_BLOG_DATA_SOURCE_ID!,
         filter: {
@@ -71,11 +63,6 @@ export const getBlog = async (id: string) => {
     if (!id) {
         throw new Error("Blog ID is required");
     }
-
-    // if (process.env.NODE_ENV === 'production') {
-    //     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    //     'use cache'
-    // }
 
     return api.getPage(id);
 };

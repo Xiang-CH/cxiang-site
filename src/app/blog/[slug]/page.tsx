@@ -1,4 +1,4 @@
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import {
     getBlog,
     getBlogMetadata,
@@ -6,6 +6,7 @@ import {
     getAllPostsMeta,
     getSlugById,
 } from "@/lib/notion";
+import { CACHE_TAGS, getBlogTag } from "@/lib/cache-tags";
 import NotionPageClient from "../_components/notion-page-client";
 import "react-notion-x/src/styles.css";
 import { type Metadata } from "next";
@@ -137,6 +138,7 @@ export default async function BlogBySlug({ params }: Props) {
         redirect(`/blog/${resolved.slug}`);
     }
 
+    cacheTag(CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs, getBlogTag(resolved.id));
     const recordMap = await getBlog(resolved.id);
 
     if (!recordMap) {

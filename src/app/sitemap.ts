@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 import { type PageObjectResponse } from "@notionhq/client";
+import { cacheLife, cacheTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { getAllPostsMeta, getProjects } from "@/lib/notion";
 import { routing } from "@/i18n/routing";
 
@@ -51,6 +53,8 @@ function getLocalizedAlternates(pathname: string) {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "use cache";
+    cacheLife("days");
+    cacheTag(CACHE_TAGS.sitemap, CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs, CACHE_TAGS.projects);
     const [postsResult, projectsResult] = await Promise.allSettled([
         getAllPostsMeta(),
         getProjects(),

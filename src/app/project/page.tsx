@@ -1,5 +1,4 @@
-"use cache";
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { getProjects } from "@/lib/notion";
 import { type PageObjectResponse } from "@notionhq/client";
 import { Metadata } from "next";
@@ -10,6 +9,7 @@ import { OpenViewerLink } from "@/components/viewer";
 import { GitHubLogoIcon, GlobeIcon } from "@radix-ui/react-icons";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
 
@@ -39,7 +39,9 @@ export const metadata: Metadata = {
 };
 
 export default async function Projects() {
+    "use cache";
     cacheLife("days");
+    cacheTag(CACHE_TAGS.projects);
     let response;
     try {
         response = await getProjects();

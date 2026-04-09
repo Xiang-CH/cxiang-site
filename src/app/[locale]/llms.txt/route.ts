@@ -1,6 +1,8 @@
 import { getTranslations } from "next-intl/server";
+import { cacheLife, cacheTag } from "next/cache";
 import { routing } from "@/i18n/routing";
 import { skills } from "@/app/[locale]/_components/skills";
+import { CACHE_TAGS, getLlmsTag } from "@/lib/cache-tags";
 
 export function generateStaticParams() {
     return routing.locales.map((locale) => ({ locale }));
@@ -8,6 +10,8 @@ export function generateStaticParams() {
 
 async function buildLlmsText(locale: string): Promise<string> {
     "use cache";
+    cacheLife("weeks");
+    cacheTag(CACHE_TAGS.llms, getLlmsTag(locale));
     const t = await getTranslations({ locale });
 
     type OrgEntry = { position: string; company: string; website: string; duration: string };
