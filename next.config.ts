@@ -55,6 +55,10 @@ const nextConfig: NextConfig = {
                 ],
             },
             {
+                source: "/llms.txt",
+                destination: "/en/llms.txt",
+            },
+            {
                 source: "/projects",
                 destination: "/project",
             },
