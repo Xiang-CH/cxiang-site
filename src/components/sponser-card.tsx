@@ -29,7 +29,7 @@ export default function SponserCard() {
                         </div>
                     </div>
                 </div> */
-        <div className="w-full max-w-2xl pb-3">
+        <div className="w-full max-w-180 pb-3 pt-5">
             <div className="mt-10 flex flex-wrap gap-3 rounded-lg border border-border px-6 py-4 text-sm text-muted-foreground items-center">
                 <p>If you liked this post, you can support me by:</p>
                 <div className="flex flex-wrap items-center gap-3">

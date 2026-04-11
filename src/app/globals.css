@@ -194,6 +194,17 @@ main.at-page-end .invisible-at-end {
 
 .notion-full-page {
     padding-bottom: calc(max(8vh, 90px)) !important;
+    transition: translate 0.3s ease-in-out !important;
+}
+
+@media (width >= 1000px) {
+    .notion-full-page {
+        translate: -8.6rem 0 !important;
+    }
+
+    .notion-aside {
+        display: block !important;
+    }
 }
 
 .notion-page-icon-hero {
@@ -203,11 +214,21 @@ main.at-page-end .invisible-at-end {
 .notion-aside {
     padding-left: min(2rem, 2%) !important;
     align-items: flex-start !important;
+    width: fit-content !important;
+    max-width: 15.5rem !important;
 }
 
 .notion-aside-table-of-contents {
     background-color: transparent !important;
     align-items: flex-start !important;
+    max-width: 15rem !important;
+}
+
+.notion-table-of-contents-item {
+    white-space: pre-wrap !important;
+    line-height: 1.3 !important;
+    padding-left: calc(1rem + 8px) !important;
+    text-indent: -1rem !important;
 }
 
 .notion-aside-table-of-contents-header {
@@ -216,7 +237,7 @@ main.at-page-end .invisible-at-end {
 
 a.notion-table-of-contents-active-item {
     color: #3c59a8 !important;
-    font-weight: bold !important;
+    font-weight: 500 !important;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -253,9 +274,16 @@ a.notion-table-of-contents-active-item {
     }
 }
 
-@media (width >= 1300px) and (height >= 300px) {
+@media (width >= 1000px) and (height >= 300px) {
     .notion-page-content-has-aside {
-        width: calc((100vw + var(--notion-max-width)) / 2 - 2rem) !important;
+        width: 61rem !important;
+        flex-direction: row !important;
+        display: flex !important;
+        justify-content: between !important;
+    }
+    .notion-page-content-inner {
+        width: 100% !important;
+        max-width: 100% !important;
     }
 }
 

@@ -20,6 +20,7 @@ import {
     absoluteUrl,
     getLocaleAlternateUrls,
 } from "@/lib/seo";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
 const notoSans = Noto_Sans({
     variable: "--font-noto-sans",
@@ -126,10 +127,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         </div>
                     </div>
                     <footer className="my-6 flex items-center justify-center px-8 pb-[env(safe-area-inset-bottom)]">
-                        <div className="text-[0.65rem] text-muted-foreground w-full flex flex-wrap items-center justify-center gap-3">
+                        <div className="text-[0.65rem] text-muted-foreground w-full flex flex-wrap items-center justify-center gap-3 max-w-244">
                             <span>{"©"} 2026 Chen Xiang</span>
                             <span>|</span>
-                            <span>CXIANG-OS - session active</span>
+                            <a
+                                href="https://github.com/Xiang-CH/cxiang-site"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1"
+                            >
+                                <GitHubLogoIcon width={12} />
+                                Source Code
+                            </a>
                         </div>
                     </footer>
                     <Toaster />
