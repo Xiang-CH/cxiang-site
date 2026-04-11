@@ -119,7 +119,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     </Suspense>
                     <ConsoleArtLogger />
                     <MenuBar />
-                    {/* <div className="h-14" /> */}
+                    <div className="h-12" />
                     <div className="px-4">
                         <div className="min-h-[calc(100vh-var(--spacing)*34)] max-w-244 mx-auto">
                             {children}

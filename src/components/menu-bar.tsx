@@ -17,7 +17,7 @@ export default function MenuBar() {
     return (
         <header
             className={cn(
-                currentPath.startsWith("/blog/") && "fixed",
+                currentPath !== "/" && currentPath !== "/zh-CN" && "fixed",
                 "w-full top-0 px-5 box-border z-1 header transition-[top] backdrop-blur-[3px] bg-background",
                 !isHomeRoute && "shadow-[inset_0_-1px_0_0_var(--accent)]"
             )}

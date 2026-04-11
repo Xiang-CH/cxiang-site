@@ -44,7 +44,7 @@ export default async function Layout({
 
     return (
         <NextIntlClientProvider>
-            <div lang={locale} className={"ring-0 border-0 " + pressStart.variable}>
+            <div lang={locale} className={"-mt-12 ring-0 border-0 " + pressStart.variable}>
                 {children}
             </div>
         </NextIntlClientProvider>
