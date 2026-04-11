@@ -1,0 +1,58 @@
+name: Submit Search URLs
+
+on:
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    submit:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+
+            - name: Collect changed files
+              id: changes
+              shell: bash
+              run: |
+                  if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+                    files="$(git ls-files)"
+                  else
+                    before="${{ github.event.before }}"
+                    after="${{ github.sha }}"
+                    if [[ -z "$before" || "$before" == "0000000000000000000000000000000000000000" ]]; then
+                      files="$(git ls-files)"
+                    else
+                      files="$(git diff --name-only "$before" "$after")"
+                    fi
+                  fi
+
+                  {
+                    echo "changed_files<<EOF"
+                    echo "$files"
+                    echo "EOF"
+                  } >> "$GITHUB_OUTPUT"
+
+            - name: Submit changed URLs to search engines
+              env:
+                  RUN_REASON: ${{ github.event_name }}
+                  FORCE_SITEMAP_CHECK: ${{ github.event_name == 'schedule' && '1' || '0' }}
+                  CHANGED_FILES: ${{ steps.changes.outputs.changed_files }}
+                  SITE_URL: ${{ vars.SITE_URL || 'https://cxiang.site' }}
+                  INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+                  INDEXNOW_KEY_LOCATION: ${{ vars.INDEXNOW_KEY_LOCATION }}
+                  BAIDU_TOKEN: ${{ secrets.BAIDU_TOKEN }}
+                  BAIDU_SITE: ${{ vars.BAIDU_SITE || 'https://cxiang.site' }}
+              run: node scripts/submit-search-indexes.mjs
