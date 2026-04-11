@@ -115,7 +115,7 @@ async function submitBaidu(urls) {
         return;
     }
 
-    const api = `https://data.zz.baidu.com/urls?site=${encodeURIComponent(site)}&token=${encodeURIComponent(token)}`;
+    const api = `http://data.zz.baidu.com/urls?site=${site}&token=${encodeURIComponent(token)}`;
 
     const res = await fetch(api, {
         method: "POST",
