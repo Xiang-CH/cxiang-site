@@ -12,10 +12,19 @@ import "react-notion-x/src/styles.css";
 import { type Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { type PageObjectResponse } from "@notionhq/client";
+import { type ExtendedRecordMap } from "notion-types";
 import SponsorCard from "@/components/sponser-card";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { BlogPosting, WithContext } from "schema-dts";
+import { cache } from "react";
+import {
+    BLOG_DESCRIPTION_FALLBACK,
+    SITE_AUTHOR,
+    SITE_NAME,
+    absoluteUrl,
+    createPageMetadata,
+} from "@/lib/seo";
 
 export async function generateStaticParams() {
     // Prebuild slugs for ISR; if dataset is large, consider reducing this or relying on dynamic rendering.
@@ -27,8 +36,7 @@ type Props = {
     params: Promise<{ slug: string }>;
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
-const AUTHOR = "Chen Xiang";
+const META_DESCRIPTION_MAX_LENGTH = 160;
 
 /** Notion date properties are often YYYY-MM-DD; add UTC so schema gets a timezone. */
 function normalizeNotionDateTime(value: string): string {
@@ -53,67 +61,156 @@ function getPostDates(post: PageObjectResponse) {
     };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const slug = (await params).slug;
-    const post = await getPostBySlug(slug);
+function toMetaDescription(text: string, maxLength = META_DESCRIPTION_MAX_LENGTH): string {
+    const normalized = text.replace(/\s+/g, " ").trim();
+    if (!normalized) return BLOG_DESCRIPTION_FALLBACK;
+    if (normalized.length <= maxLength) return normalized;
 
-    if (!post) {
-        // Let the page render a 404
-        return {
-            title: "Blog Post Not Found",
-            description: "Chen Xiang's personal blog, sharing thoughts and experiences.",
-        };
+    const clipped = normalized.slice(0, maxLength - 3);
+    const safe = clipped.slice(0, clipped.lastIndexOf(" ")).trim();
+    return `${safe || clipped}...`;
+}
+
+type NotionTextLikeBlock = {
+    properties?: {
+        title?: unknown;
+    };
+};
+
+function getBlockValue(
+    box: ExtendedRecordMap["block"][string] | undefined
+): NotionTextLikeBlock | undefined {
+    if (!box) return undefined;
+
+    const candidate = box.value as {
+        value?: NotionTextLikeBlock;
+        properties?: NotionTextLikeBlock["properties"];
+    };
+    if (candidate && "value" in candidate && candidate.value) {
+        return candidate.value;
     }
 
-    // If the incoming slug is historical, redirect in the page render. For metadata, use current slug.
-    const id = post.id;
-    const response = (await getBlogMetadata(id)) as PageObjectResponse;
+    return box.value as NotionTextLikeBlock;
+}
+
+function getTitleTextFromRecordMap(recordMap: ExtendedRecordMap): string {
+    const blocks = Object.values(recordMap.block || {});
+    for (const blockBox of blocks) {
+        const block = getBlockValue(blockBox);
+        const titleDecorations = block?.properties?.title;
+        if (!Array.isArray(titleDecorations) || titleDecorations.length === 0) continue;
+
+        const title = titleDecorations
+            .map((segment) => (Array.isArray(segment) && typeof segment[0] === "string" ? segment[0] : ""))
+            .join("")
+            .trim();
+
+        if (title.length > 0) return title;
+    }
+
+    return "";
+}
+
+function getExcerptFromRecordMap(recordMap: ExtendedRecordMap): string {
+    const snippets: string[] = [];
+    let seenChars = 0;
+
+    for (const blockBox of Object.values(recordMap.block || {})) {
+        const block = getBlockValue(blockBox);
+        const titleDecorations = block?.properties?.title;
+        if (!Array.isArray(titleDecorations) || titleDecorations.length === 0) continue;
+
+        const text = titleDecorations
+            .map((segment) => (Array.isArray(segment) && typeof segment[0] === "string" ? segment[0] : ""))
+            .join("")
+            .replace(/\s+/g, " ")
+            .trim();
+
+        if (!text) continue;
+
+        snippets.push(text);
+        seenChars += text.length + 1;
+        if (seenChars >= META_DESCRIPTION_MAX_LENGTH * 2) break;
+    }
+
+    return toMetaDescription(snippets.join(" "));
+}
+
+const getPostSeoData = cache(async (slug: string) => {
+    const post = await getPostBySlug(slug);
+    if (!post) {
+        return null;
+    }
+
+    const [recordMap, notionPage] = await Promise.all([
+        getBlog(post.id),
+        getBlogMetadata(post.id) as Promise<PageObjectResponse>,
+    ]);
+
+    if (!recordMap) {
+        return null;
+    }
 
     const title =
-        (response?.properties.Title.type === "title" &&
-            response?.properties.Title.title[0]?.plain_text) ||
+        (notionPage?.properties.Title.type === "title" &&
+            notionPage.properties.Title.title[0]?.plain_text) ||
+        post.title ||
+        getTitleTextFromRecordMap(recordMap) ||
         "Blog Post";
-    const abstract =
-        (response?.properties.Abstract.type === "rich_text" &&
-            response?.properties.Abstract.rich_text[0]?.plain_text) ||
-        "Chen Xiang's personal blog, sharing thoughts and experiences.";
-    const coverImage =
-        response?.cover?.type === "external"
-            ? response.cover.external.url
-            : response?.cover?.type === "file"
-              ? response.cover.file.url
-              : "/images/default-og-image.jpg";
 
-    const canonical = `${SITE_URL}/blog/${post.slug}`;
-    const { publishedTime, modifiedTime } = getPostDates(response);
+    const notionAbstract =
+        notionPage?.properties.Abstract.type === "rich_text"
+            ? notionPage.properties.Abstract.rich_text[0]?.plain_text || ""
+            : "";
+
+    const description = notionAbstract
+        ? toMetaDescription(notionAbstract)
+        : getExcerptFromRecordMap(recordMap);
+
+    const coverImage =
+        notionPage?.cover?.type === "external"
+            ? notionPage.cover.external.url
+            : notionPage?.cover?.type === "file"
+              ? notionPage.cover.file.url
+              : "https://cdn.cxiang.site/default-og-image.jpg";
+
+    const { publishedTime, modifiedTime } = getPostDates(notionPage);
 
     return {
+        post,
+        recordMap,
+        notionPage,
         title,
-        description: abstract,
-        authors: [{ name: AUTHOR, url: `${SITE_URL}/en` }],
-        creator: AUTHOR,
-        publisher: AUTHOR,
-        alternates: {
-            canonical,
-        },
-        openGraph: {
-            type: "article",
-            url: canonical,
-            title,
-            description: abstract,
-            siteName: "Chen Xiang",
-            images: [{ url: coverImage }],
-            publishedTime,
-            modifiedTime,
-            authors: [AUTHOR],
-        },
-        twitter: {
-            card: "summary_large_image",
-            title,
-            description: abstract,
-            images: [{ url: coverImage }],
-        },
+        description,
+        coverImage,
+        publishedTime,
+        modifiedTime,
     };
+});
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const slug = (await params).slug;
+    const seoData = await getPostSeoData(slug);
+
+    if (!seoData) {
+        // Let the page render a 404
+        return createPageMetadata({
+            title: "Blog Post Not Found",
+            description: BLOG_DESCRIPTION_FALLBACK,
+            pathname: "/blog",
+        });
+    }
+
+    return createPageMetadata({
+        title: seoData.title,
+        description: seoData.description,
+        pathname: `/blog/${seoData.post.slug}`,
+        openGraphType: "article",
+        images: [seoData.coverImage],
+        publishedTime: seoData.publishedTime,
+        modifiedTime: seoData.modifiedTime,
+        articleAuthors: [SITE_AUTHOR],
+    });
 }
 
 export default async function BlogBySlug({ params }: Props) {
@@ -127,61 +224,38 @@ export default async function BlogBySlug({ params }: Props) {
         redirect(`/blog/${legacySlug}`);
     }
 
-    const resolved = await getPostBySlug(slug);
-
-    if (!resolved) {
+    const seoData = await getPostSeoData(slug);
+    if (!seoData) {
         notFound();
     }
 
     // If the provided slug is a previous slug or otherwise not the current one, redirect to the canonical slug
-    if (resolved.slug !== slug) {
-        redirect(`/blog/${resolved.slug}`);
+    if (seoData.post.slug !== slug) {
+        redirect(`/blog/${seoData.post.slug}`);
     }
 
-    cacheTag(CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs, getBlogTag(resolved.id));
-    const recordMap = await getBlog(resolved.id);
-
-    if (!recordMap) {
-        notFound();
-    }
-
-    const metadata = (await getBlogMetadata(resolved.id)) as PageObjectResponse;
-    const title =
-        (metadata?.properties.Title.type === "title" &&
-            metadata.properties.Title.title[0]?.plain_text) ||
-        resolved.title;
-    const abstract =
-        (metadata?.properties.Abstract.type === "rich_text" &&
-            metadata.properties.Abstract.rich_text[0]?.plain_text) ||
-        "Chen Xiang's personal blog, sharing thoughts and experiences.";
-    const coverImage =
-        metadata?.cover?.type === "external"
-            ? metadata.cover.external.url
-            : metadata?.cover?.type === "file"
-              ? metadata.cover.file.url
-              : "https://cdn.cxiang.site/default-og-image.jpg";
-    const canonical = `${SITE_URL}/blog/${resolved.slug}`;
-    const { publishedTime, modifiedTime } = getPostDates(metadata);
+    cacheTag(CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs, getBlogTag(seoData.post.id));
+    const canonical = absoluteUrl(`/blog/${seoData.post.slug}`);
 
     const blogJsonLd: WithContext<BlogPosting> = {
         "@context": "https://schema.org",
         "@type": "BlogPosting",
-        headline: title,
-        description: abstract,
+        headline: seoData.title,
+        description: seoData.description,
         url: canonical,
         mainEntityOfPage: canonical,
-        image: coverImage,
-        datePublished: publishedTime,
-        dateModified: modifiedTime,
+        image: seoData.coverImage,
+        datePublished: seoData.publishedTime,
+        dateModified: seoData.modifiedTime,
         author: {
             "@type": "Person",
-            name: AUTHOR,
-            url: `${SITE_URL}/en`,
+            name: SITE_AUTHOR,
+            url: absoluteUrl("/"),
         },
         publisher: {
             "@type": "Person",
-            name: AUTHOR,
-            url: `${SITE_URL}/en`,
+            name: SITE_NAME,
+            url: absoluteUrl("/"),
         },
     };
 
@@ -191,7 +265,7 @@ export default async function BlogBySlug({ params }: Props) {
                 entries={[
                     { name: "Home", item: BREADCRUMB_SITE_URL },
                     { name: "Blog", item: `${BREADCRUMB_SITE_URL}/blog` },
-                    { name: title },
+                    { name: seoData.title },
                 ]}
             />
             <script
@@ -202,7 +276,7 @@ export default async function BlogBySlug({ params }: Props) {
             />
             <div className="h-12" />
             <div className="relative left-1/2 w-screen max-w-none -translate-x-1/2">
-                <NotionPageClient recordMap={recordMap} />
+                <NotionPageClient recordMap={seoData.recordMap} />
             </div>
             <div className="w-full flex justify-center">
                 <SponsorCard />

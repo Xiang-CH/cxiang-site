@@ -1,7 +1,21 @@
 import createMiddleware from "next-intl/middleware";
+import { NextRequest, NextResponse } from "next/server";
 import { routing } from "./i18n/routing";
 
-export default createMiddleware(routing);
+const handleI18nRouting = createMiddleware(routing);
+
+export default function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+
+    // Keep a single canonical URL for the default locale home and child paths.
+    if (pathname === "/en" || pathname.startsWith("/en/")) {
+        const url = request.nextUrl.clone();
+        url.pathname = pathname === "/en" ? "/" : pathname.replace(/^\/en/, "");
+        return NextResponse.redirect(url, 301);
+    }
+
+    return handleI18nRouting(request);
+}
 
 export const config = {
     // Skip all paths that should not be internationalized. This example skips the

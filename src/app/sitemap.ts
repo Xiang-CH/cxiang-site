@@ -4,12 +4,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { getAllPostsMeta, getProjects } from "@/lib/notion";
 import { routing } from "@/i18n/routing";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
-
-function absoluteUrl(pathname: string) {
-    return new URL(pathname, SITE_URL).toString();
-}
+import { absoluteUrl, getLocaleAlternateUrls, getLocalePath } from "@/lib/seo";
 
 function toValidDate(value: string | Date | undefined): Date | undefined {
     if (!value) return undefined;
@@ -39,16 +34,7 @@ function getProjectLastModified(project: PageObjectResponse): Date | undefined {
 }
 
 function getLocaleAlternates() {
-    return getLocalizedAlternates("/");
-}
-
-function getLocalizedAlternates(pathname: string) {
-    return Object.fromEntries(
-        routing.locales.map((locale) => [
-            locale,
-            absoluteUrl(`/${locale}${pathname === "/" ? "" : pathname}`),
-        ])
-    ) as Record<string, string>;
+    return getLocaleAlternateUrls();
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -76,7 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const sitemapEntries: MetadataRoute.Sitemap = [
         ...routing.locales.map((locale) => ({
-            url: absoluteUrl(`/${locale}`),
+            url: absoluteUrl(getLocalePath(locale)),
             lastModified: siteLastModified,
             changeFrequency: "monthly" as const,
             priority: 1,

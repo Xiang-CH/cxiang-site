@@ -10,32 +10,16 @@ import { GitHubLogoIcon, GlobeIcon } from "@radix-ui/react-icons";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
+import { createPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-    title: "Projects",
-    description:
-        "Selected software engineering projects built by Chen Xiang across web, product, and creative development.",
-    alternates: {
-        canonical: `${SITE_URL}/project`,
-    },
-    openGraph: {
-        title: "Projects | Chen Xiang",
-        siteName: "Chen Xiang",
-        url: `${SITE_URL}/project`,
-        images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
+    ...createPageMetadata({
+        title: "Projects",
+        socialTitle: "Projects | Chen Xiang",
         description:
-            "Selected software engineering projects built by Chen Xiang across web, product, and creative development.",
-        type: "website",
-    },
-    twitter: {
-        card: "summary_large_image",
-        title: "Projects | Chen Xiang",
-        description:
-            "Selected software engineering projects built by Chen Xiang across web, product, and creative development.",
-        images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
-    },
+            "Selected projects built by Chen Xiang across web, product, and creative development.",
+        pathname: "/project",
+    }),
 };
 
 export default async function Projects() {

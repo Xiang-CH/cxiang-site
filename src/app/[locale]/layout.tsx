@@ -3,9 +3,8 @@ import { notFound } from "next/navigation";
 import { Press_Start_2P } from "next/font/google";
 import { routing } from "@/i18n/routing";
 import { setRequestLocale } from "next-intl/server";
+import { getLocaleAlternateUrls, getLocalePath, absoluteUrl } from "@/lib/seo";
 import "@/app/globals.css";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
 
 export function generateStaticParams() {
     return routing.locales.map((locale) => ({ locale }));
@@ -16,12 +15,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
     return {
         alternates: {
-            canonical: `${SITE_URL}/${locale}`,
-            languages: {
-                en: `${SITE_URL}/en`,
-                "zh-CN": `${SITE_URL}/zh-CN`,
-                "x-default": `${SITE_URL}/${routing.defaultLocale}`,
-            },
+            canonical: absoluteUrl(getLocalePath(locale)),
+            languages: getLocaleAlternateUrls(),
         },
     };
 }
@@ -40,7 +35,7 @@ export default async function Layout({
     params: Promise<{ locale: string }>;
 }) {
     // Ensure that the incoming `locale` is valid
-    const { locale } = (await params) as { locale: "en" | "zh-CN" | "zh-HK" };
+    const { locale } = (await params) as { locale: "en" | "zh-CN" };
     if (!hasLocale(routing.locales, locale)) {
         notFound();
     }

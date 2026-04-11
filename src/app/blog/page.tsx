@@ -7,32 +7,16 @@ import Link from "next/link";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
+import { createPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = {
-    title: "Blog",
-    description:
-        "Technical writing by Chen Xiang on software engineering, projects, and lessons learned.",
-    alternates: {
-        canonical: `${SITE_URL}/blog`,
-    },
-    openGraph: {
-        title: "Blog | Chen Xiang",
-        siteName: "Chen Xiang",
-        url: `${SITE_URL}/blog`,
-        images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
+    ...createPageMetadata({
+        title: "Blog",
+        socialTitle: "Blog | Chen Xiang",
         description:
-            "Technical writing by Chen Xiang on software engineering, projects, and lessons learned.",
-        type: "website",
-    },
-    twitter: {
-        card: "summary_large_image",
-        title: "Blog | Chen Xiang",
-        description:
-            "Technical writing by Chen Xiang on software engineering, projects, and lessons learned.",
-        images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
-    },
+            "Writing by Chen Xiang on software, projects, lessons learned, and more.",
+        pathname: "/blog",
+    }),
 };
 
 function ErrorLoadingBlogs() {

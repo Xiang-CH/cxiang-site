@@ -10,6 +10,16 @@ import { Toaster } from "@/components/ui/sonner";
 import { Person, WebSite, WithContext } from "schema-dts";
 import Viewer from "@/components/viewer";
 import ConsoleArtLogger from "@/components/console-art-logger";
+import {
+    DEFAULT_OG_IMAGE,
+    DEFAULT_SITE_DESCRIPTION,
+    SITE_ALTERNATE_NAMES,
+    SITE_AUTHOR,
+    SITE_NAME,
+    SITE_URL,
+    absoluteUrl,
+    getLocaleAlternateUrls,
+} from "@/lib/seo";
 
 const notoSans = Noto_Sans({
     variable: "--font-noto-sans",
@@ -21,55 +31,51 @@ const jetbrainsMono = JetBrains_Mono({
     subsets: ["latin-ext"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
-
 export const metadata: Metadata = {
     metadataBase: new URL(SITE_URL),
     title: {
-        default: "Chen Xiang 陈想",
+        default: SITE_NAME,
         template: "%s | Chen Xiang",
     },
-    description: "Personal website and portfolio of Chen Xiang, showcasing projects and experience",
-    authors: [{ name: "Chen Xiang", url: SITE_URL }],
-    creator: "Chen Xiang",
-    publisher: "Chen Xiang",
+    applicationName: SITE_NAME,
+    manifest: "/manifest.json",
+    description: DEFAULT_SITE_DESCRIPTION,
+    authors: [{ name: SITE_AUTHOR, url: absoluteUrl("/") }],
+    creator: SITE_AUTHOR,
+    publisher: SITE_AUTHOR,
     alternates: {
-        languages: {
-            en: `${SITE_URL}/en`,
-            "zh-CN": `${SITE_URL}/zh-CN`,
-            "x-default": `${SITE_URL}/en`,
-        },
+        languages: getLocaleAlternateUrls(),
     },
     openGraph: {
-        title: "Chen Xiang 陈想",
-        siteName: "Chen Xiang",
+        title: SITE_NAME,
+        siteName: SITE_NAME,
         url: SITE_URL,
-        images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
-        description: "My personal portfolio website",
+        images: [{ url: DEFAULT_OG_IMAGE }],
+        description: DEFAULT_SITE_DESCRIPTION,
         type: "website",
     },
     twitter: {
         card: "summary_large_image",
-        title: "Chen Xiang 陈想",
-        description: "My personal portfolio website",
-        images: [{ url: "https://cdn.cxiang.site/default-og-image.jpg" }],
+        title: SITE_NAME,
+        description: DEFAULT_SITE_DESCRIPTION,
+        images: [{ url: DEFAULT_OG_IMAGE }],
     },
 };
 
 const websiteJsonLd: WithContext<WebSite> = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Chen Xiang",
-    alternateName: ["CXiang", "陈想"],
+    name: SITE_NAME,
+    alternateName: SITE_ALTERNATE_NAMES,
     url: SITE_URL,
-    description: "Chen Xiang's personal website",
+    description: DEFAULT_SITE_DESCRIPTION,
 };
 
 const personJsonLd: WithContext<Person> = {
     "@context": "https://schema.org",
     "@type": "Person",
-    name: "Chen Xiang",
-    alternateName: ["CXiang", "陈想"],
+    name: SITE_AUTHOR,
+    alternateName: SITE_ALTERNATE_NAMES,
     url: SITE_URL,
     image: "https://avatars.githubusercontent.com/u/63144890?s=96&v=4",
     jobTitle: "Full-Stack Software Developer",
