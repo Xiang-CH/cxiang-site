@@ -13,8 +13,7 @@ export const metadata: Metadata = {
     ...createPageMetadata({
         title: "Blog",
         socialTitle: "Blog | Chen Xiang",
-        description:
-            "Writing by Chen Xiang on software, projects, lessons learned, and more.",
+        description: "Writing by Chen Xiang on software, projects, lessons learned, and more.",
         pathname: "/blog",
     }),
 };

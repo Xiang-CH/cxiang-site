@@ -65,7 +65,10 @@ async function getBlogUrlsFromSitemap() {
         .filter((url) => {
             try {
                 const parsed = new URL(url);
-                return parsed.origin === new URL(SITE_URL).origin && parsed.pathname.startsWith("/blog/");
+                return (
+                    parsed.origin === new URL(SITE_URL).origin &&
+                    parsed.pathname.startsWith("/blog/")
+                );
             } catch {
                 return false;
             }

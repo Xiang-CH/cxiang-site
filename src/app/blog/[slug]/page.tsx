@@ -101,7 +101,9 @@ function getTitleTextFromRecordMap(recordMap: ExtendedRecordMap): string {
         if (!Array.isArray(titleDecorations) || titleDecorations.length === 0) continue;
 
         const title = titleDecorations
-            .map((segment) => (Array.isArray(segment) && typeof segment[0] === "string" ? segment[0] : ""))
+            .map((segment) =>
+                Array.isArray(segment) && typeof segment[0] === "string" ? segment[0] : ""
+            )
             .join("")
             .trim();
 
@@ -121,7 +123,9 @@ function getExcerptFromRecordMap(recordMap: ExtendedRecordMap): string {
         if (!Array.isArray(titleDecorations) || titleDecorations.length === 0) continue;
 
         const text = titleDecorations
-            .map((segment) => (Array.isArray(segment) && typeof segment[0] === "string" ? segment[0] : ""))
+            .map((segment) =>
+                Array.isArray(segment) && typeof segment[0] === "string" ? segment[0] : ""
+            )
             .join("")
             .replace(/\s+/g, " ")
             .trim();
@@ -274,12 +278,8 @@ export default async function BlogBySlug({ params }: Props) {
                     __html: JSON.stringify(blogJsonLd),
                 }}
             />
-            <div className="h-12" />
             <div className="relative left-1/2 w-screen max-w-none -translate-x-1/2">
                 <NotionPageClient recordMap={seoData.recordMap} />
-            </div>
-            <div className="w-full flex justify-center">
-                <SponsorCard />
             </div>
         </div>
     );

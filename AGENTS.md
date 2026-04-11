@@ -22,15 +22,16 @@ Personal portfolio & blog site (cxiang.site) — Next.js 16 + React 19 + TypeScr
 
 ### Required environment variables
 
-| Variable | Purpose |
-|---|---|
-| `NOTION_SECRET` | Notion integration token — app throws on startup without it |
-| `NOTION_PROJECTS_DATA_SOURCE_ID` | Notion data source ID for projects |
-| `NOTION_BLOG_DATA_SOURCE_ID` | Notion data source ID for blog posts |
+| Variable                         | Purpose                                                     |
+| -------------------------------- | ----------------------------------------------------------- |
+| `NOTION_SECRET`                  | Notion integration token — app throws on startup without it |
+| `NOTION_PROJECTS_DATA_SOURCE_ID` | Notion data source ID for projects                          |
+| `NOTION_BLOG_DATA_SOURCE_ID`     | Notion data source ID for blog posts                        |
 
 ### Common commands
 
 See `package.json` scripts. Key ones:
+
 - **Dev server:** `bun run dev` (runs on port 3000, redirects `/` to `/en`)
 - **Lint:** `bun run lint` (ESLint)
 - **Format check:** `bun run format:check` (Prettier)
