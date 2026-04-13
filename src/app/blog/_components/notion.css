@@ -74,6 +74,11 @@ a.notion-table-of-contents-active-item {
         color: #88c8f9 !important;
     }
 
+    .notion-link{
+        color: #b7d6f4 !important;
+        text-decoration: underline !important;
+    }
+
     td {
         border: 1px solid var(--accent) !important;
     }
@@ -104,6 +109,7 @@ a.notion-table-of-contents-active-item {
         color: var(--color-muted-foreground) !important;
     }
 
+    .notion-preview-card-logo,
     .notion-external-image{
         filter: invert(0.9) !important;
     }
