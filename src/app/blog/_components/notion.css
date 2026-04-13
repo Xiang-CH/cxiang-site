@@ -70,11 +70,11 @@ a.notion-table-of-contents-active-item {
         color: #eb5757ea !important;
     }
 
-    .notion-blue{
+    .notion-blue {
         color: #88c8f9 !important;
     }
 
-    .notion-link{
+    .notion-link {
         color: #b7d6f4 !important;
         text-decoration: underline !important;
     }
@@ -94,23 +94,23 @@ a.notion-table-of-contents-active-item {
         box-shadow: none !important;
     }
 
-    .notion-external-title, 
-    .notion-link-mention-title, 
+    .notion-external-title,
+    .notion-link-mention-title,
     .notion-link-mention-preview-title,
-    .notion-preview-card-title, 
-    .notion-external-subtitle-item{
+    .notion-preview-card-title,
+    .notion-external-subtitle-item {
         color: var(--foreground) !important;
     }
 
-    .notion-external-block-desc, 
-    .notion-link-mention-provider, 
-    .notion-link-mention-preview-description, 
-    .notion-preview-card-domain{
+    .notion-external-block-desc,
+    .notion-link-mention-provider,
+    .notion-link-mention-preview-description,
+    .notion-preview-card-domain {
         color: var(--color-muted-foreground) !important;
     }
 
     .notion-preview-card-logo,
-    .notion-external-image{
+    .notion-external-image {
         filter: invert(0.9) !important;
     }
 }

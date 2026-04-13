@@ -101,7 +101,7 @@ export default async function Blogs() {
                                 </p>
                             </div>
                             {blog.cover && (
-                                <div className="ml-2.5 min-w-40 max-w-40">
+                                <div className="ml-2.5 min-w-30 max-w-30 sm:min-w-40 sm:max-w-40">
                                     <Image
                                         src={
                                             blog.cover?.type === "external"
@@ -112,7 +112,7 @@ export default async function Blogs() {
                                         width={160}
                                         height={90}
                                         quality={40}
-                                        className="rounded-md w-full"
+                                        className="rounded-md w-full h-auto"
                                         priority
                                     />
                                 </div>
