@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useEffect } from "react";
 import { type ExtendedRecordMap } from "notion-types";
 import SponsorCard from "@/components/sponser-card";
+import "./notion.css";
 
 // Dynamically import components used by NotionRenderer, ensuring they are client-side
 const Code = dynamic(() => import("react-notion-x/build/third-party/code").then((m) => m.Code));
