@@ -70,6 +70,10 @@ a.notion-table-of-contents-active-item {
         color: #eb5757ea !important;
     }
 
+    .notion-blue{
+        color: #88c8f9 !important;
+    }
+
     td {
         border: 1px solid var(--accent) !important;
     }
@@ -83,6 +87,25 @@ a.notion-table-of-contents-active-item {
         background-color: var(--muted) !important;
         color: var(--foreground) !important;
         box-shadow: none !important;
+    }
+
+    .notion-external-title, 
+    .notion-link-mention-title, 
+    .notion-link-mention-preview-title,
+    .notion-preview-card-title, 
+    .notion-external-subtitle-item{
+        color: var(--foreground) !important;
+    }
+
+    .notion-external-block-desc, 
+    .notion-link-mention-provider, 
+    .notion-link-mention-preview-description, 
+    .notion-preview-card-domain{
+        color: var(--color-muted-foreground) !important;
+    }
+
+    .notion-external-image{
+        filter: invert(0.9) !important;
     }
 }
 
