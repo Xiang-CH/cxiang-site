@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
-import { createPageMetadata, getLocalePath, SITE_NAME } from "@/lib/seo";
+import { createPageMetadata, getLocalePath } from "@/lib/seo";
 import TerminalHomeClient from "./_components/terminal-home-client";
 import type { TerminalContent } from "./_components/terminal-home-client";
 

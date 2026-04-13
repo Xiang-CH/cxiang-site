@@ -13,7 +13,6 @@ import { type Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { type PageObjectResponse } from "@notionhq/client";
 import { type ExtendedRecordMap } from "notion-types";
-import SponsorCard from "@/components/sponser-card";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { BlogPosting, WithContext } from "schema-dts";
