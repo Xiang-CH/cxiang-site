@@ -79,6 +79,10 @@ a.notion-table-of-contents-active-item {
         text-decoration: underline !important;
     }
 
+    .notion-callout {
+        background-color: var(--card) !important;
+    }
+
     td {
         border: 1px solid var(--accent) !important;
     }
