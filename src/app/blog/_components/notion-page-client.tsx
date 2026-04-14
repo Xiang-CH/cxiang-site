@@ -1,16 +1,25 @@
 "use client";
 
-import { useTheme } from "next-themes";
 import { NotionRenderer } from "react-notion-x";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useEffect } from "react";
-import { type ExtendedRecordMap } from "notion-types";
+import { type CodeBlock, type ExtendedRecordMap } from "notion-types";
 import SponsorCard from "@/components/sponser-card";
 import "./notion.css";
 
 // Dynamically import components used by NotionRenderer, ensuring they are client-side
-const Code = dynamic(() => import("react-notion-x/build/third-party/code").then((m) => m.Code));
+const Code = dynamic(() => import("react-notion-x-code-block").then((m) => m.Code));
+function CustomCode({ block }: { block: CodeBlock }) {
+    return <Code 
+            block={block}
+            themes={{
+                light: "material-theme-lighter", // "catppuccin-latte",
+                dark: "material-theme-darker",
+            }}
+            showLangLabel={false}
+    />;
+}
+
 const Collection = dynamic(() =>
     import("react-notion-x/build/third-party/collection").then((m) => m.Collection)
 );
@@ -27,51 +36,17 @@ interface NotionPageClientProps {
 
 export default function NotionPageClient({
     recordMap,
-    fullPage = true, // Default to true as it's common for blog posts
+    fullPage = true,
 }: NotionPageClientProps) {
-    const { resolvedTheme } = useTheme();
-
-    useEffect(() => {
-        // if (!isMounted) return;
-        const lightThemeLink = document.getElementById("light-theme-link");
-        const darkThemeLink = document.getElementById("dark-theme-link");
-
-        if (resolvedTheme == "dark") {
-            if (lightThemeLink) {
-                lightThemeLink.remove();
-            }
-
-            if (!darkThemeLink) {
-                const link = document.createElement("link");
-                link.id = "dark-theme-link";
-                link.rel = "stylesheet";
-                link.href = "/styles/prism-tomorrow.min.css";
-                document.head.appendChild(link);
-            }
-        } else {
-            if (darkThemeLink) {
-                darkThemeLink.remove();
-            }
-
-            if (!lightThemeLink) {
-                const link = document.createElement("link");
-                link.id = "light-theme-link";
-                link.rel = "stylesheet";
-                link.href = "/styles/prism.min.css";
-                document.head.appendChild(link);
-            }
-        }
-    }, [resolvedTheme]);
 
     return (
         <NotionRenderer
             disableHeader
             recordMap={recordMap}
             fullPage={fullPage}
-            // darkMode={isMounted && resolvedTheme === "dark"}
             showTableOfContents
             components={{
-                Code,
+                Code: CustomCode,
                 Collection,
                 Equation,
                 Modal,
