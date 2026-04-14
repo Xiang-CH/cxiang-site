@@ -10,14 +10,16 @@ import "./notion.css";
 // Dynamically import components used by NotionRenderer, ensuring they are client-side
 const Code = dynamic(() => import("react-notion-x-code-block").then((m) => m.Code));
 function CustomCode({ block }: { block: CodeBlock }) {
-    return <Code 
+    return (
+        <Code
             block={block}
             themes={{
                 light: "material-theme-lighter", // "catppuccin-latte",
                 dark: "material-theme-darker",
             }}
             showLangLabel={false}
-    />;
+        />
+    );
 }
 
 const Collection = dynamic(() =>
@@ -34,11 +36,7 @@ interface NotionPageClientProps {
     fullPage?: boolean;
 }
 
-export default function NotionPageClient({
-    recordMap,
-    fullPage = true,
-}: NotionPageClientProps) {
-
+export default function NotionPageClient({ recordMap, fullPage = true }: NotionPageClientProps) {
     return (
         <NotionRenderer
             disableHeader
