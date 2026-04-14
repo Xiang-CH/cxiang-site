@@ -3,12 +3,8 @@ import { Link } from "@/i18n/navigation";
 import { locales } from "@/i18n/routing";
 import { skills } from "./skills";
 import { TypewriterText } from "./typewriter-text-client";
-import {
-    GitHubLogoIcon,
-    LinkedInLogoIcon,
-    EnvelopeClosedIcon,
-    FileTextIcon,
-} from "@radix-ui/react-icons";
+import { GitHubLogoIcon, LinkedInLogoIcon, FileTextIcon } from "@radix-ui/react-icons";
+import XTwitterIcon from "@/components/icons/twitter-icon";
 import Shuffle from "@/components/shuffle";
 
 export type TerminalContent = {
@@ -24,7 +20,7 @@ export type TerminalContent = {
     links: {
         github: string;
         linkedin: string;
-        email: string;
+        x: string;
         resume: string;
     };
     about: string;
@@ -153,9 +149,9 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                                 icon: <LinkedInLogoIcon width={13} />,
                             },
                             {
-                                label: content.links.email,
-                                href: "mailto:xiiang.ch@gmail.com",
-                                icon: <EnvelopeClosedIcon width={13} />,
+                                label: content.links.x,
+                                href: "https://x.com/cxiiang",
+                                icon: <XTwitterIcon size={13} />,
                             },
                             {
                                 label: content.links.resume,
@@ -283,6 +279,11 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                                 key: "linkedin",
                                 value: "Xiang Chen",
                                 href: "https://www.linkedin.com/in/xiang-chen-62389526a/",
+                            },
+                            {
+                                key: "twitter",
+                                value: "@cxiiang",
+                                href: "https://x.com/cxiiang",
                             },
                             {
                                 key: "instagram",
