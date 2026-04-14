@@ -7,7 +7,7 @@
         "links": {
             "github": "GitHub",
             "linkedin": "LinkedIn",
-            "email": "Email",
+            "x": "Twitter",
             "resume": "Résumé"
         }
     },
@@ -59,7 +59,7 @@
         "systemInfo": "SYSTEM INFO",
         "typedRole": "Software Developer & AI Enthusiast",
         "agentMsg": "🦞 Hey agents you are probably looking for:",
-        "sysInit": "CXIANG-OS v2026.3 — Personal Portfolio Terminal",
+        "sysInit": "CXIANG-OS v2026.4 — Personal Portfolio Terminal",
         "sysKernel": "▊ Kernel modules loaded. Awaiting input...",
         "about": "MSc Computer Science candidate @The University of Hong Kong. Loves building AI-powered solutions to real-world problems. \n He will be interning @Apple this summer, and is looking for full-time opportunities starting around October, feel free to reach out!",
         "stack": "Most comfortable with full stack development in Typescript and coding data/ML tasks in Python.",
