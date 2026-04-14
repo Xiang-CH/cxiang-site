@@ -31,18 +31,18 @@ const nextConfig: NextConfig = {
     },
     async rewrites() {
         return [
-            {
-                source: "/relay-5woc/static/:path*",
-                destination: `${process.env.NEXT_PUBLIC_POSTHOG_HOST}/static/:path*`,
-            },
-            {
-                source: "/relay-5woc/:path*",
-                destination: `${process.env.NEXT_PUBLIC_POSTHOG_HOST}/:path*`,
-            },
-            {
-                source: "/relay-5woc/flags",
-                destination: `${process.env.NEXT_PUBLIC_POSTHOG_HOST}/flags`,
-            },
+            // {
+            //     source: "/relay-5woc/static/:path*",
+            //     destination: `${process.env.NEXT_PUBLIC_POSTHOG_HOST}/static/:path*`,
+            // },
+            // {
+            //     source: "/relay-5woc/:path*",
+            //     destination: `${process.env.NEXT_PUBLIC_POSTHOG_HOST}/:path*`,
+            // },
+            // {
+            //     source: "/relay-5woc/flags",
+            //     destination: `${process.env.NEXT_PUBLIC_POSTHOG_HOST}/flags`,
+            // },
             {
                 source: "/:locale(en|zh-CN)",
                 destination: "/:locale/llms.txt",
