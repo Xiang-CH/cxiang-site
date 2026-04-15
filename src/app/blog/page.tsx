@@ -69,7 +69,7 @@ export default async function Blogs() {
             <BreadcrumbJsonLd
                 entries={[{ name: "Home", item: BREADCRUMB_SITE_URL }, { name: "Blog" }]}
             />
-            <main className="w-full max-w-xl h-full flex flex-col justify-start items-start mx-auto mt-4 sm:mt-6 gap-8">
+            <main className="w-full max-w-2xl h-full flex flex-col justify-start items-start mx-auto pt-4 sm:pt-6 gap-9 px-1">
                 <h1 className="sr-only">Blog</h1>
                 {response.results.map((item) => {
                     if (item.object !== "page" || !("properties" in item)) return;
@@ -84,39 +84,41 @@ export default async function Blogs() {
                     return (
                         <Link
                             href={`/blog/${slug}`}
-                            className="w-full flex justify-between items-center group"
+                            className="w-full items-center group"
                             key={blog.id}
                         >
-                            <div className="flex flex-col gap-1 min-h-28 h-full justify-center">
-                                <h2 className="text-xl font-semibold group-hover:underline text-wrap">
-                                    {title}
-                                </h2>
-                                <p className="text-sm">
-                                    {blog.properties["Publish Date"]?.type === "date" &&
-                                        blog.properties["Publish Date"]?.date?.start}
-                                </p>
-                                <p className="text-md">
-                                    {blog.properties.Abstract?.type === "rich_text" &&
-                                        blog.properties.Abstract.rich_text[0]?.plain_text}
-                                </p>
-                            </div>
-                            {blog.cover && (
-                                <div className="ml-2.5 min-w-30 max-w-30 sm:min-w-40 sm:max-w-40">
-                                    <Image
-                                        src={
-                                            blog.cover?.type === "external"
-                                                ? blog.cover.external.url
-                                                : blog.cover.file.url
-                                        }
-                                        alt={`${title} cover image`}
-                                        width={160}
-                                        height={90}
-                                        quality={40}
-                                        className="rounded-md w-full h-auto"
-                                        priority
-                                    />
+                            <div className="flex justify-between items-center gap-4">
+                                <div className="flex flex-col gap-1 h-full justify-center mt-1">
+                                    <h2 className="text-lg sm:text-xl font-[550] group-hover:underline text-wrap leading-[1.3]">
+                                        {title}
+                                    </h2>
+                                    <p className="text-sm text-muted-foreground">
+                                        {blog.properties["Publish Date"]?.type === "date" &&
+                                            blog.properties["Publish Date"]?.date?.start}
+                                    </p>
+                                    <p className="text-md font-[350]">
+                                        {blog.properties.Abstract?.type === "rich_text" &&
+                                            blog.properties.Abstract.rich_text[0]?.plain_text}
+                                    </p>
                                 </div>
-                            )}
+                                {blog.cover && (
+                                    <div className="min-w-28 max-w-28 sm:min-w-40 sm:max-w-40 mt-2">
+                                        <Image
+                                            src={
+                                                blog.cover?.type === "external"
+                                                    ? blog.cover.external.url
+                                                    : blog.cover.file.url
+                                            }
+                                            alt={`${title} cover image`}
+                                            width={160}
+                                            height={90}
+                                            quality={40}
+                                            className="rounded-md w-full h-auto"
+                                            priority
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </Link>
                     );
                 })}

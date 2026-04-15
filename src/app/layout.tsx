@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Noto_Sans, JetBrains_Mono } from "next/font/google";
+import { Noto_Sans, JetBrains_Mono, Google_Sans, Open_Sans } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import { Suspense } from "react";
@@ -22,7 +22,7 @@ import {
 } from "@/lib/seo";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 
-const notoSans = Noto_Sans({
+const notoSans = Open_Sans({
     variable: "--font-noto-sans",
     subsets: ["latin-ext"],
 });
@@ -107,7 +107,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 />
             </head>
             <body
-                className={`${notoSans.variable} ${jetbrainsMono.variable} antialiased min-h-full pb-[env(safe-area-inset-bottom)] flex flex-col`}
+                className={`${notoSans.variable} ${jetbrainsMono.variable} font-sans antialiased min-h-full pb-[env(safe-area-inset-bottom)] flex flex-col`}
             >
                 <ThemeProvider
                     attribute="class"
@@ -121,7 +121,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     <ConsoleArtLogger />
                     <MenuBar />
                     <div className="px-4">
-                        <div className="min-h-[calc(100vh-var(--spacing)*34)] max-w-244 mx-auto">
+                        <div className="min-h-[calc(100vh-var(--spacing)*28)] max-w-244 mx-auto">
                             {children}
                         </div>
                     </div>

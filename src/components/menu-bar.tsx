@@ -42,7 +42,7 @@ export default function MenuBar() {
                                     "flex items-center gap-1.5 text-card-foreground overflow-x-hidden",
                                     (currentPath.startsWith(item.href) && item.href !== "/") ||
                                         (item.href === "/" && isHomeRoute)
-                                        ? "font-normal text-primary"
+                                        ? "font-[450] text-primary"
                                         : "text-muted-foreground hover:text-primary transition-colors"
                                 )}
                             >

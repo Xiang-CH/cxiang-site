@@ -106,7 +106,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                             /llms.txt
                         </Link>
                     </p>
-                    <p className="text-[0.7rem] text-(--th-dim) mb-4">{content.sysKernel}</p>
+                    {/* <p className="text-[0.7rem] text-(--th-dim) mb-4">{content.sysKernel}</p> */}
                     <Cmd>$ whoami</Cmd>
                     <div className="pl-4 border-l-2 border-l-[rgba(200,164,90,0.22)] pt-3">
                         <Shuffle
@@ -164,7 +164,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                                 href={l.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="th-link flex items-center gap-1"
+                                className="th-link flex items-center gap-1 text-sm sm:text-base"
                             >
                                 {l.icon} <span>{l.label}</span>
                             </a>
@@ -200,7 +200,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                                 <p className="text-[0.65rem] text-(--th-accent) mb-[0.15rem]">
                                     commit {e.commit}
                                 </p>
-                                <p className="text-[clamp(0.85rem,1.8vw,0.97rem)] font-bold text-(--th-bright) ">
+                                <p className="text-[clamp(0.85rem,1.8vw,0.97rem)] font-semibold text-(--th-bright) ">
                                     {e.role}
                                 </p>
                                 <a
@@ -262,10 +262,6 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                         <p className="text-(--th-dim)">{"{"}</p>
                         {[
                             {
-                                key: "_comment",
-                                value: content.contactIntro,
-                            },
-                            {
                                 key: "email",
                                 value: "xiiang.ch@gmail.com",
                                 href: "mailto:xiiang.ch@gmail.com",
@@ -313,7 +309,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                         ))}
                         <p className="text-(--th-dim)">{"}"}</p>
                         <p className="text-(--th-dim)">{"~"}</p>
-                        <p className="text-(--th-dim)">{`"contact.json" 7L, 174B`}</p>
+                        <p className="text-(--th-dim)">{`"contact.json" 7L, 139B`}</p>
                     </div>
                 </Box>
             </div>

@@ -107,109 +107,15 @@ export default async function Projects() {
                             >
                                 {redirect ? (
                                     <Link href={url} target="_blank" className="group">
-                                        {project.cover && (
-                                            <div className="overflow-hidden rounded-t-xl bg-gray-100 dark:bg-neutral-900">
-                                                <Image
-                                                    src={
-                                                        project.cover?.type === "external"
-                                                            ? project.cover.external.url
-                                                            : project.cover.file.url
-                                                    }
-                                                    alt={`${title} project cover image`}
-                                                    width={
-                                                        project.properties["Cover Width"].type ===
-                                                            "rich_text" &&
-                                                        project.properties["Cover Width"]
-                                                            .rich_text[0]?.plain_text
-                                                            ? parseInt(
-                                                                  project.properties["Cover Width"]
-                                                                      .rich_text[0]?.plain_text
-                                                              )
-                                                            : 307
-                                                    }
-                                                    height={
-                                                        project.properties["Cover Height"].type ===
-                                                            "rich_text" &&
-                                                        project.properties["Cover Height"]
-                                                            .rich_text[0]?.plain_text
-                                                            ? parseInt(
-                                                                  project.properties["Cover Height"]
-                                                                      .rich_text[0]?.plain_text
-                                                              )
-                                                            : 250
-                                                    }
-                                                    quality={40}
-                                                    className="w-full h-auto transition-transform duration-200 group-hover:scale-[1.01]"
-                                                    priority
-                                                />
-                                            </div>
-                                        )}
-                                        <div className="flex flex-col gap-1 px-4 pt-2 border-t">
-                                            <h2 className="text-lg sm:text-xl font-semibold group-hover:underline break-words">
-                                                {title}
-                                            </h2>
-                                            <p className="text-sm">
-                                                {project.properties.Abstract?.type ===
-                                                    "rich_text" &&
-                                                    project.properties.Abstract.rich_text[0]
-                                                        ?.plain_text}
-                                            </p>
-                                        </div>
+                                        <ProjectContent project={project} />
                                     </Link>
                                 ) : (
                                     <OpenViewerLink viewer={url || ""} className="group">
-                                        {project.cover && (
-                                            <div className="overflow-hidden rounded-t-xl bg-gray-100 dark:bg-neutral-900">
-                                                <Image
-                                                    src={
-                                                        project.cover?.type === "external"
-                                                            ? project.cover.external.url
-                                                            : project.cover.file.url
-                                                    }
-                                                    alt={`${title} project cover image`}
-                                                    width={
-                                                        project.properties["Cover Width"].type ===
-                                                            "rich_text" &&
-                                                        project.properties["Cover Width"]
-                                                            .rich_text[0]?.plain_text
-                                                            ? parseInt(
-                                                                  project.properties["Cover Width"]
-                                                                      .rich_text[0]?.plain_text
-                                                              )
-                                                            : 307
-                                                    }
-                                                    height={
-                                                        project.properties["Cover Height"].type ===
-                                                            "rich_text" &&
-                                                        project.properties["Cover Height"]
-                                                            .rich_text[0]?.plain_text
-                                                            ? parseInt(
-                                                                  project.properties["Cover Height"]
-                                                                      .rich_text[0]?.plain_text
-                                                              )
-                                                            : 250
-                                                    }
-                                                    quality={50}
-                                                    className="w-full h-auto transition-transform duration-200 group-hover:scale-[1.01]"
-                                                    priority
-                                                />
-                                            </div>
-                                        )}
-                                        <div className="flex flex-col gap-1 px-4 pt-2 border-t">
-                                            <h2 className="text-lg sm:text-xl font-semibold group-hover:underline break-words">
-                                                {title}
-                                            </h2>
-                                            <p className="text-sm">
-                                                {project.properties.Abstract?.type ===
-                                                    "rich_text" &&
-                                                    project.properties.Abstract.rich_text[0]
-                                                        ?.plain_text}
-                                            </p>
-                                        </div>
+                                        <ProjectContent project={project} />
                                     </OpenViewerLink>
                                 )}
 
-                                <div className="flex px-3.5 gap-1">
+                                <div className="flex px-3.5 gap-1 mt-1">
                                     {project.properties.Repo.type === "url" &&
                                         project.properties.Repo.url && (
                                             <Badge className="py-0.5 px-1.5 rounded-xl">
@@ -246,3 +152,55 @@ export default async function Projects() {
         </>
     );
 }
+
+const ProjectContent = ({ project }: { project: PageObjectResponse }) => {
+    const title =
+        project.properties.Title?.type === "title"
+            ? (project.properties.Title.title[0]?.plain_text ?? "Untitled")
+            : "Untitled";
+
+    return (
+        <>
+            {project.cover && (
+                <div className="overflow-hidden rounded-t-xl bg-gray-100 dark:bg-neutral-900">
+                    <Image
+                        src={
+                            project.cover?.type === "external"
+                                ? project.cover.external.url
+                                : project.cover.file.url
+                        }
+                        alt={`${title} project cover image`}
+                        width={
+                            project.properties["Cover Width"].type === "rich_text" &&
+                            project.properties["Cover Width"].rich_text[0]?.plain_text
+                                ? parseInt(
+                                      project.properties["Cover Width"].rich_text[0]?.plain_text
+                                  )
+                                : 307
+                        }
+                        height={
+                            project.properties["Cover Height"].type === "rich_text" &&
+                            project.properties["Cover Height"].rich_text[0]?.plain_text
+                                ? parseInt(
+                                      project.properties["Cover Height"].rich_text[0]?.plain_text
+                                  )
+                                : 250
+                        }
+                        quality={40}
+                        className="w-full h-auto transition-transform duration-200 group-hover:scale-[1.01]"
+                        priority
+                    />
+                </div>
+            )}
+            <div className="flex flex-col gap-1 px-4 pt-2 border-t">
+                <h2 className="text-lg sm:text-lg font-[550] group-hover:underline break-words">
+                    {title}
+                </h2>
+                <p className="text-sm font-[350]">
+                    {project.properties.Abstract?.type === "rich_text" &&
+                        project.properties.Abstract.rich_text[0]?.plain_text}
+                </p>
+            </div>
+        </>
+    );
+};
