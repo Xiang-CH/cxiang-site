@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         body = {};
     }
 
-    if (!body) {
+    if (!body.slug && !body.id) {
         const tags = buildTags();
         for (const tag of tags) {
             revalidateTag(tag, { expire: 0 });
