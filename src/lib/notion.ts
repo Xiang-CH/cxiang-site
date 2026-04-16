@@ -157,8 +157,9 @@ function readPreviousSlugsProperty(prop: any): string[] | undefined {
  *   2) slugifyTitle(Title)
  * - Duplicate handling: suffix later duplicates with "-{shortId}" (first 8 chars of page id without dashes)
  */
-export async function getAllPostsMeta(): Promise<PostMeta[]> {
-    const res = await getBlogs();
+export async function getAllPostsMeta(
+    res: Awaited<ReturnType<typeof getBlogs>> = await getBlogs()
+): Promise<PostMeta[]> {
     const metas: PostMeta[] = [];
     const usedSlugs = new Set<string>();
 

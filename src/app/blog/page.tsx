@@ -41,7 +41,7 @@ export default async function Blogs() {
     let metas: PostMeta[] = [];
     try {
         response = await getBlogs();
-        metas = await getAllPostsMeta();
+        metas = await getAllPostsMeta(response);
     } catch (error) {
         console.error("Error fetching blogs:", error);
         return <ErrorLoadingBlogs />;
@@ -114,7 +114,6 @@ export default async function Blogs() {
                                             height={90}
                                             quality={40}
                                             className="rounded-md w-full h-auto"
-                                            priority
                                         />
                                     </div>
                                 )}

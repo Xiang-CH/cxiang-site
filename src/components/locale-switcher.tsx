@@ -30,7 +30,6 @@ export function LocaleSwitcher({
                     width={15}
                     height={15}
                     className="inline-block mr-2 dark:invert"
-                    priority
                     quality={40}
                 />
                 <SelectValue placeholder="Select a language" />
