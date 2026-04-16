@@ -147,7 +147,10 @@ const getPostSeoData = async (slug: string) => {
         return null;
     }
 
-    cacheTag(getBlogTag(slug));
+    cacheTag(getBlogTag(post.slug));
+    if (post.slug !== slug) {
+        cacheTag(getBlogTag(slug));
+    }
 
     const [recordMap, notionPage] = await Promise.all([
         getBlog(post.id),
