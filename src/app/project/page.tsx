@@ -188,7 +188,6 @@ const ProjectContent = ({ project }: { project: PageObjectResponse }) => {
                         }
                         quality={40}
                         className="w-full h-auto transition-transform duration-200 group-hover:scale-[1.01]"
-                        priority
                     />
                 </div>
             )}

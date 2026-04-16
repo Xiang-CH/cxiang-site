@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Noto_Sans, JetBrains_Mono, Google_Sans, Open_Sans } from "next/font/google";
+import { JetBrains_Mono, Open_Sans } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
-import { Suspense } from "react";
 import "@/app/globals.css";
 import MenuBar from "@/components/menu-bar";
-import { Toaster } from "@/components/ui/sonner";
 import { Person, WebSite, WithContext } from "schema-dts";
-import Viewer from "@/components/viewer";
 import ConsoleArtLogger from "@/components/console-art-logger";
 import {
     DEFAULT_OG_IMAGE,
@@ -115,9 +112,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <Suspense fallback={<></>}>
-                        <Viewer />
-                    </Suspense>
                     <ConsoleArtLogger />
                     <MenuBar />
                     <div className="px-4">
@@ -140,7 +134,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                             </a>
                         </div>
                     </footer>
-                    <Toaster />
                     <SpeedInsights />
                     <Analytics />
                 </ThemeProvider>
