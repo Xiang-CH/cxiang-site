@@ -11,7 +11,7 @@ function getSecret(request: NextRequest): string | null {
         return authorization.slice("Bearer ".length);
     }
 
-    return request.nextUrl.searchParams.get("secret");
+    return null;
 }
 
 export function isAuthorized(req: NextRequest) {
