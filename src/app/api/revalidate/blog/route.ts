@@ -46,20 +46,20 @@ export async function POST(request: NextRequest) {
     const requestedSlug = typeof body.slug === "string" ? body.slug.trim() : "";
     const requestedId = typeof body.id === "string" ? body.id.trim() : "";
     const resolvedSlug = requestedSlug || (requestedId ? await getSlugById(requestedId) : null);
-    
+
     if (!resolvedSlug) {
-        return Response.json({ revalidated: false, message: "Invalid slug or ID" }, { status: 400 });
+        return Response.json(
+            { revalidated: false, message: "Invalid slug or ID" },
+            { status: 400 }
+        );
     }
 
-    const tags = getBlogTag(resolvedSlug);
-
-    for (const tag of tags) {
-        revalidateTag(tag, { expire: 0 });
-    }
+    const tag = getBlogTag(resolvedSlug);
+    revalidateTag(tag, { expire: 0 });
 
     return Response.json({
         revalidated: true,
-        tags,
+        tag,
         slug: resolvedSlug,
     });
 }
