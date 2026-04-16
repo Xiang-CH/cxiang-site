@@ -16,7 +16,6 @@ import { type ExtendedRecordMap } from "notion-types";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { BlogPosting, WithContext } from "schema-dts";
-import { cache } from "react";
 import {
     BLOG_DESCRIPTION_FALLBACK,
     SITE_AUTHOR,
@@ -139,11 +138,16 @@ function getExcerptFromRecordMap(recordMap: ExtendedRecordMap): string {
     return toMetaDescription(snippets.join(" "));
 }
 
-const getPostSeoData = cache(async (slug: string) => {
+const getPostSeoData = async (slug: string) => {
+    "use cache";
+    cacheLife("max");
+
     const post = await getPostBySlug(slug);
     if (!post) {
         return null;
     }
+
+    cacheTag(getBlogTag(slug));
 
     const [recordMap, notionPage] = await Promise.all([
         getBlog(post.id),
@@ -189,7 +193,7 @@ const getPostSeoData = cache(async (slug: string) => {
         publishedTime,
         modifiedTime,
     };
-});
+};
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const slug = (await params).slug;
@@ -218,7 +222,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogBySlug({ params }: Props) {
     "use cache";
-    cacheLife("days");
+    cacheLife("max");
     const slug = (await params).slug;
 
     // Legacy: if the path segment is actually an id, redirect to its canonical slug
@@ -237,7 +241,7 @@ export default async function BlogBySlug({ params }: Props) {
         redirect(`/blog/${seoData.post.slug}`);
     }
 
-    cacheTag(CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs, getBlogTag(seoData.post.id));
+    cacheTag(getBlogTag(slug));
     const canonical = absoluteUrl(`/blog/${seoData.post.slug}`);
 
     const blogJsonLd: WithContext<BlogPosting> = {

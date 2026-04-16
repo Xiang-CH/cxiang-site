@@ -34,7 +34,7 @@ function ErrorLoadingBlogs() {
 
 export default async function Blogs() {
     "use cache";
-    cacheLife("days");
+    cacheLife("max");
     cacheTag(CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs);
 
     let response;
