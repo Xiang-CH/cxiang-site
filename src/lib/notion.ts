@@ -158,12 +158,13 @@ function readPreviousSlugsProperty(prop: any): string[] | undefined {
  * - Duplicate handling: suffix later duplicates with "-{shortId}" (first 8 chars of page id without dashes)
  */
 export async function getAllPostsMeta(
-    res: Awaited<ReturnType<typeof getBlogs>> = await getBlogs()
+    res?: Awaited<ReturnType<typeof getBlogs>>
 ): Promise<PostMeta[]> {
+    const blogs = res ?? (await getBlogs());
     const metas: PostMeta[] = [];
     const usedSlugs = new Set<string>();
 
-    for (const item of res.results) {
+    for (const item of blogs.results) {
         if (!item || item.object !== "page" || !("properties" in item)) continue;
         const page: any = item;
 
