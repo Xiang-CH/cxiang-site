@@ -15,22 +15,6 @@ function buildTags() {
     return [...tags];
 }
 
-export async function GET(request: NextRequest) {
-    if (!isAuthorized(request)) {
-        return Response.json({ revalidated: false, message: "Unauthorized" }, { status: 401 });
-    }
-
-    const tags = buildTags();
-    for (const tag of tags) {
-        revalidateTag(tag, { expire: 0 });
-    }
-
-    return Response.json({
-        revalidated: true,
-        tags,
-    });
-}
-
 export async function POST(request: NextRequest) {
     if (!isAuthorized(request)) {
         return Response.json({ revalidated: false, message: "Unauthorized" }, { status: 401 });
@@ -41,6 +25,17 @@ export async function POST(request: NextRequest) {
         body = (await request.json()) as RevalidateBody;
     } catch {
         body = {};
+    }
+
+    if (!body) {
+        const tags = buildTags();
+        for (const tag of tags) {
+            revalidateTag(tag, { expire: 0 });
+        }
+        return Response.json({
+            revalidated: true,
+            tags,
+        });
     }
 
     const requestedSlug = typeof body.slug === "string" ? body.slug.trim() : "";

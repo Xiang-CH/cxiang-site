@@ -3,7 +3,7 @@ import { type NextRequest } from "next/server";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isAuthorized } from "../_auth";
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     if (!isAuthorized(request)) {
         return Response.json({ revalidated: false, message: "Unauthorized" }, { status: 401 });
     }
