@@ -43,6 +43,7 @@ export default function NotionPageClient({
     return (
         <NotionRenderer
             disableHeader
+            showTableOfContents
             recordMap={recordMap}
             fullPage={fullPage}
             components={{
