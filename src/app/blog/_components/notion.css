@@ -24,6 +24,10 @@
     }
 }
 
+.notion-page-has-cover.notion-page-no-icon {
+    padding-top: 2rem !important;
+}
+
 .notion-page-icon-hero {
     left: 4rem !important;
 }

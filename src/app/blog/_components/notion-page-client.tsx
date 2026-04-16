@@ -28,29 +28,41 @@ const Collection = dynamic(() =>
 const Equation = dynamic(() =>
     import("react-notion-x/build/third-party/equation").then((m) => m.Equation)
 );
-const Modal = dynamic(() => import("react-notion-x/build/third-party/modal").then((m) => m.Modal));
-const Pdf = dynamic(() => import("react-notion-x/build/third-party/pdf").then((m) => m.Pdf));
 
 interface NotionPageClientProps {
     recordMap: ExtendedRecordMap;
+    publishDate?: string;
     fullPage?: boolean;
 }
 
-export default function NotionPageClient({ recordMap, fullPage = true }: NotionPageClientProps) {
+export default function NotionPageClient({
+    recordMap,
+    publishDate,
+    fullPage = true,
+}: NotionPageClientProps) {
     return (
         <NotionRenderer
             disableHeader
             recordMap={recordMap}
             fullPage={fullPage}
-            showTableOfContents
             components={{
                 Code: CustomCode,
                 Collection,
                 Equation,
-                Modal,
-                Pdf,
                 nextImage: Image,
             }}
+            pageHeader={
+                publishDate && (
+                    <p className="notion-published-date text-muted-foreground pb-4">
+                        Published on{" "}
+                        {new Date(publishDate).toLocaleDateString(undefined, {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                        })}
+                    </p>
+                )
+            }
             pageFooter={<SponsorCard />}
         />
     );

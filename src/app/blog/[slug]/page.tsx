@@ -278,7 +278,10 @@ export default async function BlogBySlug({ params }: Props) {
                 }}
             />
             <div className="relative left-1/2 w-screen max-w-none -translate-x-1/2">
-                <NotionPageClient recordMap={seoData.recordMap} />
+                <NotionPageClient
+                    recordMap={seoData.recordMap}
+                    publishDate={seoData.publishedTime}
+                />
             </div>
         </div>
     );
