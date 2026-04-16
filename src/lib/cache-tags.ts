@@ -6,8 +6,8 @@ export const CACHE_TAGS = {
     llms: "content:llms",
 } as const;
 
-export function getBlogTag(id: string) {
-    return `content:blog:${id}`;
+export function getBlogTag(slug: string) {
+    return `content:blog:${slug}`;
 }
 
 export function getLlmsTag(locale: string) {
