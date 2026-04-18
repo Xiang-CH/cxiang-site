@@ -155,10 +155,6 @@ ${contactIntro}
 
 ## Sitemap
 See the full [sitemap](/sitemap.md) for all pages.
-
-## Site Map
-- [My Projects](/project)
-- [My Blog](/blog)
 `;
 }
 
