@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { ChevronDown, Copy, ExternalLink, Link2, MessageSquare } from "lucide-react";
+import { ChevronDown, Copy, ExternalLink, Link2 } from "lucide-react";
 import { toast } from "sonner";
 import { MarkdownIcon } from "@/components/icons/markdown";
 import { OpenaiIcon } from "@/components/icons/openai";
