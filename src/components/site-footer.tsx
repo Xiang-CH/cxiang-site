@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { MarkdownIcon } from "@/components/icons/markdown";
 import { absoluteUrl, markdownMirrorPathname } from "@/lib/seo";
 
 export default function SiteFooter() {
@@ -17,8 +18,9 @@ export default function SiteFooter() {
                     href={markdownHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-primary transition-colors"
+                    className="flex items-center gap-1 hover:text-primary transition-colors"
                 >
+                    <MarkdownIcon size={12} className="shrink-0" aria-hidden />
                     View Markdown
                 </a>
                 <span>|</span>
