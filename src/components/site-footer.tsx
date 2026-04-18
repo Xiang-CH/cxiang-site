@@ -19,7 +19,7 @@ export default function SiteFooter() {
                         rel="noopener noreferrer"
                         className="underline-offset-2 hover:text-primary hover:underline transition-colors"
                     >
-                        View as markdown
+                        View Markdown
                     </a>
                     <span className="hidden sm:inline" aria-hidden>
                         |
