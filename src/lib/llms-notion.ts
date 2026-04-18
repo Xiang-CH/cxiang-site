@@ -290,7 +290,7 @@ export async function buildBlogListMarkdown(): Promise<string> {
 
 Writing by Chen Xiang on software, projects, lessons learned, and more.
 
-Canonical URL: ${absUrl("/blog.md")}
+Canonical URL: ${absUrl("/blog")}
 `;
 
     if (response.results.length === 0) {
