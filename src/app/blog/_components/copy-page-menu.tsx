@@ -16,12 +16,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { absoluteUrl } from "@/lib/seo";
 
-function markdownApiAbsoluteUrl(slug: string): string {
-    return absoluteUrl(`/api/md/blog/${slug}`);
+function markdownAbsoluteUrl(slug: string): string {
+    return absoluteUrl(`/blog/${slug}.md`);
 }
 
 function aiPromptForMarkdown(slug: string): string {
-    return `Read ${markdownApiAbsoluteUrl(slug)} and help me discuss it.`;
+    return `Read ${markdownAbsoluteUrl(slug)} and help me discuss it.`;
 }
 
 export default function CopyPageMenu({ slug }: { slug: string }) {
@@ -49,14 +49,14 @@ export default function CopyPageMenu({ slug }: { slug: string }) {
 
     const copyMarkdownLink = useCallback(async () => {
         try {
-            await navigator.clipboard.writeText(markdownApiAbsoluteUrl(slug));
+            await navigator.clipboard.writeText(markdownAbsoluteUrl(slug));
             toast.success("Copied link to Markdown.");
         } catch {
             toast.error("Could not copy to clipboard.");
         }
     }, [slug]);
 
-    const mdPath = `/api/md/blog/${slug}`;
+    const mdPath = `/blog/${slug}.md`;
 
     return (
         <div className="blog-copy-page-menu flex max-w-full min-w-0">

@@ -35,6 +35,7 @@ type CreatePageMetadataParams = {
     description: string;
     pathname: string;
     includeLocaleAlternates?: boolean;
+    markdownPath?: string;
     openGraphType?: "website" | "article";
     images?: string[];
     publishedTime?: string;
@@ -42,12 +43,19 @@ type CreatePageMetadataParams = {
     articleAuthors?: string[];
 };
 
+function toMarkdownPath(pathname: string): string {
+    if (pathname === "/") return "/en.md";
+    const normalized = pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+    return `${normalized}.md`;
+}
+
 export function createPageMetadata({
     title,
     socialTitle = title,
     description,
     pathname,
     includeLocaleAlternates = false,
+    markdownPath,
     openGraphType = "website",
     images = [DEFAULT_OG_IMAGE],
     publishedTime,
@@ -55,6 +63,7 @@ export function createPageMetadata({
     articleAuthors,
 }: CreatePageMetadataParams): Metadata {
     const canonical = absoluteUrl(pathname);
+    const markdownAlternate = absoluteUrl(markdownPath ?? toMarkdownPath(pathname));
 
     const openGraph: NonNullable<Metadata["openGraph"]> =
         openGraphType === "article"
@@ -87,6 +96,9 @@ export function createPageMetadata({
         alternates: {
             canonical,
             ...(includeLocaleAlternates ? { languages: getLocaleAlternateUrls() } : {}),
+            types: {
+                "text/markdown": markdownAlternate,
+            },
         },
         openGraph,
         twitter: {
