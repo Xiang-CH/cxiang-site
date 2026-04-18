@@ -18,6 +18,7 @@ import {
     getLocaleAlternateUrls,
 } from "@/lib/seo";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
+import { Toaster } from "sonner";
 
 const notoSans = Open_Sans({
     variable: "--font-noto-sans",
@@ -136,6 +137,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     </footer>
                     <SpeedInsights />
                     <Analytics />
+                    <Toaster />
                 </ThemeProvider>
             </body>
         </html>

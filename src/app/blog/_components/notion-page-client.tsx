@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { type CodeBlock, type ExtendedRecordMap } from "notion-types";
 import SponsorCard from "@/components/sponser-card";
+import CopyPageMenu from "./copy-page-menu";
 import "./notion.css";
 
 // Dynamically import components used by NotionRenderer, ensuring they are client-side
@@ -31,12 +32,14 @@ const Equation = dynamic(() =>
 
 interface NotionPageClientProps {
     recordMap: ExtendedRecordMap;
+    slug: string;
     publishDate?: string;
     fullPage?: boolean;
 }
 
 export default function NotionPageClient({
     recordMap,
+    slug,
     publishDate,
     fullPage = true,
 }: NotionPageClientProps) {
@@ -46,6 +49,7 @@ export default function NotionPageClient({
             showTableOfContents
             recordMap={recordMap}
             fullPage={fullPage}
+            pageAside={<CopyPageMenu slug={slug} />}
             components={{
                 Code: CustomCode,
                 Collection,

@@ -37,6 +37,14 @@
     align-items: flex-start !important;
     width: fit-content !important;
     max-width: 15.5rem !important;
+    gap: 0.75rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* react-notion-x renders TOC before pageAside; pull the utility bar above the TOC */
+.notion-aside .blog-copy-page-menu {
+    order: -1 !important;
 }
 
 .notion-aside-table-of-contents {
