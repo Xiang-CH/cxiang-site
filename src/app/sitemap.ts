@@ -39,7 +39,7 @@ function getLocaleAlternates() {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "use cache";
-    cacheLife("days");
+    cacheLife("max");
     cacheTag(CACHE_TAGS.sitemap, CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs, CACHE_TAGS.projects);
     const [postsResult, projectsResult] = await Promise.allSettled([
         getAllPostsMeta(),

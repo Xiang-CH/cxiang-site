@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default async function Projects() {
     "use cache";
-    cacheLife("days");
+    cacheLife("max");
     cacheTag(CACHE_TAGS.projects);
     let response;
     try {

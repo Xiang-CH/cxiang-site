@@ -44,21 +44,6 @@ const nextConfig: NextConfig = {
             //     destination: `${process.env.NEXT_PUBLIC_POSTHOG_HOST}/flags`,
             // },
             {
-                source: "/:locale(en|zh-CN)",
-                destination: "/:locale/llms.txt",
-                has: [
-                    {
-                        type: "header",
-                        key: "accept",
-                        value: "(.*)text/plain(.*)",
-                    },
-                ],
-            },
-            {
-                source: "/llms.txt",
-                destination: "/en/llms.txt",
-            },
-            {
                 source: "/projects",
                 destination: "/project",
             },
