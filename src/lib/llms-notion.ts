@@ -159,7 +159,7 @@ export async function buildLlmsIndex(): Promise<string> {
 
 > Personal site of Chen Xiang (陈想) -- software engineer. Portfolio, blog, and projects spanning web, product, and creative development.
 
-Every page linked below is also available as markdown (except for some external project links): use the `.md` URL variant (for example, \`/blog/my-post.md\`) or request the same URL with \`Accept: text/markdown\`.
+Every page linked below is also available as markdown (except for some external project links): use the \`.md\` URL variant (for example, \`/blog/my-post.md\`) or request the same URL with \`Accept: text/markdown\`.
 
 ${sections.join("\n\n")}
 `;
