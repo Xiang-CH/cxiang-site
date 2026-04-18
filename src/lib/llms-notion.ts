@@ -288,7 +288,7 @@ export async function buildBlogListMarkdown(): Promise<string> {
 
 Writing by Chen Xiang on software, projects, lessons learned, and more.
 
-Canonical URL: ${absUrl("/blog")}
+Canonical URL: ${absUrl("/blog.md")}
 `;
 
     if (response.results.length === 0) {
@@ -307,7 +307,7 @@ ${sitemapSection}
         const abstract = readRichText(page, "Abstract");
         const date = readDate(page, "Publish Date");
         const slug = metas.find((m) => m.id === page.id)?.slug ?? page.id;
-        const url = absUrl(`/blog/${slug}`);
+        const url = absMarkdownUrl(`/blog/${slug}`);
 
         lines.push(`## [${title}](${url})`);
         if (date) lines.push("", `Published on: ${date}`);
