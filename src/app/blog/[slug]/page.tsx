@@ -6,7 +6,7 @@ import {
     getAllPostsMeta,
     getSlugById,
 } from "@/lib/notion";
-import { CACHE_TAGS, getBlogTag } from "@/lib/cache-tags";
+import { getBlogTag } from "@/lib/cache-tags";
 import NotionPageClient from "../_components/notion-page-client";
 import "react-notion-x/src/styles.css";
 import { type Metadata } from "next";
@@ -287,6 +287,7 @@ export default async function BlogBySlug({ params }: Props) {
             <div className="relative left-1/2 w-screen max-w-none -translate-x-1/2">
                 <NotionPageClient
                     recordMap={seoData.recordMap}
+                    slug={seoData.post.slug}
                     publishDate={seoData.publishedTime}
                 />
             </div>
