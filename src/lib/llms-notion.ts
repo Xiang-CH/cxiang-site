@@ -26,6 +26,8 @@ Chen Xiang (陈想)
 - Instagram: https://www.instagram.com/chen.xiiang/
 - X(Twitter): https://x.com/cxiiang
 
+This page is also available as markdown: append \`.md\` to the URL path (for example, \`/blog/my-post.md\`) or send \`Accept: text/markdown\` for the same path.
+
 `;
 
 function absUrl(pathname: string): string {
@@ -159,7 +161,7 @@ export async function buildLlmsIndex(): Promise<string> {
 
 > Personal site of Chen Xiang (陈想) -- software engineer. Portfolio, blog, and projects spanning web, product, and creative development.
 
-Every page linked below is also available as markdown (except for some external project links): use the `.md` URL variant (for example, \`/blog/my-post.md\`) or request the same URL with \`Accept: text/markdown\`.
+Every page linked below is also available as markdown (except for some external project links): use the \`.md\` URL variant (for example, \`/blog/my-post.md\`) or request the same URL with \`Accept: text/markdown\`.
 
 ${sections.join("\n\n")}
 `;
@@ -288,7 +290,7 @@ export async function buildBlogListMarkdown(): Promise<string> {
 
 Writing by Chen Xiang on software, projects, lessons learned, and more.
 
-Canonical URL: ${absUrl("/blog")}
+Canonical URL: ${absUrl("/blog.md")}
 `;
 
     if (response.results.length === 0) {
@@ -307,7 +309,7 @@ ${sitemapSection}
         const abstract = readRichText(page, "Abstract");
         const date = readDate(page, "Publish Date");
         const slug = metas.find((m) => m.id === page.id)?.slug ?? page.id;
-        const url = absUrl(`/blog/${slug}`);
+        const url = absMarkdownUrl(`/blog/${slug}`);
 
         lines.push(`## [${title}](${url})`);
         if (date) lines.push("", `Published on: ${date}`);
