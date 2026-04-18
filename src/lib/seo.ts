@@ -43,7 +43,8 @@ type CreatePageMetadataParams = {
     articleAuthors?: string[];
 };
 
-function toMarkdownPath(pathname: string): string {
+/** Pathname of the `.md` mirror for the current HTML page (used in metadata and UI). */
+export function markdownMirrorPathname(pathname: string): string {
     if (pathname === "/") return "/en.md";
     const normalized = pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
     return `${normalized}.md`;
@@ -63,7 +64,7 @@ export function createPageMetadata({
     articleAuthors,
 }: CreatePageMetadataParams): Metadata {
     const canonical = absoluteUrl(pathname);
-    const markdownAlternate = absoluteUrl(markdownPath ?? toMarkdownPath(pathname));
+    const markdownAlternate = absoluteUrl(markdownPath ?? markdownMirrorPathname(pathname));
 
     const openGraph: NonNullable<Metadata["openGraph"]> =
         openGraphType === "article"

@@ -26,6 +26,8 @@ Chen Xiang (陈想)
 - Instagram: https://www.instagram.com/chen.xiiang/
 - X(Twitter): https://x.com/cxiiang
 
+This page is also available as markdown: append \`.md\` to the URL path (for example, \`/blog/my-post.md\`) or send \`Accept: text/markdown\` for the same path.
+
 `;
 
 function absUrl(pathname: string): string {
