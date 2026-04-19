@@ -85,7 +85,11 @@ export function markdownPathname(pathname: string): string {
 export function htmlPathnameFromMarkdown(pathname: string): string {
     if (!pathname.endsWith(".md")) return pathname;
     const withoutExt = pathname.slice(0, -3) || "/";
-    if (withoutExt === "/en") return "/";
+    const defaultLocalePrefix = `/${routing.defaultLocale}`;
+    if (withoutExt === defaultLocalePrefix) return "/";
+    if (withoutExt.startsWith(`${defaultLocalePrefix}/`)) {
+        return withoutExt.slice(defaultLocalePrefix.length) || "/";
+    }
     return withoutExt;
 }
 
