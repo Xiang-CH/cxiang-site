@@ -87,7 +87,7 @@ export default async function Blogs() {
                             className="w-full items-center group"
                             key={blog.id}
                         >
-                            <div className="flex justify-between items-center gap-4">
+                            <div className="flex justify-between items-start gap-4">
                                 <div className="flex flex-col gap-1 h-full justify-center mt-1">
                                     <h2 className="text-lg sm:text-xl font-[550] group-hover:underline text-wrap leading-[1.3]">
                                         {title}
