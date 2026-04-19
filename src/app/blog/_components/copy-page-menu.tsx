@@ -1,11 +1,10 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { ChevronDown, Copy, ExternalLink, Link2, MessageSquare } from "lucide-react";
+import { ChevronDown, Copy, ExternalLink, Link2 } from "lucide-react";
 import { toast } from "sonner";
 import { MarkdownIcon } from "@/components/icons/markdown";
-import { OpenaiIcon } from "@/components/icons/openai";
-import { ClaudeIcon } from "@/components/icons/claude";
+import { OpenaiIcon, ClaudeIcon, KimiIcon } from "@/components/icons";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,12 +15,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { absoluteUrl } from "@/lib/seo";
 
-function markdownApiAbsoluteUrl(slug: string): string {
-    return absoluteUrl(`/api/md/blog/${slug}`);
+function markdownAbsoluteUrl(slug: string): string {
+    return absoluteUrl(`/blog/${slug}.md`);
 }
 
 function aiPromptForMarkdown(slug: string): string {
-    return `Read ${markdownApiAbsoluteUrl(slug)} and help me discuss it.`;
+    return `Read ${markdownAbsoluteUrl(slug)} and help me discuss it.`;
 }
 
 export default function CopyPageMenu({ slug }: { slug: string }) {
@@ -49,14 +48,32 @@ export default function CopyPageMenu({ slug }: { slug: string }) {
 
     const copyMarkdownLink = useCallback(async () => {
         try {
-            await navigator.clipboard.writeText(markdownApiAbsoluteUrl(slug));
+            await navigator.clipboard.writeText(markdownAbsoluteUrl(slug));
             toast.success("Copied link to Markdown.");
         } catch {
             toast.error("Could not copy to clipboard.");
         }
     }, [slug]);
 
-    const mdPath = `/api/md/blog/${slug}`;
+    const mdPath = `/blog/${slug}.md`;
+
+    const aiProviders = [
+        {
+            name: "ChatGPT",
+            icon: <OpenaiIcon className="size-4" aria-hidden />,
+            href: `https://chatgpt.com/?hints=search&q=${encodeURIComponent(aiPromptForMarkdown(slug))}`,
+        },
+        {
+            name: "Claude",
+            icon: <ClaudeIcon className="size-4" aria-hidden />,
+            href: `https://claude.ai/new?q=${encodeURIComponent(aiPromptForMarkdown(slug))}`,
+        },
+        {
+            name: "Kimi",
+            icon: <KimiIcon className="size-4" aria-hidden />,
+            href: `https://www.kimi.com/?prefill_prompt=${encodeURIComponent(aiPromptForMarkdown(slug))}`,
+        },
+    ];
 
     return (
         <div className="blog-copy-page-menu flex max-w-full min-w-0">
@@ -80,7 +97,7 @@ export default function CopyPageMenu({ slug }: { slug: string }) {
                         className="h-8 shrink-0 rounded-l-none border-l px-2 shadow-xs"
                         aria-label="More copy and share options"
                     >
-                        <ChevronDown className="size-4" aria-hidden />
+                        <ChevronDown className="size-3 mr-px mt-1" aria-hidden />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -105,30 +122,20 @@ export default function CopyPageMenu({ slug }: { slug: string }) {
                             <ExternalLink className="ml-auto size-4 opacity-70" aria-hidden />
                         </a>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                        <a
-                            href={`https://chatgpt.com/?hints=search&q=${encodeURIComponent(aiPromptForMarkdown(slug))}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="cursor-pointer"
-                        >
-                            <OpenaiIcon className="size-4" aria-hidden />
-                            <span className="flex-1">Open in ChatGPT</span>
-                            <ExternalLink className="ml-auto size-4 opacity-70" aria-hidden />
-                        </a>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                        <a
-                            href={`https://claude.ai/new?q=${encodeURIComponent(aiPromptForMarkdown(slug))}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="cursor-pointer"
-                        >
-                            <ClaudeIcon className="size-4" aria-hidden />
-                            <span className="flex-1">Open in Claude</span>
-                            <ExternalLink className="ml-auto size-4 opacity-70" aria-hidden />
-                        </a>
-                    </DropdownMenuItem>
+                    {aiProviders.map((provider) => (
+                        <DropdownMenuItem asChild key={provider.name}>
+                            <a
+                                href={provider.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="cursor-pointer"
+                            >
+                                {provider.icon}
+                                <span className="flex-1">Ask {provider.name}</span>
+                                <ExternalLink className="ml-auto size-4 opacity-70" aria-hidden />
+                            </a>
+                        </DropdownMenuItem>
+                    ))}
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>

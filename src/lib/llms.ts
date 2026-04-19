@@ -1,5 +1,6 @@
 import { skills } from "@/app/[locale]/_components/skills";
 import { routing } from "@/i18n/routing";
+import { absoluteUrl } from "./seo";
 import { prefersMarkdown } from "./accept";
 
 type Messages = typeof import("../../locales/en.json");
@@ -53,16 +54,41 @@ export const MARKDOWN_CACHE_CONTROL =
  * because that surface is only reached via the proxy rewrite on
  * `Accept: text/markdown`, so there is no negotiation to perform.
  */
-export function markdownResponse(body: string, status = 200): Response {
+export function markdownResponse(
+    body: string,
+    options?: { status?: number; canonicalPathname?: string }
+): Response {
+    const status = options?.status ?? 200;
+    const canonicalPathname = options?.canonicalPathname;
+    const headers: HeadersInit = {
+        "Content-Type": "text/markdown; charset=utf-8",
+        "x-markdown-tokens": String(estimateTokens(body)),
+        "Cache-Control": MARKDOWN_CACHE_CONTROL,
+        Vary: "Accept",
+    };
+    if (canonicalPathname) {
+        headers.Link = canonicalLinkHeaderForPath(canonicalPathname);
+    }
+
     return new Response(body, {
         status,
-        headers: {
-            "Content-Type": "text/markdown; charset=utf-8",
-            "x-markdown-tokens": String(estimateTokens(body)),
-            "Cache-Control": MARKDOWN_CACHE_CONTROL,
-            Vary: "Accept",
-        },
+        headers,
     });
+}
+
+export function htmlPathnameFromMarkdown(pathname: string): string {
+    if (!pathname.endsWith(".md")) return pathname;
+    const withoutExt = pathname.slice(0, -3) || "/";
+    const defaultLocalePrefix = `/${routing.defaultLocale}`;
+    if (withoutExt === defaultLocalePrefix) return "/";
+    if (withoutExt.startsWith(`${defaultLocalePrefix}/`)) {
+        return withoutExt.slice(defaultLocalePrefix.length) || "/";
+    }
+    return withoutExt;
+}
+
+export function canonicalLinkHeaderForPath(pathname: string): string {
+    return `<${absoluteUrl(pathname)}>; rel="canonical"`;
 }
 
 /**
@@ -125,9 +151,8 @@ ${contactIntro}
 - Instagram: https://www.instagram.com/chen.xiiang/
 - X(Twitter): https://x.com/cxiiang
 
-## Site Map
-- [My Projects](/project)
-- [My Blog](/blog)
+## Sitemap
+See the full [sitemap](/sitemap.md) for all pages.
 `;
 }
 
@@ -183,6 +208,11 @@ export async function buildMarkdownForPath(
     if (path === "/blog" || path === "/blogs") {
         const mod = await import("./llms-notion");
         return { kind: "ok", body: await mod.buildBlogListMarkdown() };
+    }
+
+    if (path === "/sitemap") {
+        const mod = await import("./llms-notion");
+        return { kind: "ok", body: await mod.buildSitemapMarkdown() };
     }
 
     const blogMatch = path.match(/^\/blogs?\/([^\/?#]+)$/);

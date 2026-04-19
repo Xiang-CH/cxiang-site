@@ -16,7 +16,7 @@ import {
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
 
 const footer = `
-# Contact Information
+## Contact Information
 
 Chen Xiang (陈想)
 
@@ -26,12 +26,30 @@ Chen Xiang (陈想)
 - Instagram: https://www.instagram.com/chen.xiiang/
 - X(Twitter): https://x.com/cxiiang
 
+This page is also available as markdown: append \`.md\` to the URL path (for example, \`/blog/my-post.md\`) or send \`Accept: text/markdown\` for the same path.
+
 `;
 
 function absUrl(pathname: string): string {
     if (/^https?:\/\//i.test(pathname)) return pathname;
     return `${SITE_URL}${pathname.startsWith("/") ? "" : "/"}${pathname}`;
 }
+
+function toMarkdownPath(pathname: string): string {
+    if (pathname === "/") return "/en.md";
+    const normalized = pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+    return `${normalized}.md`;
+}
+
+function absMarkdownUrl(pathname: string): string {
+    return absUrl(toMarkdownPath(pathname));
+}
+
+const sitemapSection = `
+## Sitemap
+
+See the full [sitemap](/sitemap.md) for all pages.
+`;
 
 function readTitle(page: PageObjectResponse): string {
     const p = page.properties.Title;
@@ -100,11 +118,11 @@ export async function buildLlmsIndex(): Promise<string> {
     sections.push(
         `## Overview
 
-- [${absUrl("/")}](${absUrl("/")}): Bio, skills, experience, and contact info for Chen Xiang.`
+- [${absMarkdownUrl("/")}](${absMarkdownUrl("/")}): Bio, skills, experience, and contact info for Chen Xiang.`
     );
 
     const projectLines: string[] = [
-        `- [Projects index](${absUrl("/project")}): Selected projects across web, product, and creative development.`,
+        `- [Projects index](${absMarkdownUrl("/project")}): Selected projects across web, product, and creative development.`,
     ];
     for (const item of projectsResp.results) {
         if (item.object !== "page" || !("properties" in item)) continue;
@@ -118,14 +136,14 @@ export async function buildLlmsIndex(): Promise<string> {
     }
     sections.push(`## Projects\n\n${projectLines.join("\n")}`);
 
-    const blogLines: string[] = [`- [Blog index](${absUrl("/blog")}): All blog posts.`];
+    const blogLines: string[] = [`- [Blog index](${absMarkdownUrl("/blog")}): All blog posts.`];
     for (const item of blogsResp.results) {
         if (item.object !== "page" || !("properties" in item)) continue;
         const page = item as PageObjectResponse;
         const title = readTitle(page);
         const abstract = readRichText(page, "Abstract");
         const slug = postMetas.find((m) => m.id === page.id)?.slug ?? page.id;
-        const url = absUrl(`/blog/${slug}`);
+        const url = absMarkdownUrl(`/blog/${slug}`);
         blogLines.push(abstract ? `- [${title}](${url}): ${abstract}` : `- [${title}](${url})`);
     }
     sections.push(`## Blog\n\n${blogLines.join("\n")}`);
@@ -143,10 +161,63 @@ export async function buildLlmsIndex(): Promise<string> {
 
 > Personal site of Chen Xiang (陈想) -- software engineer. Portfolio, blog, and projects spanning web, product, and creative development.
 
-Every page linked below is also available as markdown (except for some external project links): request the same URL with \`Accept: text/markdown\` to receive the markdown rendition instead of HTML.
+Every page linked below is also available as markdown (except for some external project links): use the \`.md\` URL variant (for example, \`/blog/my-post.md\`) or request the same URL with \`Accept: text/markdown\`.
 
 ${sections.join("\n\n")}
 `;
+}
+
+export async function buildSitemapMarkdown(): Promise<string> {
+    "use cache";
+    cacheLife("max");
+    cacheTag(CACHE_TAGS.sitemap, CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs, CACHE_TAGS.projects);
+
+    const [blogsResp, projectsResp] = await Promise.all([getBlogs(), getProjects()]);
+    const postMetas = await getAllPostsMeta(blogsResp);
+
+    const lines: string[] = [
+        "# Sitemap",
+        "",
+        "Structured, markdown-friendly index for all published pages.",
+        "",
+        `Canonical URL: ${absUrl("/sitemap.md")}`,
+        "",
+        "## Home",
+        `- [English Home](${absMarkdownUrl("/")})`,
+        `- [Chinese Home](${absMarkdownUrl("/zh-CN")})`,
+        "",
+        "## Main Sections",
+        `- [Projects](${absMarkdownUrl("/project")})`,
+        `- [Blog](${absMarkdownUrl("/blog")})`,
+        "",
+        "## Blog Posts",
+    ];
+
+    if (postMetas.length === 0) {
+        lines.push("- No posts published yet.");
+    } else {
+        for (const post of postMetas) {
+            lines.push(`- [${post.title}](${absMarkdownUrl(`/blog/${post.slug}`)})`);
+        }
+    }
+
+    lines.push("", "## External Project Links");
+    let hasExternalProject = false;
+    for (const item of projectsResp.results) {
+        if (item.object !== "page" || !("properties" in item)) continue;
+        const page = item as PageObjectResponse;
+        const title = readTitle(page);
+        const landing = readUrl(page, "Landing Page");
+        const url = landing ?? readUrl(page, "URL");
+        if (!url) continue;
+        hasExternalProject = true;
+        lines.push(`- [${title}](${url})`);
+    }
+    if (!hasExternalProject) {
+        lines.push("- No external project links listed.");
+    }
+
+    return `${lines.join("\n")}\n`;
 }
 
 // ---------------------------------------------------------------------------
@@ -173,6 +244,8 @@ Canonical URL: ${absUrl("/project")}
     if (response.results.length === 0) {
         return `${header}
 _No projects are listed yet._
+
+${sitemapSection}
 `;
     }
 
@@ -196,7 +269,7 @@ _No projects are listed yet._
         lines.push("");
     }
 
-    return `${header}\n${lines.join("\n")}`;
+    return `${header}\n${lines.join("\n")}\n${sitemapSection}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -223,6 +296,8 @@ Canonical URL: ${absUrl("/blog")}
     if (response.results.length === 0) {
         return `${header}
 _No posts published yet._
+
+${sitemapSection}
 `;
     }
 
@@ -234,7 +309,7 @@ _No posts published yet._
         const abstract = readRichText(page, "Abstract");
         const date = readDate(page, "Publish Date");
         const slug = metas.find((m) => m.id === page.id)?.slug ?? page.id;
-        const url = absUrl(`/blog/${slug}`);
+        const url = absMarkdownUrl(`/blog/${slug}`);
 
         lines.push(`## [${title}](${url})`);
         if (date) lines.push("", `Published on: ${date}`);
@@ -242,7 +317,7 @@ _No posts published yet._
         lines.push("");
     }
 
-    return `${header}\n${lines.join("\n")}\n${footer}`;
+    return `${header}\n${lines.join("\n")}\n${sitemapSection}\n${footer}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -316,5 +391,5 @@ export async function buildBlogPostMarkdown(slug: string): Promise<string> {
         body = `# ${title}\n\n${meta.join("\n\n")}\n\n${rendered}`;
     }
 
-    return body.trimEnd() + "\n\n" + footer;
+    return body.trimEnd() + "\n\n" + sitemapSection + "\n" + footer;
 }

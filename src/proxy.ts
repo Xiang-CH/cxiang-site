@@ -1,12 +1,28 @@
 import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { prefersMarkdown } from "./lib/accept";
+import { htmlPathnameFromMarkdown } from "./lib/llms";
 import { routing } from "./i18n/routing";
 
 const handleI18nRouting = createMiddleware(routing);
 
 export default async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
+
+    if (pathname === "/sitemap.md") {
+        return NextResponse.next();
+    }
+
+    // Explicit markdown mirrors (e.g. `/blog/my-post.md`) are rewritten to the
+    // same backend markdown builder as content negotiation so agents can choose
+    // either URL style.
+    if (pathname.endsWith(".md")) {
+        const htmlPathname = htmlPathnameFromMarkdown(pathname);
+        const url = request.nextUrl.clone();
+        url.pathname = `/api/md${htmlPathname === "/" ? "" : htmlPathname}`;
+        url.search = "";
+        return NextResponse.rewrite(url);
+    }
 
     // Markdown content negotiation: agents that send `Accept: text/markdown`
     // get rewritten to a Route Handler that runs under the normal Node.js
@@ -34,9 +50,10 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    // Skip API routes, Next.js internals, and anything that looks like a file
-    // (e.g. favicon.ico, sitemap.xml). `/blog` and `/project` are intentionally
-    // matched so markdown negotiation still applies there; i18n routing is
-    // skipped for them inside the proxy function above.
-    matcher: "/((?!api|trpc|_next|_vercel|relay-5woc|.*\\..*).*)",
+    // Main matcher excludes file-like assets; second matcher opts `.md` pages
+    // back in so route-level markdown mirrors work at stable URLs.
+    matcher: [
+        "/((?!api|trpc|_next|_vercel|relay-5woc|.*\\..*).*)",
+        "/((?!api|trpc|_next|_vercel|relay-5woc).*)\\.md",
+    ],
 };

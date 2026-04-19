@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { routing } from "@/i18n/routing";
-import { buildMarkdownForPath, markdownResponse, resolveLocale } from "@/lib/llms";
+import {
+    buildMarkdownForPath,
+    canonicalLinkHeaderForPath,
+    htmlPathnameFromMarkdown,
+    markdownResponse,
+    resolveLocale,
+} from "@/lib/llms";
 import { getAllPostsMeta } from "@/lib/notion";
 
 /**
@@ -51,6 +57,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ path?: s
     const { path } = await params;
     const pathname = path && path.length > 0 ? `/${path.join("/")}` : "/";
     const locale = resolveLocale(pathname);
+    const canonicalPathname = htmlPathnameFromMarkdown(pathname);
 
     const result = await buildMarkdownForPath(pathname, locale);
 
@@ -60,6 +67,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ path?: s
             headers: {
                 "Content-Type": "text/plain; charset=utf-8",
                 Vary: "Accept",
+                Link: canonicalLinkHeaderForPath(canonicalPathname),
             },
         });
     }
@@ -72,5 +80,5 @@ export async function GET(req: Request, { params }: { params: Promise<{ path?: s
         return NextResponse.redirect(url, 301);
     }
 
-    return markdownResponse(result.body);
+    return markdownResponse(result.body, { canonicalPathname });
 }
