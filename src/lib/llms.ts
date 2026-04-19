@@ -76,12 +76,6 @@ export function markdownResponse(
     });
 }
 
-export function markdownPathname(pathname: string): string {
-    if (pathname === "/") return "/en.md";
-    const normalized = pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
-    return `${normalized}.md`;
-}
-
 export function htmlPathnameFromMarkdown(pathname: string): string {
     if (!pathname.endsWith(".md")) return pathname;
     const withoutExt = pathname.slice(0, -3) || "/";

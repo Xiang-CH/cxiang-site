@@ -10,7 +10,7 @@ export async function GET() {
             "Content-Type": "text/markdown; charset=utf-8",
             "x-markdown-tokens": String(estimateTokens(body)),
             "Cache-Control": MARKDOWN_CACHE_CONTROL,
-            Link: canonicalLinkHeaderForPath("/sitemap"),
+            Link: canonicalLinkHeaderForPath("/sitemap.xml"),
         },
     });
 }
