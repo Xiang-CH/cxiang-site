@@ -14,6 +14,8 @@ This is the source code for my personal website, built with Next.js and TypeScri
 
 - `/robots.txt` includes `Content-Signal: search=yes, ai-input=yes, ai-train=no`.
 - `/llms.txt` is a single site-wide index per the [llms.txt spec](https://llmstxt.org/)
+- `/sitemap.md` is a sitemap per the [vercel guide](https://vercel.com/kb/guide/agent-readability-spec)
+- `.md` mirrors for all pages.
 - Any page can be fetched as markdown by sending `Accept: text/markdown`. The Proxy rewrites such requests to `/api/md${pathname}`, which renders the same content (home bio, blog posts, project list, blog list) as markdown instead of HTML.
 
 ## SEO
