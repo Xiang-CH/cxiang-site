@@ -150,6 +150,12 @@ a.notion-table-of-contents-active-item {
     }
 }
 
+@media (width < 1000px) {
+    .notion-aside-table-of-contents {
+        display: none !important;
+    }
+}
+
 html.dark .shiki,
 html.dark .shiki span {
     color: var(--shiki-dark) !important;

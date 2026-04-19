@@ -3,11 +3,11 @@
 import { usePathname } from "next/navigation";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { MarkdownIcon } from "@/components/icons/markdown";
-import { absoluteUrl, markdownMirrorPathname } from "@/lib/seo";
+import { markdownMirrorPathname } from "@/lib/seo";
 
 export default function SiteFooter() {
     const pathname = usePathname() ?? "/";
-    const markdownHref = absoluteUrl(markdownMirrorPathname(pathname));
+    const markdownHref = markdownMirrorPathname(pathname);
 
     return (
         <footer className="my-6 flex items-center justify-center px-8 pb-[env(safe-area-inset-bottom)]">
@@ -16,7 +16,6 @@ export default function SiteFooter() {
                 <span>|</span>
                 <a
                     href={markdownHref}
-                    target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 hover:text-primary transition-colors"
                 >

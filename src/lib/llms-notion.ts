@@ -16,7 +16,7 @@ import {
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
 
 const footer = `
-# Contact Information
+## Contact Information
 
 Chen Xiang (陈想)
 
