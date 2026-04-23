@@ -1,56 +1,16 @@
-"use client";
-
 import "./terminal-home-client.css";
 import type { ReactNode } from "react";
-import { ViewTransition } from "react";
 import { Link } from "@/i18n/navigation";
-import { locales } from "@/i18n/routing";
 import { skills } from "./skills";
 import { TypewriterText } from "./typewriter-text-client";
 import { GitHubLogoIcon, LinkedInLogoIcon, FileTextIcon } from "@radix-ui/react-icons";
 import XTwitterIcon from "@/components/icons/twitter-icon";
 import Shuffle from "@/components/shuffle";
-import { useRouter } from "@/i18n/navigation";
-import { scrambleThen } from "@/lib/home-text-scramble";
+import type { TerminalContent } from "./terminal-content";
+import { TerminalHomeLocalePicker } from "./terminal-home-locale-picker";
+import { TerminalHomeViewTransition } from "./terminal-home-view-transition";
 
-export type TerminalContent = {
-    locale: string;
-    onboarding: string;
-    systemInfo: string;
-    agentMsg: string;
-    name: string;
-    nameSecondary: string;
-    typedRole: string;
-    sysInit: string;
-    sysKernel: string;
-    links: {
-        github: string;
-        linkedin: string;
-        x: string;
-        resume: string;
-    };
-    about: string;
-    stack: string;
-    contactIntro: string;
-    sectionLabels: {
-        about: string;
-        skills: string;
-        experience: string;
-        contact: string;
-    };
-    skillLabels: {
-        languages: string;
-        frameworks: string;
-        tools: string;
-    };
-    experience: Array<{
-        role: string;
-        org: string;
-        period: string;
-        website: string;
-        commit: string;
-    }>;
-};
+export type { TerminalContent } from "./terminal-content";
 
 function Box({ label, children }: { label: string; children: ReactNode }) {
     return (
@@ -73,63 +33,16 @@ function Cmd({ children }: { children: ReactNode }) {
 
 export default function TerminalHomeClient({ content }: { content: TerminalContent }) {
     const fullText = content.typedRole;
-    const router = useRouter();
-
-    const runLocaleSwitch = (code: string) => {
-        const root = document.querySelector<HTMLElement>(".home-scramble-scope");
-        const go = () => {
-            router.replace("/", { locale: code, transitionTypes: ["locale-switch"] });
-        };
-        if (root) {
-            scrambleThen(root, go, { tickMs: 45, holdMs: 380 });
-        } else {
-            go();
-        }
-    };
 
     return (
-        <ViewTransition
-            enter={{
-                "to-home": "home-enter",
-                /* Scramble already signals the switch; skip full-page VT enter to avoid stacking motion */
-                "locale-switch": "none",
-                default: "home-enter-soft",
-            }}
-            exit={{
-                "from-home": "home-exit",
-                "locale-switch": "none",
-                default: "home-exit-soft",
-            }}
-            default="none"
-        >
+        <TerminalHomeViewTransition>
             <main
                 className={`font-mono terminal-page home-scramble-scope min-h-screen bg-(--th-bg) text-(--th-text) pt-2 pb-4`}
             >
                 <div className="relative z-1 max-w-215 mx-auto">
                     {/* ── Locale Onboarding ───────────────── */}
                     <Box label={content.onboarding}>
-                        <div className="flex gap-4 flex-wrap">
-                            {Object.entries(locales).map(([code, name]) => {
-                                const isActive = code === content.locale;
-                                return (
-                                    <button
-                                        key={code}
-                                        type="button"
-                                        onClick={() => {
-                                            if (code === content.locale) return;
-                                            runLocaleSwitch(code);
-                                        }}
-                                        className={`no-underline text-[0.88rem] transition-[color,border-color] duration-150 border-b bg-transparent cursor-pointer font-inherit ${
-                                            isActive
-                                                ? "text-(--th-text) font-bold border-b-(--th-accent)"
-                                                : "text-(--th-dim) font-normal border-b-(--th-link-ul)"
-                                        }`}
-                                    >
-                                        {name}
-                                    </button>
-                                );
-                            })}
-                        </div>
+                        <TerminalHomeLocalePicker currentLocale={content.locale} />
                     </Box>
 
                     {/* ── Boot / Identity ─────────────────── */}
@@ -355,6 +268,6 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                     </Box>
                 </div>
             </main>
-        </ViewTransition>
+        </TerminalHomeViewTransition>
     );
 }
