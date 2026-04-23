@@ -2,6 +2,7 @@
 
 import "./terminal-home-client.css";
 import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { ViewTransition } from "react";
 import { Link } from "@/i18n/navigation";
 import { locales } from "@/i18n/routing";
@@ -74,6 +75,16 @@ function Cmd({ children }: { children: ReactNode }) {
 export default function TerminalHomeClient({ content }: { content: TerminalContent }) {
     const fullText = content.typedRole;
     const router = useRouter();
+
+    useEffect(() => {
+        const onPageShow = (event: PageTransitionEvent) => {
+            if (event.persisted) {
+                router.refresh();
+            }
+        };
+        window.addEventListener("pageshow", onPageShow);
+        return () => window.removeEventListener("pageshow", onPageShow);
+    }, [router]);
 
     const runLocaleSwitch = (code: string) => {
         const root = document.querySelector<HTMLElement>(".home-scramble-scope");

@@ -103,7 +103,9 @@ export function scrambleThen(
     const ctrl = runHomeTextScramble(scope, { tickMs: options?.tickMs });
     const holdMs = options?.holdMs ?? 380;
     const id = window.setTimeout(() => {
-        ctrl.cancel({ restore: false });
+        // Always restore originals before navigation. Leaving the DOM scrambled
+        // gets frozen in the back-forward cache, so "back to home" shows glitched text.
+        ctrl.cancel({ restore: true });
         fn();
     }, holdMs);
     return {
