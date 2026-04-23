@@ -9,6 +9,7 @@ import Shuffle from "@/components/shuffle";
 import type { TerminalContent } from "./terminal-content";
 import { TerminalHomeLocalePicker } from "./terminal-home-locale-picker";
 import { TerminalHomeViewTransition } from "./terminal-home-view-transition";
+import { locales } from "@/i18n/routing";
 
 export type { TerminalContent } from "./terminal-content";
 

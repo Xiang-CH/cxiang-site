@@ -10,13 +10,14 @@ export function KimiIcon({
 }) {
     return (
         <svg
-            fill="currentColor"
+            fill={color}
             fillRule="evenodd"
             height={size}
             style={{ flex: "none", lineHeight: 1 }}
             viewBox="0 0 24 24"
             width={size}
             xmlns="http://www.w3.org/2000/svg"
+            className={className}
             {...props}
         >
             <path d="M21.846 0a1.923 1.923 0 110 3.846H20.15a.226.226 0 01-.227-.226V1.923C19.923.861 20.784 0 21.846 0z" />

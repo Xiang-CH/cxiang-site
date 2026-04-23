@@ -13,7 +13,7 @@ function scrambleString(original: string): string {
     let out = "";
     for (let i = 0; i < original.length; i++) {
         const ch = original[i]!;
-        if (/[A-Za-z0-9]/.test(ch)) {
+        if (/[\p{Script=Han}A-Za-z0-9]/u.test(ch)) {
             out += randomGlyph();
         } else {
             out += ch;
@@ -50,8 +50,9 @@ function collectScrambleTextNodes(scope: Element): Text[] {
 }
 
 /**
- * Scrambles visible text under `scope` (e.g. home `<main>`), preserving whitespace and
- * non-alphanumeric characters; skips text inside links.
+ * Scrambles visible text under `scope` (e.g. home `<main>`), replacing Latin
+ * alphanumerics and Chinese (Han script) characters with random glyphs; preserves
+ * whitespace, punctuation, and other scripts; skips text inside links.
  */
 export function runHomeTextScramble(
     scope: Element,
@@ -101,7 +102,7 @@ export function scrambleThen(
     options?: { tickMs?: number; holdMs?: number }
 ): HomeScrambleController {
     const ctrl = runHomeTextScramble(scope, { tickMs: options?.tickMs });
-    const holdMs = options?.holdMs ?? 380;
+    const holdMs = options?.holdMs ?? 240;
     const id = window.setTimeout(() => {
         // Always restore originals before navigation. Leaving the DOM scrambled
         // gets frozen in the back-forward cache, so "back to home" shows glitched text.

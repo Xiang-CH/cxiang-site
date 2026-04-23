@@ -26,7 +26,7 @@ export function TerminalHomeLocalePicker({ currentLocale }: { currentLocale: str
                                 });
                             };
                             if (root) {
-                                scrambleThen(root, go, { tickMs: 45, holdMs: 380 });
+                                scrambleThen(root, go, { tickMs: 45, holdMs: 240 });
                             } else {
                                 go();
                             }
