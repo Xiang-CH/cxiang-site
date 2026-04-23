@@ -102,12 +102,13 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
         <ViewTransition
             enter={{
                 "to-home": "home-enter",
-                "locale-switch": "home-enter",
+                /* Scramble already signals the switch; skip full-page VT enter to avoid stacking motion */
+                "locale-switch": "none",
                 default: "home-enter-soft",
             }}
             exit={{
                 "from-home": "home-exit",
-                "locale-switch": "home-exit",
+                "locale-switch": "none",
                 default: "home-exit-soft",
             }}
             default="none"
