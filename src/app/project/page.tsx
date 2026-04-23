@@ -4,6 +4,7 @@ import { type PageObjectResponse } from "@notionhq/client";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { ViewTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import { OpenViewerLink } from "@/components/viewer";
 import { GitHubLogoIcon, GlobeIcon } from "@radix-ui/react-icons";
@@ -83,10 +84,6 @@ export default async function Projects() {
                     {response.results.map((item) => {
                         if (item.object !== "page" || !("properties" in item)) return;
                         const project = item as PageObjectResponse;
-                        const title =
-                            project.properties.Title?.type === "title"
-                                ? (project.properties.Title.title[0]?.plain_text ?? "Untitled")
-                                : "Untitled";
 
                         const url =
                             project.properties["URL"]?.type === "url" &&
@@ -110,8 +107,14 @@ export default async function Projects() {
                                         <ProjectContent project={project} />
                                     </Link>
                                 ) : (
-                                    <OpenViewerLink viewer={url || ""} className="group">
-                                        <ProjectContent project={project} />
+                                    <OpenViewerLink
+                                        viewer={url || ""}
+                                        transitionName={project.id}
+                                        className="group"
+                                    >
+                                        <ViewTransition name={project.id} share="project-open">
+                                            <ProjectContent project={project} />
+                                        </ViewTransition>
                                     </OpenViewerLink>
                                 )}
 

@@ -8,6 +8,7 @@ import {
 } from "@/lib/notion";
 import { getBlogTag } from "@/lib/cache-tags";
 import NotionPageClient from "../_components/notion-page-client";
+import { BlogPostShell } from "../_components/blog-post-shell";
 import "react-notion-x/src/styles.css";
 import { type Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
@@ -285,11 +286,13 @@ export default async function BlogBySlug({ params }: Props) {
                 }}
             />
             <div className="relative left-1/2 w-screen max-w-none -translate-x-1/2">
-                <NotionPageClient
-                    recordMap={seoData.recordMap}
-                    slug={seoData.post.slug}
-                    publishDate={seoData.publishedTime}
-                />
+                <BlogPostShell slug={seoData.post.slug}>
+                    <NotionPageClient
+                        recordMap={seoData.recordMap}
+                        slug={seoData.post.slug}
+                        publishDate={seoData.publishedTime}
+                    />
+                </BlogPostShell>
             </div>
         </div>
     );

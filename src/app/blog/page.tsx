@@ -3,7 +3,7 @@ import { getBlogs, getAllPostsMeta, type PostMeta } from "@/lib/notion";
 import { type PageObjectResponse } from "@notionhq/client";
 import { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import { BlogListLink } from "./_components/blog-list-link";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { CACHE_TAGS } from "@/lib/cache-tags";
@@ -82,11 +82,7 @@ export default async function Blogs() {
                     const slug = metas.find((m) => m.id === blog.id)?.slug || blog.id;
 
                     return (
-                        <Link
-                            href={`/blog/${slug}`}
-                            className="w-full items-center group"
-                            key={blog.id}
-                        >
+                        <BlogListLink key={blog.id} href={`/blog/${slug}`} slug={slug}>
                             <div className="flex justify-between items-start gap-4">
                                 <div className="flex flex-col gap-1 h-full justify-center mt-1">
                                     <h2 className="text-lg sm:text-xl font-[550] group-hover:underline text-wrap leading-[1.3]">
@@ -118,7 +114,7 @@ export default async function Blogs() {
                                     </div>
                                 )}
                             </div>
-                        </Link>
+                        </BlogListLink>
                     );
                 })}
             </main>
