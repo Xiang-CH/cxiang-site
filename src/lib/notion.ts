@@ -1,23 +1,44 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "server-only";
-import { Client } from "@notionhq/client";
+import { Client, type QueryDataSourceResponse } from "@notionhq/client";
 import { NotionAPI } from "notion-client";
 
-if (!process.env.NOTION_SECRET) {
-    throw new Error("NOTION_SECRET environment variable is not set");
+const notionSecret = process.env.NOTION_SECRET;
+const projectsDataSourceId = process.env.NOTION_PROJECTS_DATA_SOURCE_ID;
+const blogDataSourceId = process.env.NOTION_BLOG_DATA_SOURCE_ID;
+
+/** When false, Notion clients are not created and data helpers return empty stubs (e.g. `next build` without secrets). */
+export const isNotionConfigured = Boolean(notionSecret && projectsDataSourceId && blogDataSourceId);
+
+const notion = isNotionConfigured
+    ? new Client({
+          auth: notionSecret,
+      })
+    : null;
+
+const api = isNotionConfigured
+    ? new NotionAPI({
+          authToken: notionSecret,
+      })
+    : null;
+
+function emptyDataSourceQuery(): QueryDataSourceResponse {
+    return {
+        type: "page_or_data_source",
+        page_or_data_source: {},
+        object: "list",
+        results: [],
+        has_more: false,
+        next_cursor: null,
+    } as QueryDataSourceResponse;
 }
 
-const notion = new Client({
-    auth: process.env.NOTION_SECRET,
-});
-
-const api = new NotionAPI({
-    authToken: process.env.NOTION_SECRET,
-});
-
 export const getProjects = async () => {
+    if (!notion) {
+        return emptyDataSourceQuery();
+    }
     return notion.dataSources.query({
-        data_source_id: process.env.NOTION_PROJECTS_DATA_SOURCE_ID!,
+        data_source_id: projectsDataSourceId!,
         sorts: [
             {
                 property: "Date",
@@ -28,8 +49,11 @@ export const getProjects = async () => {
 };
 
 export const getBlogs = async () => {
+    if (!notion) {
+        return emptyDataSourceQuery();
+    }
     return notion.dataSources.query({
-        data_source_id: process.env.NOTION_BLOG_DATA_SOURCE_ID!,
+        data_source_id: blogDataSourceId!,
         filter: {
             or: [
                 {
@@ -53,6 +77,9 @@ export const getBlogMetadata = async (id: string) => {
     if (!id) {
         throw new Error("Blog ID is required");
     }
+    if (!notion) {
+        throw new Error("Notion is not configured (missing NOTION_SECRET or data source IDs)");
+    }
 
     return notion.pages.retrieve({
         page_id: id,
@@ -62,6 +89,9 @@ export const getBlogMetadata = async (id: string) => {
 export const getBlog = async (id: string) => {
     if (!id) {
         throw new Error("Blog ID is required");
+    }
+    if (!api) {
+        return null;
     }
 
     return api.getPage(id);

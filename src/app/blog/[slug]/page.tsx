@@ -25,9 +25,15 @@ import {
     createPageMetadata,
 } from "@/lib/seo";
 
+/** Reserved slug so Cache Components builds never return an empty `generateStaticParams` (e.g. no Notion at build time). */
+const BUILD_PLACEHOLDER_BLOG_SLUG = "__build_placeholder__";
+
 export async function generateStaticParams() {
     // Prebuild slugs for ISR; if dataset is large, consider reducing this or relying on dynamic rendering.
     const metas = await getAllPostsMeta();
+    if (metas.length === 0) {
+        return [{ slug: BUILD_PLACEHOLDER_BLOG_SLUG }];
+    }
     return metas.map((m) => ({ slug: m.slug }));
 }
 
@@ -201,6 +207,13 @@ const getPostSeoData = async (slug: string) => {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const slug = (await params).slug;
+    if (slug === BUILD_PLACEHOLDER_BLOG_SLUG) {
+        return createPageMetadata({
+            title: "Blog",
+            description: BLOG_DESCRIPTION_FALLBACK,
+            pathname: "/blog",
+        });
+    }
     const seoData = await getPostSeoData(slug);
 
     if (!seoData) {
@@ -228,6 +241,10 @@ export default async function BlogBySlug({ params }: Props) {
     "use cache";
     cacheLife("max");
     const slug = (await params).slug;
+
+    if (slug === BUILD_PLACEHOLDER_BLOG_SLUG) {
+        notFound();
+    }
 
     // Legacy: if the path segment is actually an id, redirect to its canonical slug
     const legacySlug = await getSlugById(slug);
