@@ -1,7 +1,7 @@
 "use client";
 
-import { usePathname, useRouter } from "@/i18n/navigation";
-import { Link } from "@/i18n/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { scrambleThen } from "@/lib/home-text-scramble";
 
