@@ -81,8 +81,20 @@ export default async function Blogs() {
 
                     const slug = metas.find((m) => m.id === blog.id)?.slug || blog.id;
 
+                    const coverSrc =
+                        blog.cover?.type === "external"
+                            ? blog.cover.external.url
+                            : blog.cover?.type === "file"
+                              ? blog.cover.file.url
+                              : null;
+
                     return (
-                        <BlogListLink key={blog.id} href={`/blog/${slug}`} slug={slug}>
+                        <BlogListLink
+                            key={blog.id}
+                            href={`/blog/${slug}`}
+                            slug={slug}
+                            coverPrefetchSrc={coverSrc}
+                        >
                             <div className="flex justify-between items-start gap-4">
                                 <div className="flex flex-col gap-1 h-full justify-center mt-1">
                                     <h2 className="text-lg sm:text-xl font-[550] group-hover:underline text-wrap leading-[1.3]">
@@ -97,14 +109,10 @@ export default async function Blogs() {
                                             blog.properties.Abstract.rich_text[0]?.plain_text}
                                     </p>
                                 </div>
-                                {blog.cover && (
+                                {blog.cover && coverSrc && (
                                     <div className="min-w-28 max-w-28 sm:min-w-40 sm:max-w-40 mt-2">
                                         <Image
-                                            src={
-                                                blog.cover?.type === "external"
-                                                    ? blog.cover.external.url
-                                                    : blog.cover.file.url
-                                            }
+                                            src={coverSrc}
                                             alt={`${title} cover image`}
                                             width={160}
                                             height={90}
