@@ -90,7 +90,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                                 <TypewriterText key={fullText} text={fullText} />
                             </p>
                         </div>
-                        <div className="flex gap-3 flex-wrap mt-5 text-sm sm:text-base">
+                        <div className="flex gap-2 sm:gap-3 flex-wrap mt-5 text-sm sm:text-base">
                             {[
                                 {
                                     label: content.links.github,
