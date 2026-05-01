@@ -219,7 +219,7 @@ main.at-page-end .invisible-at-end {
 
 /* ── View transitions (Next.js experimental.viewTransition + React ViewTransition) ── */
 :root {
-    --vt-project-duration: 420ms;
+    --vt-project-duration: 280ms;
     --vt-blog-duration: 380ms;
     --vt-home-duration: 520ms;
     --vt-home-exit-duration: 480ms;
@@ -314,12 +314,14 @@ main.at-page-end .invisible-at-end {
 ::view-transition-group(.project-open) {
     animation-duration: var(--vt-project-duration);
     animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+    z-index: 101;
 }
 
 ::view-transition-image-pair(.project-open) {
     animation-name: vt-project-morph;
     animation-duration: var(--vt-project-duration);
     animation-timing-function: cubic-bezier(0.32, 0.72, 0.36, 1);
+    z-index: 101;
 }
 
 ::view-transition-old(.blog-open) {

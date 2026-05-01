@@ -4,7 +4,6 @@ import { type PageObjectResponse } from "@notionhq/client";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ViewTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import { OpenViewerLink } from "@/components/viewer";
 import { GitHubLogoIcon, GlobeIcon } from "@radix-ui/react-icons";
@@ -12,6 +11,7 @@ import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { createPageMetadata } from "@/lib/seo";
+import { ProjectCardTransition } from "./_components/project-card-transition";
 
 export const metadata: Metadata = {
     ...createPageMetadata({
@@ -88,7 +88,7 @@ export default async function Projects() {
                         const url =
                             project.properties["URL"]?.type === "url" &&
                             project.properties["URL"]?.url;
-                        const force_redirects = ["chromewebstore.google.com", "notion.site"];
+                        const force_redirects = ["chromewebstore.google.com", "notion.site", "streamlit.app"];
                         const redirect =
                             url &&
                             force_redirects.some((domain) => {
@@ -112,9 +112,9 @@ export default async function Projects() {
                                         transitionName={project.id}
                                         className="group"
                                     >
-                                        <ViewTransition name={project.id} share="project-open">
+                                        <ProjectCardTransition name={project.id}>
                                             <ProjectContent project={project} />
-                                        </ViewTransition>
+                                        </ProjectCardTransition>
                                     </OpenViewerLink>
                                 )}
 
@@ -195,7 +195,7 @@ const ProjectContent = ({ project }: { project: PageObjectResponse }) => {
                 </div>
             )}
             <div className="flex flex-col gap-1 px-4 pt-2 border-t">
-                <h2 className="text-lg sm:text-lg font-[550] group-hover:underline break-words">
+                <h2 className="text-lg sm:text-lg font-[550] group-hover:underline wrap-break-word">
                     {title}
                 </h2>
                 <p className="text-sm font-[350]">

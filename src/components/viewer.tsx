@@ -114,7 +114,7 @@ export default function Viewer() {
 
     const panel = (
         <div
-            className={`max-h-dvh relative z-10 rounded-2xl border border-gray-300 dark:border-neutral-700 shadow-lg shadow-gray-400/10 dark:shadow-gray-900/50 overflow-auto m-1 md:m-6 flex flex-col w-full max-w-280 ${isVisible ? "scale-100 opacity-100" : "scale-0 opacity-0"} transition-all`}
+            className={`max-h-dvh relative z-10 rounded-2xl border border-gray-300 dark:border-neutral-700 shadow-lg shadow-gray-400/10 dark:shadow-gray-900/50 overflow-auto m-1 md:m-6 flex flex-col w-full max-w-280 ${isVisible ? "scale-100 opacity-100" : "scale-0 opacity-0"} transition-all duration-200`}
         >
             <div
                 className="flex w-full justify-end  bg-accent border-b"
@@ -150,11 +150,11 @@ export default function Viewer() {
 
     return (
         <div
-            className={`fixed top-0 left-0 w-screen h-screen flex justify-center items-stretch z-100! transition-all border-0 ${isVisible ? "" : "pointer-events-none"}`}
+            className={`fixed top-0 left-0 w-screen h-screen flex justify-center items-stretch z-9999 transition-all border-0 ${isVisible ? "" : "pointer-events-none"}`}
             onClick={closeViewer}
         >
             <div
-                className={`absolute inset-0 transition-opacity bg-black/20 ${isVisible ? "opacity-100" : "opacity-0"}`}
+                className={`absolute inset-0 z-0 transition-opacity duration-150 bg-black/20 ${isVisible ? "opacity-100" : "opacity-0"}`}
             />
             {shareName && isVisible ? (
                 <ViewTransition name={shareName} share="project-open" default="none">
