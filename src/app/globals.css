@@ -216,3 +216,163 @@ main.at-page-end .invisible-at-end {
     background: transparent;
     width: 0;
 }
+
+/* ── View transitions (Next.js experimental.viewTransition + React ViewTransition) ── */
+:root {
+    --vt-project-duration: 280ms;
+    --vt-blog-duration: 380ms;
+    --vt-home-duration: 520ms;
+    --vt-home-exit-duration: 480ms;
+}
+
+@keyframes vt-project-morph {
+    0% {
+        filter: brightness(1) blur(0);
+    }
+    45% {
+        filter: brightness(1.08) blur(2px);
+    }
+    100% {
+        filter: brightness(1) blur(0);
+    }
+}
+
+@keyframes vt-blog-open-old {
+    to {
+        opacity: 0.35;
+        filter: blur(2px);
+        transform: scale(0.985);
+    }
+}
+
+@keyframes vt-blog-open-new {
+    from {
+        opacity: 0.2;
+        filter: blur(3px);
+        transform: scale(0.97) translateY(6px);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0);
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes vt-home-scan {
+    from {
+        opacity: 0.35;
+        clip-path: inset(0 0 100% 0);
+        filter: contrast(1.2) saturate(0.85);
+    }
+    55% {
+        opacity: 1;
+        clip-path: inset(0 0 0 0);
+    }
+    to {
+        opacity: 1;
+        clip-path: inset(0 0 0 0);
+        filter: contrast(1) saturate(1);
+    }
+}
+
+@keyframes vt-home-exit {
+    from {
+        opacity: 1;
+        filter: blur(0) brightness(1);
+    }
+    40% {
+        filter: blur(1px) brightness(1.15);
+    }
+    to {
+        opacity: 0.15;
+        filter: blur(6px) brightness(1.35);
+        transform: scale(0.99);
+    }
+}
+
+@keyframes vt-home-enter-soft {
+    from {
+        opacity: 0.55;
+        filter: blur(2px);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+@keyframes vt-home-exit-soft {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0.65;
+        filter: blur(1px);
+    }
+}
+
+::view-transition-group(.project-open) {
+    animation-duration: var(--vt-project-duration);
+    animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+    z-index: 101;
+}
+
+::view-transition-image-pair(.project-open) {
+    animation-name: vt-project-morph;
+    animation-duration: var(--vt-project-duration);
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0.36, 1);
+    z-index: 101;
+}
+
+::view-transition-old(.blog-open) {
+    animation: vt-blog-open-old var(--vt-blog-duration) cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+::view-transition-new(.blog-open) {
+    animation: vt-blog-open-new var(--vt-blog-duration) cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+::view-transition-new(.home-enter) {
+    animation: vt-home-scan var(--vt-home-duration) cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+::view-transition-old(.home-exit) {
+    animation: vt-home-exit var(--vt-home-exit-duration) cubic-bezier(0.4, 0.05, 0.65, 1) both;
+}
+
+::view-transition-new(.home-enter-soft) {
+    animation: vt-home-enter-soft 280ms ease-out both;
+}
+
+::view-transition-old(.home-exit-soft) {
+    animation: vt-home-exit-soft 220ms ease-in both;
+}
+
+::view-transition-group(site-header) {
+    animation: none;
+    z-index: 100;
+}
+
+::view-transition-old(site-header) {
+    display: none;
+}
+
+::view-transition-new(site-header) {
+    animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --vt-project-duration: 1ms;
+        --vt-blog-duration: 1ms;
+        --vt-home-duration: 1ms;
+        --vt-home-exit-duration: 1ms;
+    }
+
+    ::view-transition-old(*),
+    ::view-transition-new(*),
+    ::view-transition-group(*) {
+        animation-duration: 0s !important;
+        animation-delay: 0s !important;
+    }
+}

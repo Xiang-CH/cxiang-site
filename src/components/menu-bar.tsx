@@ -1,22 +1,26 @@
 "use client";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { scrambleThen } from "@/lib/home-text-scramble";
 
 const menuItems = [
     { href: "/", label: "Home" },
     { href: "/project", label: "Project" },
     { href: "/blog", label: "Blog" },
-];
+] as const;
 const homePaths = ["/", "/en", "/zh-CN"];
 
 export default function MenuBar() {
     const currentPath = usePathname();
+    const router = useRouter();
     const isHomeRoute = homePaths.includes(currentPath);
 
     return (
         <>
             <header
+                style={{ viewTransitionName: "site-header" }}
                 className={cn(
                     !isHomeRoute && "fixed",
                     "w-full top-0 px-5 box-border z-1 header transition-[top] backdrop-blur-[3px] bg-background",
@@ -27,6 +31,7 @@ export default function MenuBar() {
                     <div className="flex items-center gap-4">
                         <Link
                             href="/"
+                            transitionTypes={["to-home"]}
                             className={`text-xl font-bold ${isHomeRoute ? "opacity-0" : "opacity-100"} transition-opacity duration-500`}
                             id="header-name"
                         >
@@ -38,6 +43,28 @@ export default function MenuBar() {
                             <Link
                                 key={item.href}
                                 href={item.href}
+                                transitionTypes={
+                                    item.href === "/"
+                                        ? ["to-home"]
+                                        : isHomeRoute
+                                          ? ["from-home"]
+                                          : undefined
+                                }
+                                onNavigate={
+                                    isHomeRoute && item.href !== "/"
+                                        ? (e) => {
+                                              const scope =
+                                                  document.querySelector(".home-scramble-scope");
+                                              if (!(scope instanceof Element)) return;
+                                              e.preventDefault();
+                                              scrambleThen(scope, () => {
+                                                  router.push(item.href, {
+                                                      transitionTypes: ["from-home"],
+                                                  });
+                                              });
+                                          }
+                                        : undefined
+                                }
                                 className={cn(
                                     "flex items-center gap-1.5 text-card-foreground overflow-x-hidden",
                                     (currentPath.startsWith(item.href) && item.href !== "/") ||
@@ -46,7 +73,6 @@ export default function MenuBar() {
                                         : "text-muted-foreground hover:text-primary transition-colors"
                                 )}
                             >
-                                {/* {item.icon} */}
                                 {item.label}
                             </Link>
                         ))}

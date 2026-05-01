@@ -3,7 +3,7 @@ import { getBlogs, getAllPostsMeta, type PostMeta } from "@/lib/notion";
 import { type PageObjectResponse } from "@notionhq/client";
 import { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import { BlogListLink } from "./_components/blog-list-link";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { CACHE_TAGS } from "@/lib/cache-tags";
@@ -81,11 +81,19 @@ export default async function Blogs() {
 
                     const slug = metas.find((m) => m.id === blog.id)?.slug || blog.id;
 
+                    const coverSrc =
+                        blog.cover?.type === "external"
+                            ? blog.cover.external.url
+                            : blog.cover?.type === "file"
+                              ? blog.cover.file.url
+                              : null;
+
                     return (
-                        <Link
-                            href={`/blog/${slug}`}
-                            className="w-full items-center group"
+                        <BlogListLink
                             key={blog.id}
+                            href={`/blog/${slug}`}
+                            slug={slug}
+                            coverPrefetchSrc={coverSrc}
                         >
                             <div className="flex justify-between items-start gap-4">
                                 <div className="flex flex-col gap-1 h-full justify-center mt-1">
@@ -101,14 +109,10 @@ export default async function Blogs() {
                                             blog.properties.Abstract.rich_text[0]?.plain_text}
                                     </p>
                                 </div>
-                                {blog.cover && (
+                                {blog.cover && coverSrc && (
                                     <div className="min-w-28 max-w-28 sm:min-w-40 sm:max-w-40 mt-2">
                                         <Image
-                                            src={
-                                                blog.cover?.type === "external"
-                                                    ? blog.cover.external.url
-                                                    : blog.cover.file.url
-                                            }
+                                            src={coverSrc}
                                             alt={`${title} cover image`}
                                             width={160}
                                             height={90}
@@ -118,7 +122,7 @@ export default async function Blogs() {
                                     </div>
                                 )}
                             </div>
-                        </Link>
+                        </BlogListLink>
                     );
                 })}
             </main>

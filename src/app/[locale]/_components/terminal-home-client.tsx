@@ -1,52 +1,19 @@
 import "./terminal-home-client.css";
+import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
-import { locales } from "@/i18n/routing";
 import { skills } from "./skills";
 import { TypewriterText } from "./typewriter-text-client";
 import { GitHubLogoIcon, LinkedInLogoIcon, FileTextIcon } from "@radix-ui/react-icons";
 import XTwitterIcon from "@/components/icons/twitter-icon";
 import Shuffle from "@/components/shuffle";
+import type { TerminalContent } from "./terminal-content";
+import { TerminalHomeLocalePicker } from "./terminal-home-locale-picker";
+import { TerminalHomeViewTransition } from "./terminal-home-view-transition";
+import { locales } from "@/i18n/routing";
 
-export type TerminalContent = {
-    locale: string;
-    onboarding: string;
-    systemInfo: string;
-    agentMsg: string;
-    name: string;
-    nameSecondary: string;
-    typedRole: string;
-    sysInit: string;
-    sysKernel: string;
-    links: {
-        github: string;
-        linkedin: string;
-        x: string;
-        resume: string;
-    };
-    about: string;
-    stack: string;
-    contactIntro: string;
-    sectionLabels: {
-        about: string;
-        skills: string;
-        experience: string;
-        contact: string;
-    };
-    skillLabels: {
-        languages: string;
-        frameworks: string;
-        tools: string;
-    };
-    experience: Array<{
-        role: string;
-        org: string;
-        period: string;
-        website: string;
-        commit: string;
-    }>;
-};
+export type { TerminalContent } from "./terminal-content";
 
-function Box({ label, children }: { label: string; children: React.ReactNode }) {
+function Box({ label, children }: { label: string; children: ReactNode }) {
     return (
         <div className="relative border border-(--th-border) p-[clamp(0.75rem,2vw,1.25rem)] mb-8">
             <span className="absolute top-[-0.6em] left-4 bg-(--th-bg) px-[0.4em] text-[0.65rem] tracking-[0.2em] uppercase text-(--th-dim)">
@@ -57,7 +24,7 @@ function Box({ label, children }: { label: string; children: React.ReactNode }) 
     );
 }
 
-function Cmd({ children }: { children: React.ReactNode }) {
+function Cmd({ children }: { children: ReactNode }) {
     return (
         <p className="text-[0.72rem] text-(--th-accent) tracking-[0.2em] uppercase mb-2">
             {children}
@@ -69,250 +36,239 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
     const fullText = content.typedRole;
 
     return (
-        <main
-            className={`font-mono terminal-page min-h-screen bg-(--th-bg) text-(--th-text) pt-2 pb-4`}
-        >
-            <div className="relative z-1 max-w-215 mx-auto">
-                {/* ── Locale Onboarding ───────────────── */}
-                <Box label={content.onboarding}>
-                    {/*<Cmd>$ select --language</Cmd>*/}
-                    <div className="flex gap-4 flex-wrap">
-                        {Object.entries(locales).map(([code, name]) => {
-                            const isActive = code === content.locale;
-                            return (
-                                <Link
-                                    key={code}
-                                    href="/"
-                                    locale={code}
-                                    className={`no-underline text-[0.88rem] transition-[color,border-color] duration-150 border-b ${
-                                        isActive
-                                            ? "text-(--th-text) font-bold border-b-(--th-accent)"
-                                            : "text-(--th-dim) font-normal border-b-(--th-link-ul)"
-                                    }`}
-                                >
-                                    {name}
-                                </Link>
-                            );
-                        })}
-                    </div>
-                </Box>
+        <TerminalHomeViewTransition>
+            <main
+                className={`font-mono terminal-page home-scramble-scope min-h-screen bg-(--th-bg) text-(--th-text) pt-2 pb-4`}
+            >
+                <div className="relative z-1 max-w-215 mx-auto">
+                    {/* ── Locale Onboarding ───────────────── */}
+                    <Box label={content.onboarding}>
+                        <TerminalHomeLocalePicker currentLocale={content.locale} />
+                    </Box>
 
-                {/* ── Boot / Identity ─────────────────── */}
-                <Box label={content.systemInfo}>
-                    <p className="text-[0.7rem] text-(--th-dim) mb-[0.4rem]">{content.sysInit}</p>
-                    <p className="text-[0.7rem] text-(--th-dim) mb-[0.4rem]">
-                        {content.agentMsg}{" "}
-                        <Link href="/llms.txt" className="text-(--th-dim)! th-link">
-                            /llms.txt
-                        </Link>
-                    </p>
-                    {/* <p className="text-[0.7rem] text-(--th-dim) mb-4">{content.sysKernel}</p> */}
-                    <Cmd>$ whoami</Cmd>
-                    <div className="pl-4 border-l-2 border-l-[rgba(200,164,90,0.22)] pt-3">
-                        <Shuffle
-                            text="Chen Xiang"
-                            shuffleDirection="right"
-                            duration={0.35}
-                            animationMode="evenodd"
-                            shuffleTimes={1}
-                            ease="power3.out"
-                            stagger={0.03}
-                            threshold={0.1}
-                            triggerOnce={true}
-                            triggerOnHover
-                            respectReducedMotion={true}
-                            loop={false}
-                            tag="h1"
-                            loopDelay={10}
-                            textAlign="left"
-                            className="text-[3rem] tracking-tighter scale-y-115"
-                        />
-                        {content.locale != "en" && (
-                            <h2 className="text-[clamp(1.5rem,2vw,2.5rem)] opacity-40 leading-none">
-                                <TypewriterText key={content.name} text={content.name} noCursor />
-                            </h2>
-                        )}
-                        <p className="text-[clamp(0.8rem,1.8vw,1rem)] text-(--th-accent) mt-1">
-                            <TypewriterText key={fullText} text={fullText} />
+                    {/* ── Boot / Identity ─────────────────── */}
+                    <Box label={content.systemInfo}>
+                        <p className="text-[0.7rem] text-(--th-dim) mb-[0.4rem]">
+                            {content.sysInit}
                         </p>
-                    </div>
-                    <div className="flex gap-3 flex-wrap mt-5 text-sm sm:text-base">
-                        {[
-                            {
-                                label: content.links.github,
-                                href: "https://github.com/Xiang-CH",
-                                icon: <GitHubLogoIcon width={13} />,
-                            },
-                            {
-                                label: content.links.linkedin,
-                                href: "https://www.linkedin.com/in/xiang-chen-62389526a/",
-                                icon: <LinkedInLogoIcon width={13} />,
-                            },
-                            {
-                                label: content.links.x,
-                                href: "https://x.com/cxiiang",
-                                icon: <XTwitterIcon size={13} />,
-                            },
-                            {
-                                label: content.links.resume,
-                                href: "https://cdn.cxiang.site/resume_chen_xiang.pdf",
-                                icon: <FileTextIcon width={13} />,
-                            },
-                        ].map((l) => (
-                            <a
-                                key={l.label}
-                                href={l.href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="th-link flex items-center gap-1 text-sm sm:text-base"
-                            >
-                                {l.icon} <span>{l.label}</span>
-                            </a>
-                        ))}
-                    </div>
-                </Box>
-
-                {/* ── About ────────────────────────────── */}
-                <Box label={content.sectionLabels.about}>
-                    <Cmd>$ cat about.txt</Cmd>
-                    {content.about.split("\n").map((line, i) => (
-                        <p
-                            key={i}
-                            className={`text-[clamp(0.85rem,1.8vw,0.97rem)] leading-[1.6] text-(--th-text)${i > 0 ? " mt-4" : ""}`}
-                        >
-                            {line}
+                        <p className="text-[0.7rem] text-(--th-dim) mb-[0.4rem]">
+                            {content.agentMsg}{" "}
+                            <Link href="/llms.txt" className="text-(--th-dim)! th-link">
+                                /llms.txt
+                            </Link>
                         </p>
-                    ))}
-                    <p className="text-[clamp(0.85rem,1.8vw,0.97rem)] leading-[1.6] text-(--th-text) mt-4">
-                        {content.stack}
-                    </p>
-                </Box>
-
-                {/* ── Experience ───────────────────────── */}
-                <Box label={content.sectionLabels.experience}>
-                    <Cmd>$ git log --experience</Cmd>
-                    <div className="flex flex-col gap-4">
-                        {content.experience.map((e) => (
-                            <div
-                                key={e.commit}
-                                className="pl-4 border-l-2 border-l-[rgba(200,164,90,0.22)]"
-                            >
-                                <p className="text-[0.65rem] text-(--th-accent) mb-[0.15rem]">
-                                    commit {e.commit}
-                                </p>
-                                <p className="text-[clamp(0.85rem,1.8vw,0.97rem)] font-semibold text-(--th-bright) ">
-                                    {e.role}
-                                </p>
+                        <Cmd>$ whoami</Cmd>
+                        <div className="pl-4 border-l-2 border-l-[rgba(200,164,90,0.22)] pt-3">
+                            <Shuffle
+                                text="Chen Xiang"
+                                shuffleDirection="right"
+                                duration={0.35}
+                                animationMode="evenodd"
+                                shuffleTimes={1}
+                                ease="power3.out"
+                                stagger={0.03}
+                                threshold={0.1}
+                                triggerOnce={true}
+                                triggerOnHover
+                                respectReducedMotion={true}
+                                loop={false}
+                                tag="h1"
+                                loopDelay={10}
+                                textAlign="left"
+                                className="text-[3rem] tracking-tighter scale-y-115"
+                            />
+                            {content.locale != "en" && (
+                                <h2 className="text-[clamp(1.5rem,2vw,2.5rem)] opacity-40 leading-none">
+                                    <TypewriterText
+                                        key={content.name}
+                                        text={content.name}
+                                        noCursor
+                                    />
+                                </h2>
+                            )}
+                            <p className="text-[clamp(0.8rem,1.8vw,1rem)] text-(--th-accent) mt-1">
+                                <TypewriterText key={fullText} text={fullText} />
+                            </p>
+                        </div>
+                        <div className="flex gap-2 sm:gap-3 flex-wrap mt-5 text-sm sm:text-base">
+                            {[
+                                {
+                                    label: content.links.github,
+                                    href: "https://github.com/Xiang-CH",
+                                    icon: <GitHubLogoIcon width={13} />,
+                                },
+                                {
+                                    label: content.links.linkedin,
+                                    href: "https://www.linkedin.com/in/xiang-chen-62389526a/",
+                                    icon: <LinkedInLogoIcon width={13} />,
+                                },
+                                {
+                                    label: content.links.x,
+                                    href: "https://x.com/cxiiang",
+                                    icon: <XTwitterIcon size={13} />,
+                                },
+                                {
+                                    label: content.links.resume,
+                                    href: "https://cdn.cxiang.site/resume_chen_xiang.pdf",
+                                    icon: <FileTextIcon width={13} />,
+                                },
+                            ].map((l) => (
                                 <a
-                                    href={e.website}
+                                    key={l.label}
+                                    href={l.href}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="th-link text-[0.82rem]"
+                                    className="th-link flex items-center gap-1 text-sm sm:text-base"
                                 >
-                                    {e.org}
+                                    {l.icon} <span>{l.label}</span>
                                 </a>
-                                <p className="text-[0.72rem] text-(--th-dim) mt-[0.15rem]">
-                                    {e.period}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                </Box>
+                            ))}
+                        </div>
+                    </Box>
 
-                {/* ── Skills ───────────────────────────── */}
-                <Box label={content.sectionLabels.skills}>
-                    <Cmd>$ ls ./skills/</Cmd>
-                    <div className="flex flex-col gap-4">
-                        {[
-                            { label: content.skillLabels.languages, items: skills.languages },
-                            { label: content.skillLabels.frameworks, items: skills.frameworks },
-                            { label: content.skillLabels.tools, items: skills.tools },
-                        ].map((s) => (
-                            <div key={s.label}>
-                                <p className="flex items-center gap-2 text-[0.75rem] text-(--th-dim) mb-[0.4rem]">
-                                    <span className="text-(--th-accent) select-none">◇</span>
-                                    {s.label}/
-                                </p>
-                                <div className="flex">
-                                    <div className="ml-[0.2rem] pl-5 border-l border-(--th-border)" />
-                                    <div className="flex flex-wrap">
-                                        {s.items.map((sk) => (
-                                            <a
-                                                key={sk.name}
-                                                href={sk.href}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="th-skill"
-                                            >
-                                                {sk.name}
-                                            </a>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </Box>
-
-                {/* ── Contact ──────────────────────────── */}
-                <Box label={content.sectionLabels.contact}>
-                    <Cmd>$ vim contact.json</Cmd>
-                    {/*<p className="text-[0.78rem] text-(--th-dim) mb-3">{content.contactIntro}</p>*/}
-                    <div className="text-[clamp(0.78rem,1.6vw,0.9rem)] leading-loose">
-                        <p className="text-(--th-dim)">{"{"}</p>
-                        {[
-                            {
-                                key: "email",
-                                value: "xiiang.ch@gmail.com",
-                                href: "mailto:xiiang.ch@gmail.com",
-                            },
-                            {
-                                key: "github",
-                                value: "Xiang-CH",
-                                href: "https://github.com/Xiang-CH",
-                            },
-                            {
-                                key: "linkedin",
-                                value: "Xiang Chen",
-                                href: "https://www.linkedin.com/in/xiang-chen-62389526a/",
-                            },
-                            {
-                                key: "twitter",
-                                value: "@cxiiang",
-                                href: "https://x.com/cxiiang",
-                            },
-                            {
-                                key: "instagram",
-                                value: "@chen.xiiang",
-                                href: "https://www.instagram.com/chen.xiiang/",
-                            },
-                        ].map((c, i, arr) => (
-                            <p key={c.key} className="pl-6">
-                                <span className="text-(--th-dim)">&quot;</span>
-                                <span className="text-(--th-accent)">{c.key}</span>
-                                <span className="text-(--th-dim)">&quot;: &quot;</span>
-                                {c.href ? (
-                                    <a
-                                        href={c.href}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="th-link"
-                                    >
-                                        {c.value}
-                                    </a>
-                                ) : (
-                                    <span className="text-(--th-text)">{c.value}</span>
-                                )}
-                                <span className="text-(--th-dim)">&quot;</span>
-                                {i < arr.length - 1 && <span className="text-(--th-dim)">,</span>}
+                    {/* ── About ────────────────────────────── */}
+                    <Box label={content.sectionLabels.about}>
+                        <Cmd>$ cat about.txt</Cmd>
+                        {content.about.split("\n").map((line, i) => (
+                            <p
+                                key={i}
+                                className={`text-[clamp(0.85rem,1.8vw,0.97rem)] leading-[1.6] text-(--th-text)${i > 0 ? " mt-4" : ""}`}
+                            >
+                                {line}
                             </p>
                         ))}
-                        <p className="text-(--th-dim)">{"}"}</p>
-                        <p className="text-(--th-dim)">{"~"}</p>
-                        <p className="text-(--th-dim)">{`"contact.json" 7L, 139B`}</p>
-                    </div>
-                </Box>
-            </div>
-        </main>
+                        <p className="text-[clamp(0.85rem,1.8vw,0.97rem)] leading-[1.6] text-(--th-text) mt-4">
+                            {content.stack}
+                        </p>
+                    </Box>
+
+                    {/* ── Experience ───────────────────────── */}
+                    <Box label={content.sectionLabels.experience}>
+                        <Cmd>$ git log --experience</Cmd>
+                        <div className="flex flex-col gap-4">
+                            {content.experience.map((e) => (
+                                <div
+                                    key={e.commit}
+                                    className="pl-4 border-l-2 border-l-[rgba(200,164,90,0.22)]"
+                                >
+                                    <p className="text-[0.65rem] text-(--th-accent) mb-[0.15rem]">
+                                        commit {e.commit}
+                                    </p>
+                                    <p className="text-[clamp(0.85rem,1.8vw,0.97rem)] font-semibold text-(--th-bright) ">
+                                        {e.role}
+                                    </p>
+                                    <a
+                                        href={e.website}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="th-link text-[0.82rem]"
+                                    >
+                                        {e.org}
+                                    </a>
+                                    <p className="text-[0.72rem] text-(--th-dim) mt-[0.15rem]">
+                                        {e.period}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </Box>
+
+                    {/* ── Skills ───────────────────────────── */}
+                    <Box label={content.sectionLabels.skills}>
+                        <Cmd>$ ls ./skills/</Cmd>
+                        <div className="flex flex-col gap-4">
+                            {[
+                                { label: content.skillLabels.languages, items: skills.languages },
+                                { label: content.skillLabels.frameworks, items: skills.frameworks },
+                                { label: content.skillLabels.tools, items: skills.tools },
+                            ].map((s) => (
+                                <div key={s.label}>
+                                    <p className="flex items-center gap-2 text-[0.75rem] text-(--th-dim) mb-[0.4rem]">
+                                        <span className="text-(--th-accent) select-none">◇</span>
+                                        {s.label}/
+                                    </p>
+                                    <div className="flex">
+                                        <div className="ml-[0.2rem] pl-5 border-l border-(--th-border)" />
+                                        <div className="flex flex-wrap">
+                                            {s.items.map((sk) => (
+                                                <a
+                                                    key={sk.name}
+                                                    href={sk.href}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="th-skill"
+                                                >
+                                                    {sk.name}
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </Box>
+
+                    {/* ── Contact ──────────────────────────── */}
+                    <Box label={content.sectionLabels.contact}>
+                        <Cmd>$ vim contact.json</Cmd>
+                        <div className="text-[clamp(0.78rem,1.6vw,0.9rem)] leading-loose">
+                            <p className="text-(--th-dim)">{"{"}</p>
+                            {[
+                                {
+                                    key: "email",
+                                    value: "xiiang.ch@gmail.com",
+                                    href: "mailto:xiiang.ch@gmail.com",
+                                },
+                                {
+                                    key: "github",
+                                    value: "Xiang-CH",
+                                    href: "https://github.com/Xiang-CH",
+                                },
+                                {
+                                    key: "linkedin",
+                                    value: "Xiang Chen",
+                                    href: "https://www.linkedin.com/in/xiang-chen-62389526a/",
+                                },
+                                {
+                                    key: "twitter",
+                                    value: "@cxiiang",
+                                    href: "https://x.com/cxiiang",
+                                },
+                                {
+                                    key: "instagram",
+                                    value: "@chen.xiiang",
+                                    href: "https://www.instagram.com/chen.xiiang/",
+                                },
+                            ].map((c, i, arr) => (
+                                <p key={c.key} className="pl-6">
+                                    <span className="text-(--th-dim)">&quot;</span>
+                                    <span className="text-(--th-accent)">{c.key}</span>
+                                    <span className="text-(--th-dim)">&quot;: &quot;</span>
+                                    {c.href ? (
+                                        <a
+                                            href={c.href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="th-link"
+                                        >
+                                            {c.value}
+                                        </a>
+                                    ) : (
+                                        <span className="text-(--th-text)">{c.value}</span>
+                                    )}
+                                    <span className="text-(--th-dim)">&quot;</span>
+                                    {i < arr.length - 1 && (
+                                        <span className="text-(--th-dim)">,</span>
+                                    )}
+                                </p>
+                            ))}
+                            <p className="text-(--th-dim)">{"}"}</p>
+                            <p className="text-(--th-dim)">{"~"}</p>
+                            <p className="text-(--th-dim)">{`"contact.json" 7L, 139B`}</p>
+                        </div>
+                    </Box>
+                </div>
+            </main>
+        </TerminalHomeViewTransition>
     );
 }

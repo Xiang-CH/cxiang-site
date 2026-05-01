@@ -4,7 +4,7 @@ import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { createPageMetadata, getLocalePath } from "@/lib/seo";
 import TerminalHomeClient from "./_components/terminal-home-client";
-import type { TerminalContent } from "./_components/terminal-home-client";
+import type { TerminalContent } from "./_components/terminal-content";
 
 type Props = {
     params: Promise<{ locale: string }>;

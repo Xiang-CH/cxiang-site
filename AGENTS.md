@@ -20,13 +20,15 @@ Personal portfolio & blog site (cxiang.site) — Next.js 16 + React 19 + TypeScr
 
 **Bun** — all scripts use `bun --bun next ...`. Lockfile is `bun.lock`.
 
-### Required environment variables
+### Environment variables (Notion)
 
-| Variable                         | Purpose                                                     |
-| -------------------------------- | ----------------------------------------------------------- |
-| `NOTION_SECRET`                  | Notion integration token — app throws on startup without it |
-| `NOTION_PROJECTS_DATA_SOURCE_ID` | Notion data source ID for projects                          |
-| `NOTION_BLOG_DATA_SOURCE_ID`     | Notion data source ID for blog posts                        |
+| Variable                         | Purpose                              |
+| -------------------------------- | ------------------------------------ |
+| `NOTION_SECRET`                  | Notion integration token             |
+| `NOTION_PROJECTS_DATA_SOURCE_ID` | Notion data source ID for projects   |
+| `NOTION_BLOG_DATA_SOURCE_ID`     | Notion data source ID for blog posts |
+
+If **all three** are set, blog and project pages load from Notion. If any are missing (typical for local `next build` / CI without secrets), the app uses empty project/blog lists and `next build` still completes; production should always set them for real content.
 
 ### Common commands
 
