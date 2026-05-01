@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { ChevronDown, Copy, ExternalLink, Link2 } from "lucide-react";
+import { ChevronDown, Copy, ExternalLink, Link2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { MarkdownIcon } from "@/components/icons/markdown";
 import { OpenaiIcon, ClaudeIcon, KimiIcon } from "@/components/icons";
@@ -76,17 +76,22 @@ export default function CopyPageMenu({ slug }: { slug: string }) {
     ];
 
     return (
-        <div className="blog-copy-page-menu flex max-w-full min-w-0">
+        <div className="blog-copy-page-menu flex max-w-full relative">
             <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-8 min-w-0 flex-1 shrink gap-1.5 rounded-r-none border-r-0 px-2.5 text-xs shadow-xs"
+                className="h-8 w-38 flex-1 shrink gap-1.5 rounded-r-none border-r-0 px-2.5 text-xs shadow-xs justify-start"
                 disabled={copying}
+                aria-busy={copying}
                 onClick={() => void copyPageMarkdown()}
             >
-                <Copy className="size-3.5 shrink-0" aria-hidden />
-                <span className="truncate">Copy as Markdown</span>
+                {copying ? (
+                    <Loader2 className="size-3.5 shrink-0 animate-spin" aria-hidden />
+                ) : (
+                    <Copy className="size-3.5 shrink-0" aria-hidden />
+                )}
+                <span className="truncate">{copying ? "Copying..." : "Copy as Markdown"}</span>
             </Button>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>

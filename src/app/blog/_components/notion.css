@@ -69,6 +69,10 @@ a.notion-table-of-contents-active-item {
     font-weight: 500 !important;
 }
 
+.notion-page-content-inner{
+    margin-bottom: 1rem !important;
+}
+
 @media (prefers-color-scheme: dark) {
     a.notion-table-of-contents-active-item {
         color: #afc0ee !important;
