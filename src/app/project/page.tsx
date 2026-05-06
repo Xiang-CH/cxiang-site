@@ -88,7 +88,11 @@ export default async function Projects() {
                         const url =
                             project.properties["URL"]?.type === "url" &&
                             project.properties["URL"]?.url;
-                        const force_redirects = ["chromewebstore.google.com", "notion.site", "streamlit.app"];
+                        const force_redirects = [
+                            "chromewebstore.google.com",
+                            "notion.site",
+                            "streamlit.app",
+                        ];
                         const redirect =
                             url &&
                             force_redirects.some((domain) => {
