@@ -27,18 +27,28 @@
             "label": "Experience",
             "organizations": [
                 {
+                    "position": "AI Developer Intern - LLM",
+                    "company": "Apple Inc.",
+                    "website": "https://www.apple.com",
+                    "logo": "/images/apple-logo.png",
+                    "duration": "May 2026 - Present",
+                    "commit": "a7f3c2e"
+                },
+                {
                     "position": "Research Assistant (LLM Application)",
                     "company": "The University of Hong Kong",
                     "website": "https://www.hku.hk",
                     "logo": "/images/hku-logo.png",
-                    "duration": "June 2023 - May 2024, Sep 2024 - Present"
+                    "duration": "June 2023 - May 2024, Sep 2024 - Present",
+                    "commit": "1b9d4f8"
                 },
                 {
                     "position": "Assistant Software Development Engineer (Intern)",
                     "company": "iFLYTEK Co., Ltd.",
                     "website": "https://www.iflytek.com",
                     "logo": "/images/iflytek-logo-mono.png",
-                    "duration": "Jun 2024 - Aug 2024"
+                    "duration": "Jun 2024 - Aug 2024",
+                    "commit": "3c5d6e1"
                 }
             ]
         },

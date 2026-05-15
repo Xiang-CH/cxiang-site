@@ -33,7 +33,7 @@ export default async function Home({ params }: Props) {
 
     const t = await getTranslations();
 
-    type OrgEntry = { position: string; company: string; website: string; duration: string };
+    type OrgEntry = { position: string; company: string; website: string; duration: string; commit: string };
     const orgs: OrgEntry[] = t.raw("main.experience.organizations") as OrgEntry[];
 
     const content: TerminalContent = {
@@ -61,12 +61,12 @@ export default async function Home({ params }: Props) {
             frameworks: t("main.skills.frameworks"),
             tools: t("main.skills.tools"),
         },
-        experience: orgs.map((o, i) => ({
+        experience: orgs.map((o) => ({
             role: o.position,
             org: o.company,
             period: o.duration,
             website: o.website,
-            commit: i === 0 ? "a7f3c2e" : "1b9d4f8",
+            commit: o.commit
         })),
     };
 
