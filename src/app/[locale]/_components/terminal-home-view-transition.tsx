@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
 import { ViewTransition } from "react";
 
+/**
+ * Wraps terminal home content with route-specific view transitions.
+ *
+ * @param children - The content to render within the transition.
+ */
 export function TerminalHomeViewTransition({ children }: { children: ReactNode }) {
     return (
         <ViewTransition

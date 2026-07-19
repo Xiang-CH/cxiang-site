@@ -5,6 +5,11 @@ import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { MarkdownIcon } from "@/components/icons/markdown";
 import { markdownMirrorPathname } from "@/lib/seo";
 
+/**
+ * Renders the site footer with copyright, Markdown, and source code links.
+ *
+ * @returns The footer element, or `null` for CLI routes.
+ */
 export default function SiteFooter() {
     const pathname = usePathname() ?? "/";
     if (pathname === "/cli" || pathname.endsWith("/cli")) return null;
