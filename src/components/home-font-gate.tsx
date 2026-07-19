@@ -40,21 +40,7 @@ export default function HomeFontGate() {
 
     return (
         <>
-            <div
-                className="home-font-gate fixed inset-0 z-[200] grid place-items-center bg-background text-foreground"
-                role="status"
-                aria-live="polite"
-                aria-busy="true"
-            >
-                <div className="font-mono flex items-center gap-3 border border-border px-4 py-3 text-xs tracking-[0.2em] text-muted-foreground uppercase">
-                    <span className="flex gap-1" aria-hidden="true">
-                        <span className="size-1.5 animate-pulse bg-primary motion-reduce:animate-none" />
-                        <span className="size-1.5 animate-pulse bg-primary [animation-delay:150ms] motion-reduce:animate-none" />
-                        <span className="size-1.5 animate-pulse bg-primary [animation-delay:300ms] motion-reduce:animate-none" />
-                    </span>
-                    Summoning pixels
-                </div>
-            </div>
+            <div className="home-font-gate fixed inset-0 z-[200] bg-background" />
             <noscript>
                 <style>{".home-font-gate { display: none !important; }"}</style>
             </noscript>
