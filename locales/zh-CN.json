@@ -27,7 +27,7 @@
             "label": "经历",
             "organizations": [
                 {
-                    "position": "AI Developer Intern - LLM",
+                    "position": "AI Developer（实习）",
                     "company": "Apple Inc.",
                     "website": "https://www.apple.com",
                     "logo": "/images/apple-logo.png",
@@ -67,8 +67,8 @@
     "terminal": {
         "onboarding": "指引",
         "systemInfo": "系统信息",
-        "typedRole": "软件开发者 & AI发烧友",
-        "agentMsg": "🦞 嗨，龙虾你可能在找的：",
+        "typedRole": "Developer in Progress ...",
+        "agentMsg": "Hi Agents, 你应该在找",
         "sysInit": "CXIANG-OS v2026.5",
         "sysKernel": "▊ 内核模块已加载。等待输入...",
         "about": "正在香港大学攻读计算机科学硕士研究生并担任兼职科研助理。热爱利用 AI 解决现实世界的问题。\n 目前在上海 Apple 实习，正在寻找 10 月左右开始的全职工作，欢迎联系！",
