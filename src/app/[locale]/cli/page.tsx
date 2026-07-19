@@ -91,6 +91,9 @@ export default async function CliPage({ params }: Props) {
             searchUsage: t("terminal.cli.searchUsage"),
             grepUsage: t("terminal.cli.grepUsage"),
             commandUsage: t("terminal.cli.commandUsage"),
+            localeUsage: t("terminal.cli.localeUsage"),
+            localeRestart: t.raw("terminal.cli.localeRestart") as string,
+            localeCancelled: t("terminal.cli.localeCancelled"),
             fileExists: t("terminal.cli.fileExists"),
             notDirectory: t("terminal.cli.notDirectory"),
             parentMissing: t("terminal.cli.parentMissing"),
@@ -102,6 +105,8 @@ export default async function CliPage({ params }: Props) {
                 skills: t("terminal.cli.labels.skills"),
                 contact: t("terminal.cli.labels.contact"),
                 date: t("terminal.cli.labels.date"),
+                english: t("terminal.cli.labels.english"),
+                chinese: t("terminal.cli.labels.chinese"),
             },
         },
     };

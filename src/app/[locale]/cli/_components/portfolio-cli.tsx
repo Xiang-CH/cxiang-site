@@ -63,6 +63,9 @@ export type CliContent = {
         searchUsage: string;
         grepUsage: string;
         commandUsage: string;
+        localeUsage: string;
+        localeRestart: string;
+        localeCancelled: string;
         fileExists: string;
         notDirectory: string;
         parentMissing: string;
@@ -74,6 +77,8 @@ export type CliContent = {
             skills: string;
             contact: string;
             date: string;
+            english: string;
+            chinese: string;
         };
     };
 };
@@ -109,6 +114,7 @@ const COMMANDS = [
     "echo",
     "mkdir",
     "touch",
+    "locale",
     "whoami",
     "about",
     "experience",
@@ -140,12 +146,12 @@ const PATHS = [
 ];
 
 const CLI_BANNER = [
-    "   ██████╗██╗  ██╗██╗ █████╗ ███╗   ██╗ ██████╗   ██████╗ ███████╗",
-    "  ██╔════╝╚██╗██╔╝██║██╔══██╗████╗  ██║██╔════╝  ██╔═══██╗██╔════╝",
-    "  ██║      ╚███╔╝ ██║███████║██╔██╗ ██║██║  ███╗ ██║   ██║███████╗",
-    "  ██║      ██╔██╗ ██║██╔══██║██║╚██╗██║██║   ██║ ██║   ██║╚════██║",
-    "  ╚██████╗██╔╝ ██╗██║██║  ██║██║ ╚████║╚██████╔╝ ╚██████╔╝███████║",
-    "   ╚═════╝╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝   ╚═════╝ ╚══════╝",
+    "██╗  ██╗██╗ █████╗ ███╗   ██╗ ██████╗   ██████╗ ███████╗",
+    "╚██╗██╔╝██║██╔══██╗████╗  ██║██╔════╝  ██╔═══██╗██╔════╝",
+    " ╚███╔╝ ██║███████║██╔██╗ ██║██║  ███╗ ██║   ██║███████╗",
+    " ██╔██╗ ██║██╔══██║██║╚██╗██║██║   ██║ ██║   ██║╚════██║",
+    "██╔╝ ██╗██║██║  ██║██║ ╚████║╚██████╔╝ ╚██████╔╝███████║",
+    "╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝   ╚═════╝ ╚══════╝",
 ].join("\n");
 
 function splitOutsideQuotes(input: string, separator: string): string[] {
@@ -297,6 +303,7 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
     const [history, setHistory] = useState<string[]>([]);
     const [historyIndex, setHistoryIndex] = useState<number | null>(null);
     const [suggestions, setSuggestions] = useState<string[]>([]);
+    const [pendingLocale, setPendingLocale] = useState<"en" | "zh-CN" | null>(null);
     const [output, setOutput] = useState<OutputEntry[]>(() => [
         { type: "banner", text: CLI_BANNER },
         { type: "text", text: content.copy.welcome },
@@ -402,8 +409,8 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
     const pathExists = (path: string) =>
         Boolean(virtualNodesRef.current[path]) || isBuiltInDirectory(path) || isBuiltInFile(path);
 
-    const directoryItems = (path: string, items: ListingItem[] = []) => {
-        const dynamicItems = Object.entries(virtualNodesRef.current)
+    const directoryItems = (path: string, items: ListingItem[] = []): CommandResult => {
+        const dynamicItems: ListingItem[] = Object.entries(virtualNodesRef.current)
             .filter(([nodePath]) => parentPath(nodePath) === path)
             .map(([nodePath, node]) => {
                 const name = `${basename(nodePath)}${node.kind === "directory" ? "/" : ""}`;
@@ -435,6 +442,11 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
             entries: [{ type: "link", text: `${content.copy.opened}:`, href, label }],
         };
     };
+
+    const localeName = (locale: "en" | "zh-CN") =>
+        locale === "en" ? content.copy.labels.english : content.copy.labels.chinese;
+
+    const cliHref = (locale: "en" | "zh-CN") => `/${locale}/cli`;
 
     const readPath = (path: string): CommandResult => {
         const virtualNode = virtualNodesRef.current[path];
@@ -526,6 +538,7 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
                       echo: "echo TEXT [> FILE | >> FILE]",
                       mkdir: "mkdir [-p] <path>",
                       touch: "touch <path>",
+                      locale: "locale <en|zh-CN>",
                       search: "search <query> [--in=all|projects|blog]",
                       open: "open <path|project:N|blog:N> [--repo]",
                   }[target]
@@ -680,6 +693,18 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
             }
             return { entries: [] };
         }
+        if (command === "locale") {
+            const requested = args[0]?.toLowerCase();
+            const target = requested === "en" ? "en" : requested === "zh-cn" ? "zh-CN" : null;
+            if (!target || args.length !== 1) {
+                return { entries: [{ type: "text", text: content.copy.localeUsage }] };
+            }
+            if (target === content.locale) {
+                return { entries: [{ type: "text", text: content.copy.localeUsage }] };
+            }
+            setPendingLocale(target);
+            return { entries: [] };
+        }
         if (command === "whoami") return readPath(`${HOME_DIR}/about.txt`);
         if (command === "about") return readPath(`${HOME_DIR}/about.txt`);
         if (command === "experience") return readPath(`${HOME_DIR}/experience.log`);
@@ -758,6 +783,32 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
         const commands = splitOutsideQuotes(value, ";");
         if (!commands.length) return;
 
+        if (pendingLocale) {
+            const answer = value.trim().toLocaleLowerCase();
+            const confirmed = answer === "y" || answer === "yes";
+            const question = content.copy.localeRestart.replace(
+                "{language}",
+                localeName(pendingLocale)
+            );
+            const nextOutput: OutputEntry[] = [
+                {
+                    type: "text",
+                    text: `${question} ${value}`,
+                },
+                ...(confirmed
+                    ? []
+                    : [{ type: "text" as const, text: content.copy.localeCancelled }]),
+            ];
+            setOutput((previous) => [...previous, ...nextOutput]);
+            setHistory((previous) => [...previous, value]);
+            setHistoryIndex(null);
+            setInput("");
+            setSuggestions([]);
+            setPendingLocale(null);
+            if (confirmed) window.location.assign(cliHref(pendingLocale));
+            return;
+        }
+
         const nextOutput: OutputEntry[] = [];
         let clearedTranscript = false;
         for (const commandText of commands) {
@@ -822,6 +873,9 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
                 ...projectItems().map((item) => item.id),
                 ...blogItems().map((item) => item.id),
             ].filter((candidate) => candidate.startsWith(current));
+        } else if (command === "locale") {
+            const current = hasTrailingSpace ? "" : (tokens.at(-1) ?? "");
+            candidates = ["en", "zh-CN"].filter((candidate) => candidate.startsWith(current));
         } else if (command === "search") {
             const current = hasTrailingSpace ? "" : (tokens.at(-1) ?? "");
             candidates = ["--in=all", "--in=projects", "--in=blog"].filter((candidate) =>
@@ -1008,7 +1062,7 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
                         </div>
 
                         <form
-                            className="mt-4"
+                            className={pendingLocale ? "mt-1" : "mt-4"}
                             onSubmit={(event) => {
                                 event.preventDefault();
                                 submit(input);
@@ -1019,16 +1073,31 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
                                     {suggestions.slice(0, 8).join("   ")}
                                 </p>
                             )}
-                            <label className="flex items-center gap-2 text-sm">
+                            <label
+                                className={`flex items-center text-sm ${pendingLocale ? "gap-1" : "gap-2"}`}
+                            >
                                 <span className="shrink-0">
-                                    <span className="mr-2 text-emerald-700 dark:text-emerald-300">
-                                        ➜
-                                    </span>
-                                    <span className="text-cyan-700 dark:text-cyan-300">
-                                        {displayPath(cwd)}
-                                    </span>
+                                    {pendingLocale ? (
+                                        <span className="text-(--th-text)">
+                                            {content.copy.localeRestart.replace(
+                                                "{language}",
+                                                localeName(pendingLocale)
+                                            )}
+                                        </span>
+                                    ) : (
+                                        <>
+                                            <span className="mr-2 text-emerald-700 dark:text-emerald-300">
+                                                ➜
+                                            </span>
+                                            <span className="text-cyan-700 dark:text-cyan-300">
+                                                {displayPath(cwd)}
+                                            </span>
+                                        </>
+                                    )}
                                 </span>
-                                <span className="sr-only">CLI command</span>
+                                <span className="sr-only">
+                                    {pendingLocale ? "Locale restart confirmation" : "CLI command"}
+                                </span>
                                 <input
                                     ref={inputRef}
                                     value={input}
@@ -1074,7 +1143,7 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
                                     autoComplete="off"
                                     spellCheck="false"
                                     className="min-w-0 flex-1 bg-transparent text-(--th-bright) outline-none placeholder:text-(--th-dim)"
-                                    placeholder="help"
+                                    placeholder={pendingLocale ? "" : "help"}
                                 />
                             </label>
                         </form>
