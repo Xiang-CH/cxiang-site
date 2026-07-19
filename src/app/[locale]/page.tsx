@@ -33,7 +33,13 @@ export default async function Home({ params }: Props) {
 
     const t = await getTranslations();
 
-    type OrgEntry = { position: string; company: string; website: string; duration: string; commit: string };
+    type OrgEntry = {
+        position: string;
+        company: string;
+        website: string;
+        duration: string;
+        commit: string;
+    };
     const orgs: OrgEntry[] = t.raw("main.experience.organizations") as OrgEntry[];
 
     const content: TerminalContent = {
@@ -66,7 +72,7 @@ export default async function Home({ params }: Props) {
             org: o.company,
             period: o.duration,
             website: o.website,
-            commit: o.commit
+            commit: o.commit,
         })),
     };
 
