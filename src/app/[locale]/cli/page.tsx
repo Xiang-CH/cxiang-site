@@ -14,6 +14,18 @@ function cliPath(locale: string): string {
     return locale === "en" ? "/cli" : `/${locale}/cli`;
 }
 
+function formatLastUpdate(locale: string): string {
+    const timestamp = process.env.NEXT_PUBLIC_LAST_UPDATE_AT;
+    const date = timestamp ? new Date(timestamp) : null;
+    if (!date || Number.isNaN(date.getTime())) return "—";
+
+    return new Intl.DateTimeFormat(locale, {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: "UTC",
+    }).format(date) + " UTC";
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
     const t = await getTranslations({ locale });
@@ -30,6 +42,7 @@ export default async function CliPage({ params }: Props) {
     setRequestLocale(locale);
 
     const [t, catalog] = await Promise.all([getTranslations({ locale }), getCliCatalog()]);
+    const lastUpdate = formatLastUpdate(locale);
     type OrgEntry = {
         position: string;
         company: string;
@@ -70,6 +83,7 @@ export default async function CliPage({ params }: Props) {
         copy: {
             title: t("terminal.cli.title"),
             prompt: t("terminal.cli.prompt"),
+            lastUpdate: t("terminal.cli.lastUpdate", { date: lastUpdate }),
             welcome: t("terminal.cli.welcome"),
             commandHint: t("terminal.cli.commandHint"),
             commands: t("terminal.cli.commands"),

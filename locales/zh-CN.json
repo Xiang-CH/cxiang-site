@@ -79,6 +79,7 @@
             "title": "Xiang OS",
             "description": "通过命令行探索陈想的作品集、项目、文章和联系方式。",
             "prompt": "visitor@cxiang.site",
+            "lastUpdate": "上次登录：{date}",
             "welcome": "CLI 已就绪。无需离开键盘即可浏览网站。",
             "commandHint": "输入 “help” 查看命令。按 Tab 补全，使用 ↑/↓ 查看历史。",
             "commands": "命令：help、pwd、ls、cd、cat、echo、mkdir、touch、locale、whoami、about、experience、skills、contact、projects、blog、search、open、history、clear、exit。使用 “;” 串联命令，使用 “>” 或 “>>” 写入文件，并以 “| grep QUERY” 过滤列表。",

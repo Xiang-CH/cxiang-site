@@ -42,6 +42,7 @@ export type CliContent = {
     copy: {
         title: string;
         prompt: string;
+        lastUpdate: string;
         welcome: string;
         commandHint: string;
         commands: string;
@@ -306,6 +307,7 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
     const [pendingLocale, setPendingLocale] = useState<"en" | "zh-CN" | null>(null);
     const [output, setOutput] = useState<OutputEntry[]>(() => [
         { type: "banner", text: CLI_BANNER },
+        { type: "text", text: content.copy.lastUpdate },
         { type: "text", text: content.copy.welcome },
         { type: "text", text: content.copy.commandHint },
     ]);

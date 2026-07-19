@@ -79,6 +79,7 @@
             "title": "Xiang OS",
             "description": "A command-line interface for exploring Chen Xiang's portfolio, projects, writing, and contact details.",
             "prompt": "visitor@cxiang.site",
+            "lastUpdate": "Last logged in: {date}",
             "welcome": "CLI ready. Explore the site without leaving the keyboard.",
             "commandHint": "Type 'help' to see commands. Use Tab to complete and ↑/↓ for history.",
             "commands": "Commands: help, pwd, ls, cd, cat, echo, mkdir, touch, locale, whoami, about, experience, skills, contact, projects, blog, search, open, history, clear, exit. Separate commands with ';', write files with '>' or '>>', and filter listings with '| grep QUERY'.",
