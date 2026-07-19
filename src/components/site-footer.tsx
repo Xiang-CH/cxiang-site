@@ -7,6 +7,8 @@ import { markdownMirrorPathname } from "@/lib/seo";
 
 export default function SiteFooter() {
     const pathname = usePathname() ?? "/";
+    if (pathname === "/cli" || pathname.endsWith("/cli")) return null;
+
     const markdownHref = markdownMirrorPathname(pathname);
 
     return (

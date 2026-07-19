@@ -16,6 +16,9 @@ export default function MenuBar() {
     const currentPath = usePathname();
     const router = useRouter();
     const isHomeRoute = homePaths.includes(currentPath);
+    const isCliRoute = currentPath === "/cli" || currentPath.endsWith("/cli");
+
+    if (isCliRoute) return null;
 
     return (
         <>
