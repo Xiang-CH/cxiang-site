@@ -19,6 +19,7 @@ import {
 } from "@/lib/seo";
 import { Toaster } from "sonner";
 import SiteFooter from "@/components/site-footer";
+import HomeFontGate from "@/components/home-font-gate";
 
 const notoSans = Open_Sans({
     variable: "--font-noto-sans",
@@ -113,6 +114,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     enableSystem
                     disableTransitionOnChange
                 >
+                    <HomeFontGate />
                     <ConsoleArtLogger />
                     <MenuBar />
                     <div className="px-4">
