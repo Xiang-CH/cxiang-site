@@ -4,30 +4,27 @@ import { useLayoutEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 const HOME_PATHS = new Set(["/en", "/zh-CN", "/"]);
+const FONT_LOADING_TIMEOUT_MS = 5_000;
 
 export default function HomeFontGate() {
     const pathname = usePathname();
-    const normalizedPathname = pathname.replace(/\/+$/, "") || "/";
-    const isHomeRoute = HOME_PATHS.has(normalizedPathname);
-    const [readyPath, setReadyPath] = useState<string | null>(null);
-    const isVisible = isHomeRoute && readyPath !== normalizedPathname;
+    const normalizedPathname = pathname ? pathname.replace(/\/+$/, "") || "/" : null;
+    const isHomeRoute = normalizedPathname !== null && HOME_PATHS.has(normalizedPathname);
+    const [fontsLoaded, setFontsLoaded] = useState(false);
+    const isVisible = isHomeRoute && !fontsLoaded;
 
     useLayoutEffect(() => {
         if (!isVisible) return;
 
         let isCurrent = true;
         const revealPage = () => {
-            if (isCurrent) setReadyPath(normalizedPathname);
+            if (isCurrent) setFontsLoaded(true);
         };
+        const timeoutId = window.setTimeout(revealPage, FONT_LOADING_TIMEOUT_MS);
 
         if (!("fonts" in document)) {
             revealPage();
-            return () => {
-                isCurrent = false;
-            };
-        }
-
-        if (document.fonts.status === "loaded") {
+        } else if (document.fonts.status === "loaded") {
             revealPage();
         } else {
             document.fonts.ready.then(revealPage, revealPage);
@@ -35,8 +32,9 @@ export default function HomeFontGate() {
 
         return () => {
             isCurrent = false;
+            window.clearTimeout(timeoutId);
         };
-    }, [isVisible, normalizedPathname]);
+    }, [isVisible]);
 
     if (!isVisible) return null;
 
