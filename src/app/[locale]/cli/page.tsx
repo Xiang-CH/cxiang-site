@@ -10,10 +10,22 @@ type Props = {
     params: Promise<{ locale: string }>;
 };
 
+/**
+ * Builds the locale-specific pathname for the CLI page.
+ *
+ * @param locale - The locale used to construct the pathname
+ * @returns The CLI pathname for the specified locale
+ */
 function cliPath(locale: string): string {
     return locale === "en" ? "/cli" : `/${locale}/cli`;
 }
 
+/**
+ * Formats the configured last-update timestamp for the specified locale.
+ *
+ * @param locale - The locale used for date and time formatting
+ * @returns The formatted UTC timestamp, or `—` when no valid timestamp is configured
+ */
 function formatLastUpdate(locale: string): string {
     const timestamp = process.env.NEXT_PUBLIC_LAST_UPDATE_AT;
     const date = timestamp ? new Date(timestamp) : null;
@@ -26,6 +38,12 @@ function formatLastUpdate(locale: string): string {
     }).format(date) + " UTC";
 }
 
+/**
+ * Generates localized metadata for the CLI page.
+ *
+ * @param params - Route parameters containing the locale.
+ * @returns Metadata configured with the localized page title, description, and path.
+ */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale } = await params;
     const t = await getTranslations({ locale });
@@ -37,6 +55,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     });
 }
 
+/**
+ * Renders the localized portfolio CLI page.
+ *
+ * @param params - Route parameters containing the requested locale.
+ */
 export default async function CliPage({ params }: Props) {
     const { locale } = await params;
     setRequestLocale(locale);

@@ -27,6 +27,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     });
 }
 
+/**
+ * Renders the localized terminal-style home page with translated content and breadcrumb metadata.
+ *
+ * @param params - A promise containing the requested locale.
+ */
 export default async function Home({ params }: Props) {
     const { locale } = await params;
     setRequestLocale(locale);

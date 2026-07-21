@@ -12,6 +12,12 @@ const menuItems = [
 ] as const;
 const homePaths = ["/", "/en", "/zh-CN"];
 
+/**
+ * Renders the site's navigation bar and coordinates route transitions.
+ *
+ * The navigation bar is omitted on CLI routes and adapts its layout and active
+ * link styling to the current route.
+ */
 export default function MenuBar() {
     const currentPath = usePathname();
     const router = useRouter();

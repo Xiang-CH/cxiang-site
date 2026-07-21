@@ -33,6 +33,12 @@ function Cmd({ children }: { children: ReactNode }) {
     );
 }
 
+/**
+ * Renders the localized terminal-style home page and its CLI navigation link.
+ *
+ * @param content - Localized text and data used to populate the page.
+ * @returns The terminal home page element.
+ */
 export default function TerminalHomeClient({ content }: { content: TerminalContent }) {
     const fullText = content.typedRole;
     const cliHref = content.locale === "en" ? "/cli" : `/${content.locale}/cli`;
