@@ -155,6 +155,13 @@ const CLI_BANNER = [
     "╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝   ╚═════╝ ╚══════╝",
 ].join("\n");
 
+/**
+ * Splits input into trimmed segments while preserving separators inside quoted or escaped text.
+ *
+ * @param input - The text to split
+ * @param separator - The character that separates segments outside quotes
+ * @returns The non-empty trimmed segments
+ */
 function splitOutsideQuotes(input: string, separator: string): string[] {
     const parts: string[] = [];
     let current = "";
@@ -189,6 +196,12 @@ function splitOutsideQuotes(input: string, separator: string): string[] {
     return parts;
 }
 
+/**
+ * Splits a command string into tokens while preserving quoted content and escaped characters.
+ *
+ * @param input - The command string to tokenize
+ * @returns The resulting tokens
+ */
 function tokenize(input: string): string[] {
     const tokens: string[] = [];
     let current = "";
@@ -221,6 +234,13 @@ function tokenize(input: string): string[] {
     return tokens;
 }
 
+/**
+ * Resolves a path against the current working directory and removes redundant path segments.
+ *
+ * @param path - The path to normalize, including optional `~`, `.`, and `..` segments
+ * @param cwd - The current working directory used for relative paths
+ * @returns The normalized absolute path
+ */
 function normalizePath(path: string, cwd: string): string {
     if (!path || path === ".") return cwd;
     const basePath = path === "~" || path.startsWith("~/") ? `${HOME_DIR}${path.slice(1)}` : path;
@@ -239,21 +259,45 @@ function normalizePath(path: string, cwd: string): string {
     return `/${normalized.join("/")}` || "/";
 }
 
+/**
+ * Formats a path for display by replacing the home directory prefix with `~`.
+ *
+ * @param path - The path to format
+ * @returns The display-formatted path
+ */
 function displayPath(path: string): string {
     if (path === HOME_DIR) return "~";
     return path.startsWith(`${HOME_DIR}/`) ? `~${path.slice(HOME_DIR.length)}` : path;
 }
 
+/**
+ * Gets the parent directory of a slash-separated path.
+ *
+ * @param path - The path whose parent directory to resolve
+ * @returns The parent path, or `/` when the path has no parent
+ */
 function parentPath(path: string): string {
     const segments = path.split("/").filter(Boolean);
     segments.pop();
     return segments.length ? `/${segments.join("/")}` : "/";
 }
 
+/**
+ * Extracts the final non-empty segment from a slash-separated path.
+ *
+ * @param path - The path to inspect
+ * @returns The final non-empty path segment, or an empty string when none exists
+ */
 function basename(path: string): string {
     return path.split("/").filter(Boolean).at(-1) ?? "";
 }
 
+/**
+ * Separates a command from its optional output redirection target.
+ *
+ * @param input - The command text to parse
+ * @returns The command and, when present, the redirection target and append mode
+ */
 function splitRedirection(input: string): {
     command: string;
     target?: string;
@@ -289,10 +333,22 @@ function splitRedirection(input: string): {
     return { command: input.trim() };
 }
 
+/**
+ * Determines whether a listing item contains the specified search query.
+ *
+ * @param item - The listing item to search
+ * @param query - The case-insensitive query to match
+ * @returns `true` if the item's identifier, title, or detail contains the query, `false` otherwise.
+ */
 function matchesQuery(item: ListingItem, query: string): boolean {
     return `${item.id} ${item.title} ${item.detail ?? ""}`.toLocaleLowerCase().includes(query);
 }
 
+/**
+ * Renders an interactive terminal interface for browsing portfolio content and executing CLI commands.
+ *
+ * @param content - Localized portfolio data and interface text used by the terminal.
+ */
 export default function PortfolioCli({ content }: { content: CliContent }) {
     const router = useRouter();
     const inputRef = useRef<HTMLInputElement>(null);
