@@ -4,13 +4,12 @@ import Link from "next/link";
 import { skills } from "./skills";
 import { TypewriterText } from "./typewriter-text-client";
 import { GitHubLogoIcon, LinkedInLogoIcon, FileTextIcon } from "@radix-ui/react-icons";
-import { TerminalIcon } from "lucide-react";
 import XTwitterIcon from "@/components/icons/twitter-icon";
 import Shuffle from "@/components/shuffle";
 import type { TerminalContent } from "./terminal-content";
 import { TerminalHomeLocalePicker } from "./terminal-home-locale-picker";
 import { TerminalHomeViewTransition } from "./terminal-home-view-transition";
-import { Button } from "@/components/ui/button";
+import { TerminalHomeCliLauncher } from "./terminal-home-cli-launcher";
 
 export type { TerminalContent } from "./terminal-content";
 
@@ -38,10 +37,11 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
     const cliHref = content.locale === "en" ? "/cli" : `/${content.locale}/cli`;
 
     return (
-        <TerminalHomeViewTransition>
-            <main
-                className={`font-mono terminal-page home-scramble-scope min-h-screen bg-(--th-bg) text-(--th-text) pt-2 pb-4`}
-            >
+        <div className="terminal-page">
+            <TerminalHomeViewTransition>
+                <main
+                    className="font-mono home-scramble-scope min-h-screen bg-(--th-bg) text-(--th-text) pt-2 pb-4"
+                >
                 <div className="relative z-1 max-w-215 mx-auto">
                     {/* ── Locale Onboarding ───────────────── */}
                     <Box label={content.onboarding}>
@@ -270,22 +270,9 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                         </div>
                     </Box>
                 </div>
-                <Button
-                    asChild
-                    size="icon"
-                    variant="outline"
-                    className="fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-20 border-(--th-border) bg-(--th-bg) text-(--th-accent) shadow-lg hover:bg-(--th-skill-hover) hover:text-(--th-bright)"
-                >
-                    <Link
-                        href={cliHref}
-                        transitionTypes={["to-cli"]}
-                        aria-label={content.cliLauncher}
-                        title={content.cliLauncher}
-                    >
-                        <TerminalIcon aria-hidden="true" />
-                    </Link>
-                </Button>
-            </main>
-        </TerminalHomeViewTransition>
+                </main>
+            </TerminalHomeViewTransition>
+            <TerminalHomeCliLauncher href={cliHref} label={content.cliLauncher} />
+        </div>
     );
 }
