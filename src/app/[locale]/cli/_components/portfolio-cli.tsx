@@ -1200,7 +1200,7 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
                                     }}
                                     autoComplete="off"
                                     spellCheck="false"
-                                    className="min-w-0 flex-1 bg-transparent text-(--th-bright) outline-none placeholder:text-(--th-dim)"
+                                    className="min-w-0 flex-1 bg-transparent text-base text-(--th-bright) outline-none placeholder:text-(--th-dim) sm:text-sm"
                                     placeholder={pendingLocale ? "" : "help"}
                                 />
                             </label>
