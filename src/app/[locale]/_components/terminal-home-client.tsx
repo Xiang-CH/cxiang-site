@@ -9,6 +9,7 @@ import Shuffle from "@/components/shuffle";
 import type { TerminalContent } from "./terminal-content";
 import { TerminalHomeLocalePicker } from "./terminal-home-locale-picker";
 import { TerminalHomeViewTransition } from "./terminal-home-view-transition";
+import { TerminalHomeCliLauncher } from "./terminal-home-cli-launcher";
 
 export type { TerminalContent } from "./terminal-content";
 
@@ -31,14 +32,22 @@ function Cmd({ children }: { children: ReactNode }) {
     );
 }
 
+/**
+ * Renders the localized terminal-style home page and its CLI navigation link.
+ *
+ * @param content - Localized text and data used to populate the page.
+ * @returns The terminal home page element.
+ */
 export default function TerminalHomeClient({ content }: { content: TerminalContent }) {
     const fullText = content.typedRole;
+    const cliHref = content.locale === "en" ? "/cli" : `/${content.locale}/cli`;
 
     return (
-        <TerminalHomeViewTransition>
-            <main
-                className={`font-mono terminal-page home-scramble-scope min-h-screen bg-(--th-bg) text-(--th-text) pt-2 pb-4`}
-            >
+        <div className="terminal-page">
+            <TerminalHomeViewTransition>
+                <main
+                    className="font-mono home-scramble-scope min-h-screen bg-(--th-bg) text-(--th-text) pt-2 pb-4"
+                >
                 <div className="relative z-1 max-w-215 mx-auto">
                     {/* ── Locale Onboarding ───────────────── */}
                     <Box label={content.onboarding}>
@@ -267,7 +276,9 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                         </div>
                     </Box>
                 </div>
-            </main>
-        </TerminalHomeViewTransition>
+                </main>
+            </TerminalHomeViewTransition>
+            <TerminalHomeCliLauncher href={cliHref} label={content.cliLauncher} />
+        </div>
     );
 }

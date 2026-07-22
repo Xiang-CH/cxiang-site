@@ -223,6 +223,7 @@ main.at-page-end .invisible-at-end {
     --vt-blog-duration: 380ms;
     --vt-home-duration: 520ms;
     --vt-home-exit-duration: 480ms;
+    --vt-cli-duration: 360ms;
 }
 
 @keyframes vt-project-morph {
@@ -311,6 +312,48 @@ main.at-page-end .invisible-at-end {
     }
 }
 
+@keyframes vt-cli-enter {
+    from {
+        opacity: 0;
+        filter: blur(6px) brightness(1.08);
+        transform: translateY(14px) scale(0.99);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0) brightness(1);
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes vt-cli-launch-exit {
+    to {
+        opacity: 0.2;
+        filter: blur(5px) brightness(1.12);
+        transform: translateY(-8px) scale(0.995);
+    }
+}
+
+@keyframes vt-cli-return-exit {
+    to {
+        opacity: 0.15;
+        filter: blur(5px);
+        transform: translateY(10px) scale(0.99);
+    }
+}
+
+@keyframes vt-cli-return-home-enter {
+    from {
+        opacity: 0.3;
+        filter: blur(4px);
+        transform: translateY(-8px) scale(0.995);
+    }
+    to {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0) scale(1);
+    }
+}
+
 ::view-transition-group(.project-open) {
     animation-duration: var(--vt-project-duration);
     animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -348,6 +391,23 @@ main.at-page-end .invisible-at-end {
     animation: vt-home-exit-soft 220ms ease-in both;
 }
 
+::view-transition-new(.cli-enter) {
+    animation: vt-cli-enter var(--vt-cli-duration) cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+::view-transition-old(.cli-launch-exit) {
+    animation: vt-cli-launch-exit var(--vt-cli-duration) cubic-bezier(0.4, 0.05, 0.65, 1) both;
+}
+
+::view-transition-old(.cli-return-exit) {
+    animation: vt-cli-return-exit var(--vt-cli-duration) cubic-bezier(0.4, 0.05, 0.65, 1) both;
+}
+
+::view-transition-new(.cli-return-home-enter) {
+    animation: vt-cli-return-home-enter var(--vt-cli-duration) cubic-bezier(0.22, 0.61, 0.36, 1)
+        both;
+}
+
 ::view-transition-group(site-header) {
     animation: none;
     z-index: 100;
@@ -367,6 +427,7 @@ main.at-page-end .invisible-at-end {
         --vt-blog-duration: 1ms;
         --vt-home-duration: 1ms;
         --vt-home-exit-duration: 1ms;
+        --vt-cli-duration: 1ms;
     }
 
     ::view-transition-old(*),
