@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
+const lastUpdateAt = process.env.NEXT_PUBLIC_LAST_UPDATE_AT ?? new Date().toISOString();
+
 const nextConfig: NextConfig = {
+    env: {
+        NEXT_PUBLIC_LAST_UPDATE_AT: lastUpdateAt,
+    },
     experimental: {
         viewTransition: true,
     },

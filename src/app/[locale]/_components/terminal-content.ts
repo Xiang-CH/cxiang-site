@@ -8,6 +8,7 @@ export type TerminalContent = {
     typedRole: string;
     sysInit: string;
     sysKernel: string;
+    cliLauncher: string;
     links: {
         github: string;
         linkedin: string;

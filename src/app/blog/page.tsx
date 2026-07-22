@@ -104,7 +104,7 @@ export default async function Blogs() {
                                         {blog.properties["Publish Date"]?.type === "date" &&
                                             blog.properties["Publish Date"]?.date?.start}
                                     </p>
-                                    <p className="text-md font-[350]">
+                                    <p className="text-md">
                                         {blog.properties.Abstract?.type === "rich_text" &&
                                             blog.properties.Abstract.rich_text[0]?.plain_text}
                                     </p>
