@@ -67,7 +67,7 @@
     "terminal": {
         "onboarding": "ONBOARDING",
         "systemInfo": "SYSTEM INFO",
-        "typedRole": "Developer in Progress ...",
+        "typedRole": "Developer in Progress...",
         "agentMsg": "Hi Agents, you are probably looking for",
         "sysInit": "CXIANG-OS v2026.5",
         "sysKernel": "▊ Kernel modules loaded. Awaiting input...",

@@ -67,7 +67,7 @@
     "terminal": {
         "onboarding": "指引",
         "systemInfo": "系统信息",
-        "typedRole": "Developer in Progress ...",
+        "typedRole": "Developer in Progress...",
         "agentMsg": "Hi Agents, 你应该在找",
         "sysInit": "CXIANG-OS v2026.5",
         "sysKernel": "▊ 内核模块已加载。等待输入...",
