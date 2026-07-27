@@ -13,6 +13,11 @@ export default async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
+    // The résumé route always serves the PDF, regardless of the Accept header.
+    if (pathname === "/resume") {
+        return NextResponse.next();
+    }
+
     // Explicit markdown mirrors (e.g. `/blog/my-post.md`) are rewritten to the
     // same backend markdown builder as content negotiation so agents can choose
     // either URL style.
@@ -41,7 +46,7 @@ export default async function middleware(request: NextRequest) {
         return resp;
     }
 
-    // `/blog` and `/project` aren't localized; skip i18n routing for them.
+    // These root-level routes aren't localized; skip i18n routing for them.
     if (pathname.startsWith("/blog") || pathname.startsWith("/project")) {
         return NextResponse.next();
     }

@@ -117,7 +117,7 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                                 },
                                 {
                                     label: content.links.resume,
-                                    href: "https://cdn.cxiang.site/resume_chen_xiang.pdf",
+                                    href: "/resume",
                                     icon: <FileTextIcon width={13} />,
                                 },
                             ].map((l) => (
