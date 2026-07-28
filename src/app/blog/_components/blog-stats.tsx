@@ -18,17 +18,15 @@ type BlogStats = PublicBlogStats & {
     liked: boolean;
 };
 
-export function BlogStats({ slug }: { slug: string }) {
-    const [publicStats, setPublicStats] = useState<PublicBlogStats | null>(null);
-    const [liked, setLiked] = useState<boolean | null>(null);
+export function BlogStats({ slug, initialStats }: { slug: string; initialStats: PublicBlogStats }) {
+    const [publicStats, setPublicStats] = useState(initialStats);
+    const [liked, setLiked] = useState(false);
     const [isLiking, setIsLiking] = useState(false);
 
     useEffect(() => {
         const controller = new AbortController();
-        setPublicStats(null);
-        setLiked(null);
 
-        async function recordView(): Promise<BlogStats | null> {
+        async function recordView() {
             try {
                 const response = await fetch(`/api/blog-stats/${encodeURIComponent(slug)}/view`, {
                     method: "POST",
@@ -36,50 +34,22 @@ export function BlogStats({ slug }: { slug: string }) {
                     credentials: "same-origin",
                     signal: controller.signal,
                 });
-                if (!response.ok) return null;
-                return (await response.json()) as BlogStats;
+                if (!response.ok) return;
+                const stats = (await response.json()) as BlogStats;
+                setLiked(stats.liked);
             } catch (error) {
                 if ((error as Error).name !== "AbortError") {
                     console.error("Unable to load blog statistics", error);
                 }
-                return null;
             }
         }
 
-        async function loadPublicStats(fallback: PublicBlogStats) {
-            const params = new URLSearchParams({ slug });
-            try {
-                const response = await fetch(`/api/blog-stats?${params.toString()}`, {
-                    signal: controller.signal,
-                });
-                if (!response.ok) return;
-                const payload = (await response.json()) as {
-                    stats: Record<string, PublicBlogStats>;
-                };
-                const stats = payload.stats[slug];
-                setPublicStats(stats ?? fallback);
-            } catch (error) {
-                if ((error as Error).name !== "AbortError") {
-                    console.error("Unable to load public blog statistics", error);
-                }
-                setPublicStats(fallback);
-            }
-        }
-
-        async function loadStats() {
-            const recordedStats = await recordView();
-            if (!recordedStats) return;
-
-            setLiked(recordedStats.liked);
-            await loadPublicStats({ views: recordedStats.views, likes: recordedStats.likes });
-        }
-
-        void loadStats();
+        void recordView();
         return () => controller.abort();
     }, [slug]);
 
     async function toggleLike() {
-        if (!publicStats || liked === null || isLiking) return;
+        if (isLiking) return;
 
         const previousStats = publicStats;
         const previousLiked = liked;
@@ -110,8 +80,6 @@ export function BlogStats({ slug }: { slug: string }) {
             setIsLiking(false);
         }
     }
-
-    if (!publicStats || liked === null) return null;
 
     return (
         <span className="inline-flex items-center gap-1.5">

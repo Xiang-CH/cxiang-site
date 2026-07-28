@@ -1,10 +1,12 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { getBlogs, getAllPostsMeta, type PostMeta } from "@/lib/notion";
 import { type PageObjectResponse } from "@notionhq/client";
+import { isDatabaseConfigured } from "@/db";
+import { getPublicBlogStats, type PublicBlogStats } from "@/lib/blog-stats";
 import { Metadata } from "next";
 import Image from "next/image";
 import { BlogListLink } from "./_components/blog-list-link";
-import { BlogListStats, BlogListStatsProvider } from "./_components/blog-list-stats";
+import { BlogListStats } from "./_components/blog-list-stats";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { CACHE_TAGS } from "@/lib/cache-tags";
@@ -31,6 +33,17 @@ function ErrorLoadingBlogs() {
             </div>
         </>
     );
+}
+
+async function getServerBlogStats(slugs: string[]): Promise<Record<string, PublicBlogStats>> {
+    if (!isDatabaseConfigured()) return {};
+
+    try {
+        return await getPublicBlogStats(slugs);
+    } catch (error) {
+        console.error("Unable to render blog list statistics", error);
+        return {};
+    }
 }
 
 export default async function Blogs() {
@@ -65,6 +78,8 @@ export default async function Blogs() {
         );
     }
 
+    const statsBySlug = await getServerBlogStats(metas.map((meta) => meta.slug));
+
     return (
         <>
             <BreadcrumbJsonLd
@@ -72,63 +87,61 @@ export default async function Blogs() {
             />
             <main className="w-full max-w-2xl h-full flex flex-col justify-start items-start mx-auto pt-4 sm:pt-6 gap-9 px-1">
                 <h1 className="sr-only">Blog</h1>
-                <BlogListStatsProvider slugs={metas.map((meta) => meta.slug)}>
-                    {response.results.map((item) => {
-                        if (item.object !== "page" || !("properties" in item)) return;
-                        const blog = item as PageObjectResponse;
-                        const title =
-                            blog.properties.Title?.type === "title"
-                                ? (blog.properties.Title.title[0]?.plain_text ?? "Untitled")
-                                : "Untitled";
+                {response.results.map((item) => {
+                    if (item.object !== "page" || !("properties" in item)) return;
+                    const blog = item as PageObjectResponse;
+                    const title =
+                        blog.properties.Title?.type === "title"
+                            ? (blog.properties.Title.title[0]?.plain_text ?? "Untitled")
+                            : "Untitled";
 
-                        const slug = metas.find((m) => m.id === blog.id)?.slug || blog.id;
+                    const slug = metas.find((m) => m.id === blog.id)?.slug || blog.id;
 
-                        const coverSrc =
-                            blog.cover?.type === "external"
-                                ? blog.cover.external.url
-                                : blog.cover?.type === "file"
-                                  ? blog.cover.file.url
-                                  : null;
+                    const coverSrc =
+                        blog.cover?.type === "external"
+                            ? blog.cover.external.url
+                            : blog.cover?.type === "file"
+                              ? blog.cover.file.url
+                              : null;
 
-                        return (
-                            <BlogListLink
-                                key={blog.id}
-                                href={`/blog/${slug}`}
-                                slug={slug}
-                                coverPrefetchSrc={coverSrc}
-                            >
-                                <div className="flex justify-between items-start gap-4">
-                                    <div className="flex flex-col gap-1 h-full justify-center mt-1">
-                                        <h2 className="text-lg sm:text-xl font-[550] group-hover:underline text-wrap leading-[1.3]">
-                                            {title}
-                                        </h2>
-                                        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
-                                            {blog.properties["Publish Date"]?.type === "date" &&
-                                                blog.properties["Publish Date"]?.date?.start}
-                                            <BlogListStats slug={slug} small/>
-                                        </p>
-                                        <p className="text-md font-[350]">
-                                            {blog.properties.Abstract?.type === "rich_text" &&
-                                                blog.properties.Abstract.rich_text[0]?.plain_text}
-                                        </p>
-                                    </div>
-                                    {blog.cover && coverSrc && (
-                                        <div className="min-w-28 max-w-28 sm:min-w-40 sm:max-w-40 mt-2">
-                                            <Image
-                                                src={coverSrc}
-                                                alt={`${title} cover image`}
-                                                width={160}
-                                                height={90}
-                                                quality={40}
-                                                className="rounded-md w-full h-auto"
-                                            />
-                                        </div>
-                                    )}
+                    return (
+                        <BlogListLink
+                            key={blog.id}
+                            href={`/blog/${slug}`}
+                            slug={slug}
+                            coverPrefetchSrc={coverSrc}
+                        >
+                            <div className="flex justify-between items-start gap-4">
+                                <div className="flex flex-col gap-1 h-full justify-center mt-1">
+                                    <h2 className="text-lg sm:text-xl font-[550] group-hover:underline text-wrap leading-[1.3]">
+                                        {title}
+                                    </h2>
+                                    <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+                                        {blog.properties["Publish Date"]?.type === "date" &&
+                                            blog.properties["Publish Date"]?.date?.start}
+                                        <BlogListStats stats={statsBySlug[slug]} small />
+                                    </p>
+                                    <p className="text-md font-[350]">
+                                        {blog.properties.Abstract?.type === "rich_text" &&
+                                            blog.properties.Abstract.rich_text[0]?.plain_text}
+                                    </p>
                                 </div>
-                            </BlogListLink>
-                        );
-                    })}
-                </BlogListStatsProvider>
+                                {blog.cover && coverSrc && (
+                                    <div className="min-w-28 max-w-28 sm:min-w-40 sm:max-w-40 mt-2">
+                                        <Image
+                                            src={coverSrc}
+                                            alt={`${title} cover image`}
+                                            width={160}
+                                            height={90}
+                                            quality={40}
+                                            className="rounded-md w-full h-auto"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </BlogListLink>
+                    );
+                })}
             </main>
         </>
     );

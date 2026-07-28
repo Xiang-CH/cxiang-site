@@ -3,10 +3,10 @@
 import { NotionRenderer } from "react-notion-x";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { type ReactNode } from "react";
 import { type CodeBlock, type ExtendedRecordMap } from "notion-types";
 import SponsorCard from "@/components/sponser-card";
 import CopyPageMenu from "./copy-page-menu";
-import { BlogStats } from "./blog-stats";
 import "./notion.css";
 
 // Dynamically import components used by NotionRenderer, ensuring they are client-side
@@ -35,6 +35,7 @@ interface NotionPageClientProps {
     recordMap: ExtendedRecordMap;
     slug: string;
     publishDate?: string;
+    stats?: ReactNode;
     fullPage?: boolean;
 }
 
@@ -42,6 +43,7 @@ export default function NotionPageClient({
     recordMap,
     slug,
     publishDate,
+    stats,
     fullPage = true,
 }: NotionPageClientProps) {
     return (
@@ -70,7 +72,7 @@ export default function NotionPageClient({
                         </span>
                     )}
                     {publishDate && <span aria-hidden>·</span>}
-                    <BlogStats slug={slug} />
+                    {stats}
                 </div>
             }
             pageFooter={<SponsorCard />}

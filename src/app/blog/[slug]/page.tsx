@@ -9,6 +9,7 @@ import {
 import { getBlogTag } from "@/lib/cache-tags";
 import NotionPageClient from "../_components/notion-page-client";
 import { BlogPostShell } from "../_components/blog-post-shell";
+import { BlogStatsServer } from "../_components/blog-stats-server";
 import "react-notion-x/src/styles.css";
 import { type Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
@@ -308,6 +309,7 @@ export default async function BlogBySlug({ params }: Props) {
                         recordMap={seoData.recordMap}
                         slug={seoData.post.slug}
                         publishDate={seoData.publishedTime}
+                        stats={<BlogStatsServer slug={seoData.post.slug} />}
                     />
                 </BlogPostShell>
             </div>
