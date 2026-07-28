@@ -116,7 +116,7 @@ export default async function Blogs() {
                                     <h2 className="text-lg sm:text-xl font-[550] group-hover:underline text-wrap leading-[1.3]">
                                         {title}
                                     </h2>
-                                    <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+                                    <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
                                         {blog.properties["Publish Date"]?.type === "date" &&
                                             blog.properties["Publish Date"]?.date?.start}
                                         <BlogListStats stats={statsBySlug[slug]} small />

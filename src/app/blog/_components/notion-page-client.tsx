@@ -60,7 +60,7 @@ export default function NotionPageClient({
                 nextImage: Image,
             }}
             pageHeader={
-                <div className="notion-published-date flex flex-wrap items-center gap-x-1.5 gap-y-1 pb-4 text-muted-foreground">
+                <div className="notion-published-date flex flex-wrap items-center gap-x-2.5 gap-y-1 pb-4 text-muted-foreground">
                     {publishDate && (
                         <span>
                             Published on{" "}

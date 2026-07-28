@@ -82,7 +82,7 @@ export function BlogStats({ slug, initialStats }: { slug: string; initialStats: 
     }
 
     return (
-        <span className="inline-flex items-center gap-1.5">
+        <span className="inline-flex items-center gap-1">
             <span
                 className="inline-flex items-center gap-1 text-muted-foreground"
                 title="Views"
