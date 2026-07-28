@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isDatabaseConfigured } from "@/db";
+import { PUBLIC_BLOG_STATS_CACHE_HEADERS } from "@/lib/blog-stats-cache";
 import { getPublicBlogStats, isValidBlogSlug } from "@/lib/blog-stats";
 
 const MAX_SLUGS_PER_REQUEST = 100;
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
     try {
         return NextResponse.json(
             { stats: await getPublicBlogStats(slugs) },
-            { headers: { "Cache-Control": "no-store" } }
+            { headers: PUBLIC_BLOG_STATS_CACHE_HEADERS }
         );
     } catch (error) {
         console.error("Unable to load blog statistics", error);

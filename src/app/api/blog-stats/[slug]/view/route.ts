@@ -8,6 +8,7 @@ import {
     isVisitorId,
     recordBlogView,
 } from "@/lib/blog-stats";
+import { BLOG_STATS_MUTATION_CACHE_CONTROL } from "@/lib/blog-stats-cache";
 
 type Context = { params: Promise<{ slug: string }> };
 
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest, { params }: Context) {
     try {
         const stats = await recordBlogView(slug, visitorId);
         const response = NextResponse.json(stats, {
-            headers: { "Cache-Control": "no-store" },
+            headers: { "Cache-Control": BLOG_STATS_MUTATION_CACHE_CONTROL },
         });
 
         if (visitorId !== existingVisitorId) {

@@ -13,11 +13,18 @@ export const blogPostStats = pgTable(
     "blog_post_stats",
     {
         slug: slugColumn().primaryKey(),
+        // Vercel Web Analytics pageviews imported before the in-app counter launched.
+        // Keep this independent from viewCount so an import cannot overwrite live views.
+        historicalViewCount: integer("historical_view_count").notNull().default(0),
         viewCount: integer("view_count").notNull().default(0),
         likeCount: integer("like_count").notNull().default(0),
         updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
     },
     (table) => [
+        check(
+            "blog_post_stats_historical_view_count_nonnegative",
+            sql`${table.historicalViewCount} >= 0`
+        ),
         check("blog_post_stats_view_count_nonnegative", sql`${table.viewCount} >= 0`),
         check("blog_post_stats_like_count_nonnegative", sql`${table.likeCount} >= 0`),
     ]

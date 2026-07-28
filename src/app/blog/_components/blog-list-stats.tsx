@@ -2,6 +2,11 @@
 
 import { Eye, Heart } from "lucide-react";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+    formatBlogLikeCount,
+    formatBlogViewCount,
+    getBlogViewCountLabel,
+} from "@/lib/blog-stats-format";
 
 type PublicBlogStats = {
     views: number;
@@ -13,10 +18,6 @@ type BlogStatsResponse = {
 };
 
 const BlogListStatsContext = createContext<Record<string, PublicBlogStats>>({});
-
-function formatCount(value: number) {
-    return new Intl.NumberFormat().format(value);
-}
 
 export function BlogListStatsProvider({
     slugs,
@@ -39,7 +40,6 @@ export function BlogListStatsProvider({
         async function loadStats() {
             try {
                 const response = await fetch(`/api/blog-stats?${params.toString()}`, {
-                    cache: "no-store",
                     signal: controller.signal,
                 });
                 if (!response.ok) return;
@@ -68,13 +68,17 @@ export function BlogListStats({ slug, small }: { slug: string; small?: boolean }
             className={`inline-flex items-center gap-2 ${small ? "text-xs" : "text-sm"} text-muted-foreground`}
             aria-label="Post engagement"
         >
-            <span className="inline-flex items-center gap-1" title="Views">
+            <span
+                className="inline-flex items-center gap-1"
+                title="Views"
+                aria-label={getBlogViewCountLabel(stats.views)}
+            >
                 <Eye className={small ? "size-3" : "size-3.5"} aria-hidden />
-                {formatCount(stats.views)}
+                {formatBlogViewCount(stats.views)}
             </span>
             <span className="inline-flex items-center gap-1" title="Likes">
                 <Heart className={small ? "size-3" : "size-3.5"} aria-hidden />
-                {formatCount(stats.likes)}
+                {formatBlogLikeCount(stats.likes)}
             </span>
         </span>
     );

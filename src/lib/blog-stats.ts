@@ -12,6 +12,7 @@ export const BLOG_STATS_VISITOR_COOKIE = "blog_stats_visitor";
 export const BLOG_STATS_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 type StatsRow = {
+    historical_view_count: number;
     view_count: number;
     like_count: number;
     liked: boolean;
@@ -45,13 +46,22 @@ export async function getPublicBlogStats(
     const rows = await getDb()
         .select({
             slug: blogPostStats.slug,
+            historicalViews: blogPostStats.historicalViewCount,
             views: blogPostStats.viewCount,
             likes: blogPostStats.likeCount,
         })
         .from(blogPostStats)
         .where(inArray(blogPostStats.slug, uniqueSlugs));
 
-    return Object.fromEntries(rows.map((row) => [row.slug, row]));
+    return Object.fromEntries(
+        rows.map((row) => [
+            row.slug,
+            {
+                views: row.historicalViews + row.views,
+                likes: row.likes,
+            },
+        ])
+    );
 }
 
 function getVisitorHash(visitorId: string) {
@@ -65,7 +75,7 @@ function getVisitorHash(visitorId: string) {
 
 function toStats(row: StatsRow): BlogStats {
     return {
-        views: Number(row.view_count),
+        views: Number(row.historical_view_count) + Number(row.view_count),
         likes: Number(row.like_count),
         liked: row.liked,
     };
@@ -74,6 +84,7 @@ function toStats(row: StatsRow): BlogStats {
 async function getStats(slug: string, visitorHash: string): Promise<BlogStats> {
     const result = await getDb().execute<StatsRow>(sql`
         SELECT
+            stats.historical_view_count,
             stats.view_count,
             stats.like_count,
             EXISTS(
@@ -85,7 +96,12 @@ async function getStats(slug: string, visitorHash: string): Promise<BlogStats> {
         WHERE stats.slug = ${slug}
     `);
 
-    const row = result.rows[0] ?? { view_count: 0, like_count: 0, liked: false };
+    const row = result.rows[0] ?? {
+        historical_view_count: 0,
+        view_count: 0,
+        like_count: 0,
+        liked: false,
+    };
     return toStats(row);
 }
 
