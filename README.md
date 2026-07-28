@@ -35,3 +35,15 @@ Possible tags are:
 - content:blogs:slugs
 - content:sitemap
 - content:llms
+
+## Blog statistics
+
+Blog views and likes are stored in Neon Postgres and keyed by globally unique blog slugs. Install
+Neon through Vercel Marketplace, then configure these server-only variables for local development:
+
+- `DATABASE_URL` — Neon pooled connection string for the application.
+- `DATABASE_URL_UNPOOLED` — direct Neon connection string for migrations.
+- `BLOG_STATS_HASH_SECRET` — a high-entropy secret used to HMAC anonymous browser identifiers.
+
+Generate a migration after changing `src/db/schema.ts` with `bun run db:generate`. Apply migrations
+with `bun run db:migrate`; it reads the direct connection string from `.env.local`.

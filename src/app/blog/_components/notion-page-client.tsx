@@ -6,6 +6,7 @@ import Image from "next/image";
 import { type CodeBlock, type ExtendedRecordMap } from "notion-types";
 import SponsorCard from "@/components/sponser-card";
 import CopyPageMenu from "./copy-page-menu";
+import { BlogStats } from "./blog-stats";
 import "./notion.css";
 
 // Dynamically import components used by NotionRenderer, ensuring they are client-side
@@ -57,16 +58,20 @@ export default function NotionPageClient({
                 nextImage: Image,
             }}
             pageHeader={
-                publishDate && (
-                    <p className="notion-published-date text-muted-foreground pb-4">
-                        Published on{" "}
-                        {new Date(publishDate).toLocaleDateString(undefined, {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                        })}
-                    </p>
-                )
+                <div className="notion-published-date flex flex-wrap items-center gap-x-1.5 gap-y-1 pb-4 text-muted-foreground">
+                    {publishDate && (
+                        <span>
+                            Published on{" "}
+                            {new Date(publishDate).toLocaleDateString(undefined, {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                            })}
+                        </span>
+                    )}
+                    {publishDate && <span aria-hidden>·</span>}
+                    <BlogStats slug={slug} />
+                </div>
             }
             pageFooter={<SponsorCard />}
         />
