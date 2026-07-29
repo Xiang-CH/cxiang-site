@@ -10,13 +10,20 @@ type Database = ReturnType<typeof drizzle<typeof schema>>;
 let pool: Pool | null = null;
 let database: Database | null = null;
 
+/**
+ * Determines whether the database connection is configured.
+ *
+ * @returns `true` if `DATABASE_URL` is set, `false` otherwise.
+ */
 export function isDatabaseConfigured() {
     return Boolean(process.env.DATABASE_URL);
 }
 
 /**
- * Creates the database connection only at request time so builds without
- * production secrets can still succeed.
+ * Provides the configured Drizzle database instance, initializing it on first use.
+ *
+ * @returns The Drizzle database instance.
+ * @throws Error if `DATABASE_URL` is not configured.
  */
 export function getDb(): Database {
     if (database) return database;

@@ -10,6 +10,12 @@ import {
 } from "@/lib/blog-stats";
 import { BlogStats } from "./blog-stats";
 
+/**
+ * Loads cached public statistics for a blog post.
+ *
+ * @param slug - The blog post slug
+ * @returns The blog post's view and like counts, zero counts when no statistics exist, or `null` if loading fails
+ */
 async function getCachedPublicBlogStats(slug: string) {
     "use cache";
     cacheLife("max");
@@ -23,6 +29,12 @@ async function getCachedPublicBlogStats(slug: string) {
     }
 }
 
+/**
+ * Renders blog statistics and the current visitor's like state.
+ *
+ * @param showSeparator - Whether to render a separator before the statistics.
+ * @returns The blog statistics component, or `null` when database access or statistics retrieval is unavailable.
+ */
 export async function BlogStatsServer({
     slug,
     showSeparator = false,

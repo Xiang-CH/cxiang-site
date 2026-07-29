@@ -39,6 +39,16 @@ interface NotionPageClientProps {
     fullPage?: boolean;
 }
 
+/**
+ * Renders a Notion page with custom navigation, content components, metadata, and sponsorship footer.
+ *
+ * @param recordMap - The Notion record map containing the page content.
+ * @param slug - The page slug used by the copy-page menu.
+ * @param publishDate - Optional publication date displayed in the page header.
+ * @param stats - Optional statistics rendered alongside the publication date.
+ * @param fullPage - Whether to render the page in full-page mode.
+ * @returns The rendered Notion page.
+ */
 export default function NotionPageClient({
     recordMap,
     slug,

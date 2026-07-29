@@ -22,6 +22,11 @@ type ViewTotal = {
     views: number;
 };
 
+/**
+ * Prints an optional error and usage instructions before exiting with status code 1.
+ *
+ * @param message - An optional error message to display before the usage instructions
+ */
 function usage(message?: string): never {
     if (message) console.error(`Error: ${message}\n`);
     console.error(`Usage:
@@ -33,6 +38,12 @@ The default is a dry run. --apply writes the imported values to historical_view_
     process.exit(1);
 }
 
+/**
+ * Parses command-line arguments into validated import options.
+ *
+ * @param args - Command-line arguments to parse
+ * @returns The configured import options
+ */
 export function parseOptions(args: string[]): Options {
     const options: Options = { apply: false, limit: MAX_GROUP_LIMIT };
 
@@ -80,14 +91,34 @@ export function parseOptions(args: string[]): Options {
     return options;
 }
 
+/**
+ * Builds an error message from Vercel CLI output and its exit code.
+ *
+ * @param stdout - Standard output produced by the CLI
+ * @param stderr - Standard error produced by the CLI
+ * @param exitCode - The CLI process exit code
+ * @returns Trimmed CLI output, preferring standard output over standard error, or a fallback message containing the exit code
+ */
 export function getVercelCliError(stdout: string, stderr: string, exitCode: number | null) {
     return stdout.trim() || stderr.trim() || `vercel metrics exited with code ${exitCode}.`;
 }
 
+/**
+ * Extracts a blog post slug from a route path.
+ *
+ * @param value - The value to interpret as a blog route path
+ * @returns The blog post slug, or `null` when the value is not a canonical blog path
+ */
 export function slugFromBlogPath(value: unknown): string | null {
     return getBlogSlugFromPath(value);
 }
 
+/**
+ * Extracts and aggregates canonical blog post view totals from Vercel metrics data.
+ *
+ * @param payload - Vercel metrics JSON containing a `data` array of metric rows
+ * @returns View totals sorted by blog post slug
+ */
 export function extractViewTotals(payload: unknown): ViewTotal[] {
     if (!payload || typeof payload !== "object") {
         throw new Error("Vercel metrics did not return a JSON object.");
@@ -114,6 +145,12 @@ export function extractViewTotals(payload: unknown): ViewTotal[] {
         .sort((left, right) => left.slug.localeCompare(right.slug));
 }
 
+/**
+ * Fetches Vercel pageview metrics for blog routes within the configured range.
+ *
+ * @param options - CLI options specifying the Vercel project, time range, filters, and result limit
+ * @returns The parsed JSON response from the Vercel metrics command
+ */
 async function runVercelMetrics(options: Options): Promise<unknown> {
     const args = [
         "vercel@latest",
@@ -161,11 +198,22 @@ async function runVercelMetrics(options: Options): Promise<unknown> {
     return JSON.parse(output);
 }
 
+/**
+ * Loads metrics from an input file or the Vercel metrics CLI.
+ *
+ * @param options - Configuration specifying the input source and Vercel query options
+ * @returns The parsed metrics payload
+ */
 async function loadMetrics(options: Options): Promise<unknown> {
     if (options.input) return JSON.parse(await readFile(options.input, "utf8"));
     return runVercelMetrics(options);
 }
 
+/**
+ * Persists historical view totals for blog posts.
+ *
+ * @param totals - The per-slug view totals to insert or update.
+ */
 async function writeHistoricalViews(totals: ViewTotal[]) {
     const connectionString = process.env.DATABASE_URL_UNPOOLED;
     if (!connectionString) {
@@ -196,6 +244,11 @@ async function writeHistoricalViews(totals: ViewTotal[]) {
     }
 }
 
+/**
+ * Imports historical blog post view totals from Vercel metrics.
+ *
+ * @throws If no canonical blog pageviews are found or the import fails.
+ */
 async function main() {
     const options = parseOptions(process.argv.slice(2));
     const totals = extractViewTotals(await loadMetrics(options));

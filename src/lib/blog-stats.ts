@@ -26,6 +26,11 @@ export type BlogStats = {
 
 export type PublicBlogStats = Pick<BlogStats, "views" | "likes">;
 
+/**
+ * Determines whether blog statistics have the required configuration.
+ *
+ * @returns `true` if the database and hash secret are configured, `false` otherwise.
+ */
 export function isBlogStatsConfigured() {
     return hasBlogStatsConfiguration(
         isDatabaseConfigured() ? process.env.DATABASE_URL : undefined,
@@ -33,10 +38,21 @@ export function isBlogStatsConfigured() {
     );
 }
 
+/**
+ * Creates a unique identifier for a blog statistics visitor.
+ *
+ * @returns A generated visitor identifier
+ */
 export function createVisitorId() {
     return randomUUID();
 }
 
+/**
+ * Retrieves public view and like counts for valid blog slugs.
+ *
+ * @param slugs - Blog slugs to retrieve statistics for.
+ * @returns Statistics keyed by blog slug.
+ */
 export async function getPublicBlogStats(
     slugs: string[]
 ): Promise<Record<string, PublicBlogStats>> {
@@ -66,6 +82,13 @@ export async function getPublicBlogStats(
     );
 }
 
+/**
+ * Creates a deterministic hash for a visitor identifier.
+ *
+ * @param visitorId - The visitor identifier to hash
+ * @returns The visitor identifier's hexadecimal SHA-256 HMAC
+ * @throws If `BLOG_STATS_HASH_SECRET` is not configured
+ */
 function getVisitorHash(visitorId: string) {
     const secret = process.env.BLOG_STATS_HASH_SECRET;
     if (!secret) {
@@ -75,6 +98,12 @@ function getVisitorHash(visitorId: string) {
     return createHmac("sha256", secret).update(visitorId).digest("hex");
 }
 
+/**
+ * Converts a database statistics row into aggregated blog statistics.
+ *
+ * @param row - The database row containing historical views, daily views, likes, and visitor like state
+ * @returns Blog statistics with combined views, normalized likes, and like state
+ */
 function toStats(row: StatsRow): BlogStats {
     return {
         views: Number(row.historical_view_count) + Number(row.daily_view_count),
@@ -83,6 +112,13 @@ function toStats(row: StatsRow): BlogStats {
     };
 }
 
+/**
+ * Retrieves view and like statistics for a blog post and visitor.
+ *
+ * @param slug - The blog post slug
+ * @param visitorHash - The hashed visitor identifier used to determine like state
+ * @returns The blog post's view count, like count, and whether the visitor has liked it
+ */
 async function getStats(slug: string, visitorHash: string): Promise<BlogStats> {
     const result = await getDb().execute<StatsRow>(sql`
         SELECT
@@ -111,6 +147,13 @@ async function getStats(slug: string, visitorHash: string): Promise<BlogStats> {
     return toStats(row);
 }
 
+/**
+ * Determines whether a visitor has liked a blog post.
+ *
+ * @param slug - The blog post slug
+ * @param visitorId - The visitor identifier, if available
+ * @returns `true` if the visitor has liked the blog post, `false` otherwise.
+ */
 export async function getBlogLikeState(slug: string, visitorId: string | undefined) {
     if (!visitorId || !isBlogStatsConfigured()) return false;
 
@@ -118,6 +161,13 @@ export async function getBlogLikeState(slug: string, visitorId: string | undefin
     return stats.liked;
 }
 
+/**
+ * Toggles the like state for a blog post for a visitor.
+ *
+ * @param slug - The blog post slug
+ * @param visitorId - The visitor's identifier
+ * @returns The blog post's updated statistics and like state
+ */
 export async function toggleBlogLike(slug: string, visitorId: string): Promise<BlogStats> {
     const visitorHash = getVisitorHash(visitorId);
     const db = getDb();

@@ -207,6 +207,12 @@ const getPostSeoData = async (slug: string) => {
     };
 };
 
+/**
+ * Generates SEO metadata for a blog post route.
+ *
+ * @param params - Route parameters containing the requested blog post slug.
+ * @returns Metadata for the blog post, or fallback metadata when the slug is unavailable or the post cannot be found.
+ */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const slug = (await params).slug;
     if (slug === BUILD_PLACEHOLDER_BLOG_SLUG) {
@@ -239,6 +245,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     });
 }
 
+/**
+ * Renders the blog post page for the requested slug.
+ *
+ * @param params - Route parameters containing the blog post slug
+ * @returns The rendered blog post page with its statistics
+ */
 export default async function BlogBySlug({ params }: Props) {
     const slug = (await params).slug;
 
@@ -258,6 +270,13 @@ export default async function BlogBySlug({ params }: Props) {
     );
 }
 
+/**
+ * Renders a blog post page with canonical URL handling, metadata, and structured data.
+ *
+ * @param slug - The requested blog post slug or legacy identifier
+ * @param stats - Blog statistics content to display with the post
+ * @returns The rendered blog post page
+ */
 async function CachedBlogBySlug({ slug, stats }: { slug: string; stats: ReactNode }) {
     "use cache";
     cacheLife("max");

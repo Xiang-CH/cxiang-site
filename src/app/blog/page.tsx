@@ -21,6 +21,9 @@ export const metadata: Metadata = {
     }),
 };
 
+/**
+ * Renders the error state shown when blog data cannot be retrieved.
+ */
 function ErrorLoadingBlogs() {
     return (
         <>
@@ -35,6 +38,12 @@ function ErrorLoadingBlogs() {
     );
 }
 
+/**
+ * Retrieves public statistics for the specified blog slugs when the database is configured.
+ *
+ * @param slugs - The blog slugs whose statistics to retrieve
+ * @returns A map of blog slugs to their public statistics, or an empty object when unavailable
+ */
 async function getServerBlogStats(slugs: string[]): Promise<Record<string, PublicBlogStats>> {
     if (!isDatabaseConfigured()) return {};
 
@@ -46,6 +55,11 @@ async function getServerBlogStats(slugs: string[]): Promise<Record<string, Publi
     }
 }
 
+/**
+ * Renders the blog index page with available posts, metadata, and engagement statistics.
+ *
+ * @returns The blog listing page, an empty-state page when no posts are available, or an error page when loading fails.
+ */
 export default async function Blogs() {
     "use cache";
     cacheLife("max");

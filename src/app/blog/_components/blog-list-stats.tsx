@@ -10,6 +10,12 @@ type PublicBlogStats = {
     likes: number;
 };
 
+/**
+ * Displays formatted view and like counts for a blog post.
+ *
+ * @param stats - The post's view and like counts; when omitted, no content is rendered.
+ * @param small - Whether to use the compact text and icon sizing.
+ */
 export function BlogListStats({ stats, small }: { stats?: PublicBlogStats; small?: boolean }) {
     if (!stats) return null;
 

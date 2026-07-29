@@ -13,6 +13,12 @@ import {
 const VERCEL_ANALYTICS_API_URL = "https://api.vercel.com/v1/query/web-analytics/visits/aggregate";
 const MAX_PATH_GROUPS = 100;
 
+/**
+ * Loads the Vercel Analytics configuration from environment variables.
+ *
+ * @returns The Vercel token, project ID, and optional team ID.
+ * @throws If `VERCEL_TOKEN` or `VERCEL_PROJECT_ID` is missing.
+ */
 function getVercelAnalyticsConfiguration() {
     const token = process.env.VERCEL_TOKEN;
     const projectId = process.env.VERCEL_PROJECT_ID;
@@ -25,6 +31,13 @@ function getVercelAnalyticsConfiguration() {
     return { token, projectId, teamId: process.env.VERCEL_TEAM_ID };
 }
 
+/**
+ * Retrieves daily pageview rollups for blog paths on the specified date.
+ *
+ * @param viewedOn - The UTC calendar date to retrieve
+ * @returns The pageview rollups for blog paths on `viewedOn`
+ * @throws If the Vercel Analytics request fails
+ */
 async function fetchDailyBlogPageviewRollups(viewedOn: string) {
     const { token, projectId, teamId } = getVercelAnalyticsConfiguration();
     const { since, until } = getUtcDayRange(viewedOn);
@@ -52,6 +65,12 @@ async function fetchDailyBlogPageviewRollups(viewedOn: string) {
     return extractDailyBlogPageviewRollups(await response.json(), viewedOn);
 }
 
+/**
+ * Replaces daily blog pageview rollups for the specified dates.
+ *
+ * @param viewedOnDates - Dates whose existing rollups should be replaced
+ * @param rollups - Pageview rollups to store for those dates
+ */
 async function replaceDailyBlogPageviewRollups(
     viewedOnDates: string[],
     rollups: DailyBlogPageviewRollup[]
@@ -84,6 +103,12 @@ async function replaceDailyBlogPageviewRollups(
     });
 }
 
+/**
+ * Synchronizes recent complete UTC days of Vercel blog pageview data with the database.
+ *
+ * @param now - Reference time used to determine the recent complete UTC dates.
+ * @returns The synchronized dates and the number of distinct blog posts with pageview data.
+ */
 export async function syncRecentVercelBlogPageviews(now = new Date()) {
     const viewedOnDates = getPreviousCompleteUtcDates(now);
     const rollups = (await Promise.all(viewedOnDates.map(fetchDailyBlogPageviewRollups))).flat();

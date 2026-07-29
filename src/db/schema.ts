@@ -1,10 +1,20 @@
 import { sql } from "drizzle-orm";
 import { check, date, integer, pgTable, primaryKey, timestamp, varchar } from "drizzle-orm/pg-core";
 
+/**
+ * Creates a slug column definition with a maximum length of 255 characters.
+ *
+ * @returns A `varchar` column definition named `slug`
+ */
 function slugColumn() {
     return varchar("slug", { length: 255 });
 }
 
+/**
+ * Defines a varchar column for storing visitor hashes.
+ *
+ * @returns A `visitor_hash` varchar column with a maximum length of 64 characters.
+ */
 function visitorHashColumn() {
     return varchar("visitor_hash", { length: 64 });
 }

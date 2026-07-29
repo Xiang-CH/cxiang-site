@@ -5,6 +5,12 @@ import { getPublicBlogStats, isValidBlogSlug } from "@/lib/blog-stats";
 
 const MAX_SLUGS_PER_REQUEST = 100;
 
+/**
+ * Serves public blog statistics for the requested blog slugs.
+ *
+ * @param request - The request containing `slug` query parameters.
+ * @returns A JSON response with blog statistics, or an error response with status 400 or 503.
+ */
 export async function GET(request: NextRequest) {
     const slugs = [...new Set(request.nextUrl.searchParams.getAll("slug"))];
 

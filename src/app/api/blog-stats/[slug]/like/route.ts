@@ -12,12 +12,25 @@ import { BLOG_STATS_MUTATION_CACHE_CONTROL } from "@/lib/blog-stats-cache";
 
 type Context = { params: Promise<{ slug: string }> };
 
+/**
+ * Determines whether a request originates from the same site.
+ *
+ * @param request - The request to evaluate
+ * @returns `true` if the request origin matches the application origin and its fetch-site header is absent or `"same-origin"`, `false` otherwise.
+ */
 function isSameOrigin(request: NextRequest) {
     const origin = request.headers.get("origin");
     const fetchSite = request.headers.get("sec-fetch-site");
     return origin === request.nextUrl.origin && (!fetchSite || fetchSite === "same-origin");
 }
 
+/**
+ * Toggles the requesting visitor's like for a blog.
+ *
+ * Rejects cross-origin requests and invalid slugs, and returns an error response when blog statistics are unavailable. Sets a visitor identification cookie when needed.
+ *
+ * @returns A JSON response containing updated blog statistics or an error message.
+ */
 export async function POST(request: NextRequest, { params }: Context) {
     const { slug } = await params;
     if (!isSameOrigin(request)) {

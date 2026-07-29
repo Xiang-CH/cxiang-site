@@ -13,6 +13,12 @@ type VercelAnalyticsResponse = {
     data?: unknown;
 };
 
+/**
+ * Computes the preceding complete UTC dates for reconciliation.
+ *
+ * @param now - The reference date and time used to determine the current UTC date
+ * @returns ISO-formatted UTC dates in chronological order
+ */
 export function getPreviousCompleteUtcDates(now = new Date()) {
     const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
 
@@ -22,6 +28,12 @@ export function getPreviousCompleteUtcDates(now = new Date()) {
     });
 }
 
+/**
+ * Creates the UTC time range covering a specified calendar day.
+ *
+ * @param viewedOn - The date in `YYYY-MM-DD` format.
+ * @returns The UTC start and end timestamps for the date.
+ */
 export function getUtcDayRange(viewedOn: string) {
     return {
         since: `${viewedOn}T00:00:00.000Z`,
@@ -29,6 +41,12 @@ export function getUtcDayRange(viewedOn: string) {
     };
 }
 
+/**
+ * Extracts and validates the pageview count from an analytics record.
+ *
+ * @param record - The analytics record containing a single numeric pageview metric.
+ * @returns The non-negative safe integer pageview count.
+ */
 function getPageViews(record: Record<string, unknown>) {
     const metrics = Object.entries(record).filter(
         (entry): entry is [string, number] =>
@@ -47,6 +65,13 @@ function getPageViews(record: Record<string, unknown>) {
     return pageViews;
 }
 
+/**
+ * Aggregates Vercel Analytics pageview data into daily blog rollups.
+ *
+ * @param payload - The Vercel Analytics response containing pageview records
+ * @param viewedOn - The date associated with the rollups
+ * @returns Blog rollups grouped by slug and sorted lexicographically by slug
+ */
 export function extractDailyBlogPageviewRollups(
     payload: VercelAnalyticsResponse,
     viewedOn: string

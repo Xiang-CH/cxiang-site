@@ -18,6 +18,13 @@ type BlogStats = PublicBlogStats & {
     liked: boolean;
 };
 
+/**
+ * Displays blog view and like counts with an interactive like toggle.
+ *
+ * @param slug - The blog post identifier used for like updates.
+ * @param initialStats - The initial view and like counts.
+ * @param initialLiked - Whether the current user initially likes the post.
+ */
 export function BlogStats({
     slug,
     initialStats,
