@@ -29,17 +29,19 @@ export function BlogStats({
     slug,
     initialStats,
     initialLiked,
+    likesAvailable,
 }: {
     slug: string;
     initialStats: PublicBlogStats;
     initialLiked: boolean;
+    likesAvailable: boolean;
 }) {
     const [publicStats, setPublicStats] = useState(initialStats);
     const [liked, setLiked] = useState(initialLiked);
     const [isLiking, setIsLiking] = useState(false);
 
     async function toggleLike() {
-        if (isLiking) return;
+        if (!likesAvailable || isLiking) return;
 
         const previousStats = publicStats;
         const previousLiked = liked;
@@ -86,9 +88,15 @@ export function BlogStats({
                 variant="ghost"
                 size="sm"
                 className="h-7 gap-1 px-1.5 text-muted-foreground hover:text-foreground"
-                aria-label={liked ? "Unlike this post" : "Like this post"}
-                aria-pressed={liked}
-                disabled={isLiking}
+                aria-label={
+                    likesAvailable
+                        ? liked
+                            ? "Unlike this post"
+                            : "Like this post"
+                        : "Likes are unavailable"
+                }
+                aria-pressed={likesAvailable && liked}
+                disabled={!likesAvailable || isLiking}
                 onClick={toggleLike}
             >
                 <Heart

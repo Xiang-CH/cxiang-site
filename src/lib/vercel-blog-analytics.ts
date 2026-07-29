@@ -12,6 +12,18 @@ import {
 
 const VERCEL_ANALYTICS_API_URL = "https://api.vercel.com/v1/query/web-analytics/visits/aggregate";
 const MAX_PATH_GROUPS = 100;
+const VERCEL_ANALYTICS_TIMEOUT_MS = 20_000;
+const VERCEL_ANALYTICS_MAX_ATTEMPTS = 3;
+const VERCEL_ANALYTICS_RETRY_DELAY_MS = 500;
+
+class VercelAnalyticsRequestError extends Error {
+    constructor(
+        message: string,
+        readonly retryable: boolean
+    ) {
+        super(message);
+    }
+}
 
 /**
  * Loads the Vercel Analytics configuration from environment variables.
@@ -31,14 +43,13 @@ function getVercelAnalyticsConfiguration() {
     return { token, projectId, teamId: process.env.VERCEL_TEAM_ID };
 }
 
-/**
- * Retrieves daily pageview rollups for blog paths on the specified date.
- *
- * @param viewedOn - The UTC calendar date to retrieve
- * @returns The pageview rollups for blog paths on `viewedOn`
- * @throws If the Vercel Analytics request fails
- */
-async function fetchDailyBlogPageviewRollups(viewedOn: string) {
+function waitForRetry(attempt: number) {
+    return new Promise<void>((resolve) => {
+        setTimeout(resolve, VERCEL_ANALYTICS_RETRY_DELAY_MS * 2 ** attempt);
+    });
+}
+
+async function fetchDailyBlogPageviewRollupsOnce(viewedOn: string) {
     const { token, projectId, teamId } = getVercelAnalyticsConfiguration();
     const { since, until } = getUtcDayRange(viewedOn);
     const params = new URLSearchParams({
@@ -51,18 +62,61 @@ async function fetchDailyBlogPageviewRollups(viewedOn: string) {
     });
     if (teamId) params.set("teamId", teamId);
 
-    const response = await fetch(`${VERCEL_ANALYTICS_API_URL}?${params}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store",
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), VERCEL_ANALYTICS_TIMEOUT_MS);
 
-    if (!response.ok) {
-        throw new Error(
-            `Vercel Analytics request failed (${response.status}): ${(await response.text()).slice(0, 500)}`
-        );
+    try {
+        const response = await fetch(`${VERCEL_ANALYTICS_API_URL}?${params}`, {
+            headers: { Authorization: `Bearer ${token}` },
+            cache: "no-store",
+            signal: controller.signal,
+        });
+
+        if (!response.ok) {
+            throw new VercelAnalyticsRequestError(
+                `Vercel Analytics request failed (${response.status}): ${(await response.text()).slice(0, 500)}`,
+                response.status === 429 || response.status >= 500
+            );
+        }
+
+        return extractDailyBlogPageviewRollups(await response.json(), viewedOn);
+    } catch (error) {
+        if (controller.signal.aborted) {
+            throw new VercelAnalyticsRequestError(
+                `Vercel Analytics request timed out after ${VERCEL_ANALYTICS_TIMEOUT_MS / 1000} seconds.`,
+                true
+            );
+        }
+        throw error;
+    } finally {
+        clearTimeout(timeout);
+    }
+}
+
+/**
+ * Retrieves daily pageview rollups for blog paths on the specified date.
+ *
+ * @param viewedOn - The UTC calendar date to retrieve
+ * @returns The pageview rollups for blog paths on `viewedOn`
+ * @throws If the Vercel Analytics request fails
+ */
+async function fetchDailyBlogPageviewRollups(viewedOn: string) {
+    for (let attempt = 0; attempt < VERCEL_ANALYTICS_MAX_ATTEMPTS; attempt += 1) {
+        try {
+            return await fetchDailyBlogPageviewRollupsOnce(viewedOn);
+        } catch (error) {
+            const retryable =
+                error instanceof VercelAnalyticsRequestError
+                    ? error.retryable
+                    : error instanceof TypeError;
+            const isFinalAttempt = attempt === VERCEL_ANALYTICS_MAX_ATTEMPTS - 1;
+            if (!retryable || isFinalAttempt) throw error;
+
+            await waitForRetry(attempt);
+        }
     }
 
-    return extractDailyBlogPageviewRollups(await response.json(), viewedOn);
+    throw new Error("Vercel Analytics request retry loop ended unexpectedly.");
 }
 
 /**

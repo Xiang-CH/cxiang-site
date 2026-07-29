@@ -6,6 +6,7 @@ import {
     BLOG_STATS_VISITOR_COOKIE,
     getBlogLikeState,
     getPublicBlogStats,
+    isBlogStatsConfigured,
     isVisitorId,
 } from "@/lib/blog-stats";
 import { BlogStats } from "./blog-stats";
@@ -47,9 +48,12 @@ export async function BlogStatsServer({
     const stats = await getCachedPublicBlogStats(slug);
     if (!stats) return null;
 
-    const visitorId = (await cookies()).get(BLOG_STATS_VISITOR_COOKIE)?.value;
+    const likesAvailable = isBlogStatsConfigured();
+    const visitorId = likesAvailable
+        ? (await cookies()).get(BLOG_STATS_VISITOR_COOKIE)?.value
+        : undefined;
     let liked = false;
-    if (isVisitorId(visitorId)) {
+    if (likesAvailable && isVisitorId(visitorId)) {
         try {
             liked = await getBlogLikeState(slug, visitorId);
         } catch (error) {
@@ -60,7 +64,13 @@ export async function BlogStatsServer({
     return (
         <>
             {showSeparator && <span aria-hidden>·</span>}
-            <BlogStats slug={slug} initialStats={stats} initialLiked={liked} />
+            <BlogStats
+                key={slug}
+                slug={slug}
+                initialStats={stats}
+                initialLiked={liked}
+                likesAvailable={likesAvailable}
+            />
         </>
     );
 }
