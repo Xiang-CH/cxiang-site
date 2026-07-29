@@ -113,7 +113,7 @@ export default async function Blogs() {
                         >
                             <div className="flex justify-between items-start gap-4">
                                 <div className="flex flex-col gap-1 h-full justify-center mt-1">
-                                    <h2 className="text-md font-[550] group-hover:underline text-wrap leading-[1.3]">
+                                    <h2 className="text-md font-[450] group-hover:underline text-wrap leading-[1.3]">
                                         {title}
                                     </h2>
                                     <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
@@ -121,7 +121,7 @@ export default async function Blogs() {
                                             blog.properties["Publish Date"]?.date?.start}
                                         <BlogListStats stats={statsBySlug[slug]} small />
                                     </p>
-                                    <p className="text-sm font-[350]">
+                                    <p className="text-sm font-[350] text-foreground/70">
                                         {blog.properties.Abstract?.type === "rich_text" &&
                                             blog.properties.Abstract.rich_text[0]?.plain_text}
                                     </p>
