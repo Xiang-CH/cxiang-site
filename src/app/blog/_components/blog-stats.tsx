@@ -1,7 +1,7 @@
 "use client";
 
 import { Eye, Heart } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
     formatBlogLikeCount,
@@ -18,35 +18,18 @@ type BlogStats = PublicBlogStats & {
     liked: boolean;
 };
 
-export function BlogStats({ slug, initialStats }: { slug: string; initialStats: PublicBlogStats }) {
+export function BlogStats({
+    slug,
+    initialStats,
+    initialLiked,
+}: {
+    slug: string;
+    initialStats: PublicBlogStats;
+    initialLiked: boolean;
+}) {
     const [publicStats, setPublicStats] = useState(initialStats);
-    const [liked, setLiked] = useState(false);
+    const [liked, setLiked] = useState(initialLiked);
     const [isLiking, setIsLiking] = useState(false);
-
-    useEffect(() => {
-        const controller = new AbortController();
-
-        async function recordView() {
-            try {
-                const response = await fetch(`/api/blog-stats/${encodeURIComponent(slug)}/view`, {
-                    method: "POST",
-                    cache: "no-store",
-                    credentials: "same-origin",
-                    signal: controller.signal,
-                });
-                if (!response.ok) return;
-                const stats = (await response.json()) as BlogStats;
-                setLiked(stats.liked);
-            } catch (error) {
-                if ((error as Error).name !== "AbortError") {
-                    console.error("Unable to load blog statistics", error);
-                }
-            }
-        }
-
-        void recordView();
-        return () => controller.abort();
-    }, [slug]);
 
     async function toggleLike() {
         if (isLiking) return;

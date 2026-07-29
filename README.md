@@ -38,33 +38,44 @@ Possible tags are:
 
 ## Blog statistics
 
-Blog views and likes are stored in Neon Postgres and keyed by globally unique blog slugs. Install
-Neon through Vercel Marketplace, then configure these server-only variables for local development:
+Blog likes are stored in Neon Postgres and keyed by globally unique blog slugs. Lifetime views come from Vercel Web Analytics and are copied into Neon as daily, replaceable rollups. This keeps page loads fast and avoids a public endpoint that increments a counter on every page load.
+
+Install Neon through Vercel Marketplace, then configure these server-only variables in Vercel:
 
 - `DATABASE_URL` — Neon pooled connection string for the application.
 - `DATABASE_URL_UNPOOLED` — direct Neon connection string for migrations.
 - `BLOG_STATS_HASH_SECRET` — a high-entropy secret used to HMAC anonymous browser identifiers.
+- `VERCEL_TOKEN` — Vercel access token with access to this project’s Web Analytics data.
+- `VERCEL_PROJECT_ID` — Vercel project ID used by the analytics query API.
+- `VERCEL_TEAM_ID` — optional Vercel team ID; omit for a personal project.
+- `CRON_SECRET` — high-entropy secret that authorizes Vercel Cron requests.
 
 Generate a migration after changing `src/db/schema.ts` with `bun run db:generate`. Apply migrations
 with `bun run db:migrate`; it reads the direct connection string from `.env.local`.
 
+`vercel.json` schedules `/api/cron/sync-blog-analytics` daily at 02:00 UTC. Each run queries the
+two prior complete UTC days and transactionally replaces those date partitions, so delayed analytics
+data is reconciled without double-counting. Cached blog pages are marked stale after a successful
+sync and refresh in the background; a brief delay in visible view totals is intentional.
+
 ### Import existing Vercel pageviews
 
-The one-time importer stores existing Vercel Web Analytics pageviews in a separate historical
-baseline. This keeps it separate from the privacy-conscious, per-browser-per-UTC-day counter used
-for new views, and makes imports repeatable without double-counting.
+The one-time importer stores pageviews from before daily rollups began in a historical baseline.
+It is repeatable for each imported slug, but never include dates that the daily cron already owns,
+or those dates would be counted twice.
 
-First apply the migration, then inspect the import without changing Neon:
+First apply the migration, then inspect an import ending before the first daily rollup date without
+changing Neon:
 
 ```bash
 bun run db:migrate
-bun run db:import:vercel-views -- --project <vercel-project> --since 2025-01-01
+bun run db:import:vercel-views -- --project <vercel-project> --since 2025-01-01 --until <day-before-rollups>
 ```
 
 When the listed slugs and totals look right, re-run with `--apply`:
 
 ```bash
-bun run db:import:vercel-views -- --project <vercel-project> --since 2025-01-01 --apply
+bun run db:import:vercel-views -- --project <vercel-project> --since 2025-01-01 --until <day-before-rollups> --apply
 ```
 
 The script calls `vercel metrics` with production-only `request_path` grouping, accepts only

@@ -15,6 +15,7 @@ import { type Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { type PageObjectResponse } from "@notionhq/client";
 import { type ExtendedRecordMap } from "notion-types";
+import { Suspense, type ReactNode } from "react";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { BlogPosting, WithContext } from "schema-dts";
@@ -239,13 +240,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogBySlug({ params }: Props) {
-    "use cache";
-    cacheLife("max");
     const slug = (await params).slug;
 
     if (slug === BUILD_PLACEHOLDER_BLOG_SLUG) {
         notFound();
     }
+
+    return (
+        <CachedBlogBySlug
+            slug={slug}
+            stats={
+                <Suspense fallback={null}>
+                    <BlogStatsServer slug={slug} showSeparator />
+                </Suspense>
+            }
+        />
+    );
+}
+
+async function CachedBlogBySlug({ slug, stats }: { slug: string; stats: ReactNode }) {
+    "use cache";
+    cacheLife("max");
 
     // Legacy: if the path segment is actually an id, redirect to its canonical slug
     const legacySlug = await getSlugById(slug);
@@ -309,12 +324,7 @@ export default async function BlogBySlug({ params }: Props) {
                         recordMap={seoData.recordMap}
                         slug={seoData.post.slug}
                         publishDate={seoData.publishedTime}
-                        stats={
-                            <BlogStatsServer
-                                slug={seoData.post.slug}
-                                showSeparator={Boolean(seoData.publishedTime)}
-                            />
-                        }
+                        stats={stats}
                     />
                 </BlogPostShell>
             </div>

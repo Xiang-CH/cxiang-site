@@ -15,6 +15,13 @@
       "when": 1785216265305,
       "tag": "0001_loving_toad_men",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785315621651,
+      "tag": "0002_good_the_initiative",
+      "breakpoints": true
     }
   ]
 }

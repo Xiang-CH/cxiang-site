@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { Pool } from "pg";
+import { getBlogSlugFromPath } from "../src/lib/blog-stats-utils";
 
 const METRIC = "vercel.analytics_pageview.count";
 const ROLLUP_COLUMN = "vercel_analytics_pageview_count_sum";
@@ -84,24 +85,7 @@ export function getVercelCliError(stdout: string, stderr: string, exitCode: numb
 }
 
 export function slugFromBlogPath(value: unknown): string | null {
-    if (typeof value !== "string") return null;
-
-    let pathname: string;
-    try {
-        pathname = new URL(value, "https://cxiang.site").pathname;
-    } catch {
-        return null;
-    }
-
-    const match = /^\/blog\/([^/]+)\/?$/.exec(pathname);
-    if (!match) return null;
-
-    try {
-        const slug = decodeURIComponent(match[1]);
-        return slug.length > 0 && slug.length <= 255 && !slug.endsWith(".md") ? slug : null;
-    } catch {
-        return null;
-    }
+    return getBlogSlugFromPath(value);
 }
 
 export function extractViewTotals(payload: unknown): ViewTotal[] {

@@ -49,7 +49,7 @@ async function getServerBlogStats(slugs: string[]): Promise<Record<string, Publi
 export default async function Blogs() {
     "use cache";
     cacheLife("max");
-    cacheTag(CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs);
+    cacheTag(CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs, CACHE_TAGS.blogStats);
 
     let response;
     let metas: PostMeta[] = [];
@@ -113,21 +113,21 @@ export default async function Blogs() {
                         >
                             <div className="flex justify-between items-start gap-4">
                                 <div className="flex flex-col gap-1 h-full justify-center mt-1">
-                                    <h2 className="text-lg sm:text-xl font-[550] group-hover:underline text-wrap leading-[1.3]">
+                                    <h2 className="text-md font-[550] group-hover:underline text-wrap leading-[1.3]">
                                         {title}
                                     </h2>
-                                    <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+                                    <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                                         {blog.properties["Publish Date"]?.type === "date" &&
                                             blog.properties["Publish Date"]?.date?.start}
                                         <BlogListStats stats={statsBySlug[slug]} small />
                                     </p>
-                                    <p className="text-md font-[350]">
+                                    <p className="text-sm font-[350]">
                                         {blog.properties.Abstract?.type === "rich_text" &&
                                             blog.properties.Abstract.rich_text[0]?.plain_text}
                                     </p>
                                 </div>
                                 {blog.cover && coverSrc && (
-                                    <div className="min-w-28 max-w-28 sm:min-w-40 sm:max-w-40 mt-2">
+                                    <div className="min-w-28 max-w-28 sm:min-w-30 sm:max-w-30 mt-2">
                                         <Image
                                             src={coverSrc}
                                             alt={`${title} cover image`}

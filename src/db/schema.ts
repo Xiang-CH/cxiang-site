@@ -13,10 +13,8 @@ export const blogPostStats = pgTable(
     "blog_post_stats",
     {
         slug: slugColumn().primaryKey(),
-        // Vercel Web Analytics pageviews imported before the in-app counter launched.
-        // Keep this independent from viewCount so an import cannot overwrite live views.
+        // Vercel Web Analytics pageviews imported before daily rollups began.
         historicalViewCount: integer("historical_view_count").notNull().default(0),
-        viewCount: integer("view_count").notNull().default(0),
         likeCount: integer("like_count").notNull().default(0),
         updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
     },
@@ -25,24 +23,24 @@ export const blogPostStats = pgTable(
             "blog_post_stats_historical_view_count_nonnegative",
             sql`${table.historicalViewCount} >= 0`
         ),
-        check("blog_post_stats_view_count_nonnegative", sql`${table.viewCount} >= 0`),
         check("blog_post_stats_like_count_nonnegative", sql`${table.likeCount} >= 0`),
     ]
 );
 
-export const blogDailyViews = pgTable(
-    "blog_daily_views",
+export const blogAnalyticsDailyRollups = pgTable(
+    "blog_analytics_daily_rollups",
     {
         slug: slugColumn().notNull(),
-        visitorHash: visitorHashColumn().notNull(),
         viewedOn: date("viewed_on", { mode: "string" }).notNull(),
-        createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+        pageViews: integer("page_views").notNull().default(0),
+        updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
     },
     (table) => [
         primaryKey({
-            name: "blog_daily_views_slug_visitor_hash_viewed_on_pk",
-            columns: [table.slug, table.visitorHash, table.viewedOn],
+            name: "blog_analytics_daily_rollups_slug_viewed_on_pk",
+            columns: [table.slug, table.viewedOn],
         }),
+        check("blog_analytics_daily_rollups_page_views_nonnegative", sql`${table.pageViews} >= 0`),
     ]
 );
 

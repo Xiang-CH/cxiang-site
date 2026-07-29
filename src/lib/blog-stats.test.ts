@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-    getUtcDate,
+    getBlogSlugFromPath,
     hasBlogStatsConfiguration,
     isValidBlogSlug,
     isVisitorId,
@@ -16,8 +16,11 @@ describe("blog stats helpers", () => {
         expect(isValidBlogSlug(" ")).toBe(false);
     });
 
-    it("uses the UTC calendar day for view deduplication", () => {
-        expect(getUtcDate(new Date("2026-07-28T23:59:59-07:00"))).toBe("2026-07-29");
+    it("uses only canonical blog paths for analytics rollups", () => {
+        expect(getBlogSlugFromPath("/blog/a-post")).toBe("a-post");
+        expect(getBlogSlugFromPath("/blog/%E6%8A%80%E6%9C%AF")).toBe("技术");
+        expect(getBlogSlugFromPath("/blog/a-post.md")).toBeNull();
+        expect(getBlogSlugFromPath("/blog/a-post/extra")).toBeNull();
     });
 
     it("accepts only generated UUID-shaped visitor ids", () => {

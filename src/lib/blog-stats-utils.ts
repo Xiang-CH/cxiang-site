@@ -23,6 +23,23 @@ export function isVisitorId(value: string | undefined): value is string {
     return Boolean(value && VISITOR_ID_PATTERN.test(value));
 }
 
-export function getUtcDate(now = new Date()) {
-    return now.toISOString().slice(0, 10);
+export function getBlogSlugFromPath(value: unknown): string | null {
+    if (typeof value !== "string") return null;
+
+    let pathname: string;
+    try {
+        pathname = new URL(value, "https://cxiang.site").pathname;
+    } catch {
+        return null;
+    }
+
+    const match = /^\/blog\/([^/]+)\/?$/.exec(pathname);
+    if (!match) return null;
+
+    try {
+        const slug = decodeURIComponent(match[1]);
+        return isValidBlogSlug(slug) && !slug.endsWith(".md") ? slug : null;
+    } catch {
+        return null;
+    }
 }

@@ -1,19 +1,19 @@
 import "server-only";
 
 import { createHmac, randomUUID } from "node:crypto";
-import { inArray, sql } from "drizzle-orm";
+import { eq, inArray, sql } from "drizzle-orm";
 import { getDb, isDatabaseConfigured } from "@/db";
-import { blogPostStats } from "@/db/schema";
-import { getUtcDate, hasBlogStatsConfiguration, isValidBlogSlug } from "./blog-stats-utils";
+import { blogAnalyticsDailyRollups, blogPostStats } from "@/db/schema";
+import { hasBlogStatsConfiguration, isValidBlogSlug } from "./blog-stats-utils";
 
-export { getUtcDate, isValidBlogSlug, isVisitorId } from "./blog-stats-utils";
+export { isValidBlogSlug, isVisitorId } from "./blog-stats-utils";
 
 export const BLOG_STATS_VISITOR_COOKIE = "blog_stats_visitor";
 export const BLOG_STATS_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 type StatsRow = {
     historical_view_count: number;
-    view_count: number;
+    daily_view_count: number;
     like_count: number;
     liked: boolean;
 };
@@ -47,17 +47,19 @@ export async function getPublicBlogStats(
         .select({
             slug: blogPostStats.slug,
             historicalViews: blogPostStats.historicalViewCount,
-            views: blogPostStats.viewCount,
+            dailyViews: sql<number>`COALESCE(SUM(${blogAnalyticsDailyRollups.pageViews}), 0)`,
             likes: blogPostStats.likeCount,
         })
         .from(blogPostStats)
-        .where(inArray(blogPostStats.slug, uniqueSlugs));
+        .leftJoin(blogAnalyticsDailyRollups, eq(blogPostStats.slug, blogAnalyticsDailyRollups.slug))
+        .where(inArray(blogPostStats.slug, uniqueSlugs))
+        .groupBy(blogPostStats.slug, blogPostStats.historicalViewCount, blogPostStats.likeCount);
 
     return Object.fromEntries(
         rows.map((row) => [
             row.slug,
             {
-                views: row.historicalViews + row.views,
+                views: Number(row.historicalViews) + Number(row.dailyViews),
                 likes: row.likes,
             },
         ])
@@ -75,7 +77,7 @@ function getVisitorHash(visitorId: string) {
 
 function toStats(row: StatsRow): BlogStats {
     return {
-        views: Number(row.historical_view_count) + Number(row.view_count),
+        views: Number(row.historical_view_count) + Number(row.daily_view_count),
         likes: Number(row.like_count),
         liked: row.liked,
     };
@@ -85,7 +87,11 @@ async function getStats(slug: string, visitorHash: string): Promise<BlogStats> {
     const result = await getDb().execute<StatsRow>(sql`
         SELECT
             stats.historical_view_count,
-            stats.view_count,
+            COALESCE((
+                SELECT SUM(page_views)
+                FROM blog_analytics_daily_rollups
+                WHERE slug = stats.slug
+            ), 0) AS daily_view_count,
             stats.like_count,
             EXISTS(
                 SELECT 1
@@ -98,44 +104,18 @@ async function getStats(slug: string, visitorHash: string): Promise<BlogStats> {
 
     const row = result.rows[0] ?? {
         historical_view_count: 0,
-        view_count: 0,
+        daily_view_count: 0,
         like_count: 0,
         liked: false,
     };
     return toStats(row);
 }
 
-export async function recordBlogView(slug: string, visitorId: string): Promise<BlogStats> {
-    const visitorHash = getVisitorHash(visitorId);
-    const viewedOn = getUtcDate();
-    const db = getDb();
+export async function getBlogLikeState(slug: string, visitorId: string | undefined) {
+    if (!visitorId || !isBlogStatsConfigured()) return false;
 
-    await db.transaction(async (tx) => {
-        const insertedView = await tx.execute<{ slug: string }>(sql`
-            INSERT INTO blog_daily_views (slug, visitor_hash, viewed_on)
-            VALUES (${slug}, ${visitorHash}, ${viewedOn})
-            ON CONFLICT DO NOTHING
-            RETURNING slug
-        `);
-
-        if (insertedView.rows.length > 0) {
-            await tx.execute(sql`
-                INSERT INTO blog_post_stats (slug, view_count)
-                VALUES (${slug}, 1)
-                ON CONFLICT (slug) DO UPDATE
-                SET view_count = blog_post_stats.view_count + 1,
-                    updated_at = NOW()
-            `);
-        } else {
-            await tx.execute(sql`
-                INSERT INTO blog_post_stats (slug)
-                VALUES (${slug})
-                ON CONFLICT (slug) DO NOTHING
-            `);
-        }
-    });
-
-    return getStats(slug, visitorHash);
+    const stats = await getStats(slug, getVisitorHash(visitorId));
+    return stats.liked;
 }
 
 export async function toggleBlogLike(slug: string, visitorId: string): Promise<BlogStats> {
