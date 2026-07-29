@@ -1,0 +1,2 @@
+ALTER TABLE "blog_post_stats" ADD COLUMN "historical_view_count" integer DEFAULT 0 NOT NULL;--> statement-breakpoint
+ALTER TABLE "blog_post_stats" ADD CONSTRAINT "blog_post_stats_historical_view_count_nonnegative" CHECK ("blog_post_stats"."historical_view_count" >= 0);
