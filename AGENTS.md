@@ -16,6 +16,8 @@ Before large structural modifications or Next.js-specific changes, find and read
 
 Personal portfolio & blog site (cxiang.site) — Next.js 16 + React 19 + TypeScript, Tailwind CSS 4, shadcn/ui, next-intl for i18n (en, zh-CN). Notion is used as the headless CMS for blog posts and projects.
 
+Production is deployed on Vercel. Cloudflare files and scripts are testing-only; do not propose Cloudflare-specific solutions unless explicitly requested.
+
 ### Data freshness and performance
 
 Prioritize fast page loads over perfectly current non-critical presentation data. Stale values such as blog view and like counts are acceptable when caching keeps a page fast. Prefer batched, cache-friendly reads; do not replace one batched request with uncached per-item requests solely to make this data fresher.
