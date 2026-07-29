@@ -2,7 +2,13 @@ import { isDatabaseConfigured } from "@/db";
 import { getPublicBlogStats } from "@/lib/blog-stats";
 import { BlogStats } from "./blog-stats";
 
-export async function BlogStatsServer({ slug }: { slug: string }) {
+export async function BlogStatsServer({
+    slug,
+    showSeparator = false,
+}: {
+    slug: string;
+    showSeparator?: boolean;
+}) {
     if (!isDatabaseConfigured()) return null;
 
     let stats: { views: number; likes: number };
@@ -13,5 +19,10 @@ export async function BlogStatsServer({ slug }: { slug: string }) {
         return null;
     }
 
-    return <BlogStats slug={slug} initialStats={stats} />;
+    return (
+        <>
+            {showSeparator && <span aria-hidden>·</span>}
+            <BlogStats slug={slug} initialStats={stats} />
+        </>
+    );
 }

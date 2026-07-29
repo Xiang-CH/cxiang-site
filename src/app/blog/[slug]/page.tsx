@@ -309,7 +309,12 @@ export default async function BlogBySlug({ params }: Props) {
                         recordMap={seoData.recordMap}
                         slug={seoData.post.slug}
                         publishDate={seoData.publishedTime}
-                        stats={<BlogStatsServer slug={seoData.post.slug} />}
+                        stats={
+                            <BlogStatsServer
+                                slug={seoData.post.slug}
+                                showSeparator={Boolean(seoData.publishedTime)}
+                            />
+                        }
                     />
                 </BlogPostShell>
             </div>

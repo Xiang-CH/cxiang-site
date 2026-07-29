@@ -71,7 +71,6 @@ export default function NotionPageClient({
                             })}
                         </span>
                     )}
-                    {publishDate && <span aria-hidden>·</span>}
                     {stats}
                 </div>
             }
