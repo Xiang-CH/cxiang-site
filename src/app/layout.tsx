@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
-import { JetBrains_Mono, Open_Sans } from "next/font/google";
+import { JetBrains_Mono, Noto_Sans } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import "@/app/globals.css";
@@ -21,7 +21,7 @@ import { Toaster } from "sonner";
 import SiteFooter from "@/components/site-footer";
 import HomeFontGate from "@/components/home-font-gate";
 
-const notoSans = Open_Sans({
+const notoSans = Noto_Sans({
     variable: "--font-noto-sans",
     subsets: ["latin-ext"],
 });
