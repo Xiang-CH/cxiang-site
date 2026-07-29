@@ -48,17 +48,8 @@ export function getUtcDayRange(viewedOn: string) {
  * @returns The non-negative safe integer pageview count.
  */
 function getPageViews(record: Record<string, unknown>) {
-    const metrics = Object.entries(record).filter(
-        (entry): entry is [string, number] =>
-            entry[0] !== "requestPath" && typeof entry[1] === "number"
-    );
-
-    if (metrics.length !== 1) {
-        throw new Error("Vercel Analytics returned an unexpected pageview response.");
-    }
-
-    const [, pageViews] = metrics[0];
-    if (!Number.isSafeInteger(pageViews) || pageViews < 0) {
+    const pageViews = record.pageviews;
+    if (typeof pageViews !== "number" || !Number.isSafeInteger(pageViews) || pageViews < 0) {
         throw new Error("Vercel Analytics returned an invalid pageview count.");
     }
 

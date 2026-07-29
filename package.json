@@ -14,6 +14,7 @@
         "db:generate": "drizzle-kit generate",
         "db:migrate": "dotenv -e .env.local -- drizzle-kit migrate",
         "db:import:vercel-views": "dotenv -e .env.local -- bun scripts/import-vercel-pageviews.ts",
+        "cron:sync-blog-analytics": "dotenv -e .env.local -- bun scripts/trigger-blog-analytics-cron.ts",
         "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
         "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
         "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"

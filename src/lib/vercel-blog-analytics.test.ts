@@ -22,10 +22,10 @@ describe("Vercel blog analytics rollups", () => {
             extractDailyBlogPageviewRollups(
                 {
                     data: [
-                        { requestPath: "/blog/a-post", pageviews: 3 },
-                        { requestPath: "/blog/a-post", pageviews: 5 },
-                        { requestPath: "/blog/a-post.md", pageviews: 8 },
-                        { requestPath: "/project/a-project", pageviews: 13 },
+                        { requestPath: "/blog/a-post", visitors: 1, pageviews: 3 },
+                        { requestPath: "/blog/a-post", visitors: 2, pageviews: 5 },
+                        { requestPath: "/blog/a-post.md", visitors: 3, pageviews: 8 },
+                        { requestPath: "/project/a-project", visitors: 5, pageviews: 13 },
                     ],
                 },
                 "2026-07-28"

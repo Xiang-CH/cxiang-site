@@ -58,6 +58,16 @@ two prior complete UTC days and transactionally replaces those date partitions, 
 data is reconciled without double-counting. Cached blog pages are marked stale after a successful
 sync and refresh in the background; a brief delay in visible view totals is intentional.
 
+To invoke the cron route manually, start the local app and run:
+
+```bash
+bun run cron:sync-blog-analytics
+```
+
+The command reads `CRON_SECRET` from `.env.local` and targets
+`http://localhost:3000/api/cron/sync-blog-analytics` by default. Set
+`BLOG_ANALYTICS_CRON_URL` to explicitly target a deployed URL.
+
 ### Import existing Vercel pageviews
 
 The one-time importer stores pageviews from before daily rollups began in a historical baseline.
