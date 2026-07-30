@@ -22,7 +22,6 @@ export function BlogListStats({ stats, small }: { stats?: PublicBlogStats; small
     return (
         <span
             className={`inline-flex items-center gap-2 ${small ? "text-xs" : "text-sm"} text-muted-foreground`}
-            aria-label="Post engagement"
         >
             <span
                 className="inline-flex items-center gap-1"
