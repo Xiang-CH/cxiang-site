@@ -16,6 +16,7 @@ import { notFound, redirect } from "next/navigation";
 import { type PageObjectResponse } from "@notionhq/client";
 import { type ExtendedRecordMap } from "notion-types";
 import { Suspense, type ReactNode } from "react";
+import { getRecordMapReadTimeMinutes } from "@/lib/read-time";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { BlogPosting, WithContext } from "schema-dts";
@@ -194,6 +195,7 @@ const getPostSeoData = async (slug: string) => {
               : "https://cdn.cxiang.site/default-og-image.jpg";
 
     const { publishedTime, modifiedTime } = getPostDates(notionPage);
+    const readTimeMinutes = getRecordMapReadTimeMinutes(recordMap);
 
     return {
         post,
@@ -204,6 +206,7 @@ const getPostSeoData = async (slug: string) => {
         coverImage,
         publishedTime,
         modifiedTime,
+        readTimeMinutes,
     };
 };
 
@@ -310,6 +313,7 @@ async function CachedBlogBySlug({ slug, stats }: { slug: string; stats: ReactNod
         image: seoData.coverImage,
         datePublished: seoData.publishedTime,
         dateModified: seoData.modifiedTime,
+        timeRequired: `PT${seoData.readTimeMinutes}M`,
         author: {
             "@type": "Person",
             name: SITE_AUTHOR,
@@ -343,6 +347,7 @@ async function CachedBlogBySlug({ slug, stats }: { slug: string; stats: ReactNod
                         recordMap={seoData.recordMap}
                         slug={seoData.post.slug}
                         publishDate={seoData.publishedTime}
+                        readTimeMinutes={seoData.readTimeMinutes}
                         stats={stats}
                     />
                 </BlogPostShell>
