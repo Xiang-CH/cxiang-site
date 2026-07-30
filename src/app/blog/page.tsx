@@ -160,9 +160,6 @@ export default async function Blogs() {
                                     <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                                         {blog.properties["Publish Date"]?.type === "date" &&
                                             blog.properties["Publish Date"]?.date?.start}
-                                        {blog.properties["Publish Date"]?.type === "date" &&
-                                            blog.properties["Publish Date"]?.date?.start &&
-                                            readTimesBySlug[slug] && <span aria-hidden>·</span>}
                                         {readTimesBySlug[slug] && (
                                             <span
                                                 className="inline-flex items-center gap-1"

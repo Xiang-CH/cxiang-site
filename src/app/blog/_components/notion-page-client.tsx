@@ -84,6 +84,7 @@ export default function NotionPageClient({
                             })}
                         </span>
                     )}
+                    {publishDate && readTimeMinutes && <span aria-hidden>·</span>}
                     {readTimeMinutes && <span>{readTimeMinutes} min read</span>}
                     {stats}
                 </div>
