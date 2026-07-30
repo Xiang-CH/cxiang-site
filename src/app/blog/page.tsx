@@ -1,16 +1,18 @@
 import { cacheLife, cacheTag } from "next/cache";
-import { getBlogs, getAllPostsMeta, type PostMeta } from "@/lib/notion";
+import { getBlog, getBlogs, getAllPostsMeta, type PostMeta } from "@/lib/notion";
 import { type PageObjectResponse } from "@notionhq/client";
 import { isDatabaseConfigured } from "@/db";
 import { getPublicBlogStats, type PublicBlogStats } from "@/lib/blog-stats";
 import { Metadata } from "next";
 import Image from "next/image";
+import { BookOpen } from "lucide-react";
 import { BlogListLink } from "./_components/blog-list-link";
 import { BlogListStats } from "./_components/blog-list-stats";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { createPageMetadata } from "@/lib/seo";
+import { getRecordMapReadTimeMinutes } from "@/lib/read-time";
 
 export const metadata: Metadata = {
     ...createPageMetadata({
@@ -56,6 +58,28 @@ async function getServerBlogStats(slugs: string[]): Promise<Record<string, Publi
 }
 
 /**
+ * Retrieves cached reading-time estimates for the specified blog posts.
+ *
+ * @param metas - The metadata for posts whose reading times to retrieve
+ * @returns A map of blog slugs to estimated minutes, or an empty object when unavailable
+ */
+async function getServerBlogReadTimes(metas: PostMeta[]): Promise<Record<string, number>> {
+    try {
+        const readTimes = await Promise.all(
+            metas.map(async ({ id, slug }) => {
+                const recordMap = await getBlog(id);
+                return recordMap ? ([slug, getRecordMapReadTimeMinutes(recordMap)] as const) : null;
+            })
+        );
+
+        return Object.fromEntries(readTimes.filter((entry) => entry !== null));
+    } catch (error) {
+        console.error("Unable to render blog list reading times", error);
+        return {};
+    }
+}
+
+/**
  * Renders the blog index page with available posts, metadata, and engagement statistics.
  *
  * @returns The blog listing page, an empty-state page when no posts are available, or an error page when loading fails.
@@ -92,7 +116,10 @@ export default async function Blogs() {
         );
     }
 
-    const statsBySlug = await getServerBlogStats(metas.map((meta) => meta.slug));
+    const [statsBySlug, readTimesBySlug] = await Promise.all([
+        getServerBlogStats(metas.map((meta) => meta.slug)),
+        getServerBlogReadTimes(metas),
+    ]);
 
     return (
         <>
@@ -133,6 +160,18 @@ export default async function Blogs() {
                                     <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                                         {blog.properties["Publish Date"]?.type === "date" &&
                                             blog.properties["Publish Date"]?.date?.start}
+                                        {blog.properties["Publish Date"]?.type === "date" &&
+                                            blog.properties["Publish Date"]?.date?.start &&
+                                            readTimesBySlug[slug] && <span aria-hidden>·</span>}
+                                        {readTimesBySlug[slug] && (
+                                            <span
+                                                className="inline-flex items-center gap-1"
+                                                aria-label={`Estimated read time: ${readTimesBySlug[slug]} minutes`}
+                                            >
+                                                <BookOpen className="size-3" aria-hidden />
+                                                {readTimesBySlug[slug]} min
+                                            </span>
+                                        )}
                                         <BlogListStats stats={statsBySlug[slug]} small />
                                     </p>
                                     <p className="text-sm font-[350] text-foreground/70">
