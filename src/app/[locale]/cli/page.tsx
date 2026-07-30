@@ -31,11 +31,13 @@ function formatLastUpdate(locale: string): string {
     const date = timestamp ? new Date(timestamp) : null;
     if (!date || Number.isNaN(date.getTime())) return "—";
 
-    return new Intl.DateTimeFormat(locale, {
-        dateStyle: "medium",
-        timeStyle: "short",
-        timeZone: "UTC",
-    }).format(date) + " UTC";
+    return (
+        new Intl.DateTimeFormat(locale, {
+            dateStyle: "medium",
+            timeStyle: "short",
+            timeZone: "UTC",
+        }).format(date) + " UTC"
+    );
 }
 
 /**

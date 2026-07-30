@@ -199,10 +199,10 @@ const ProjectContent = ({ project }: { project: PageObjectResponse }) => {
                 </div>
             )}
             <div className="flex flex-col gap-1 px-4 pt-2 border-t">
-                <h2 className="text-lg sm:text-lg font-[550] group-hover:underline wrap-break-word">
+                <h2 className="text-base font-[450] group-hover:underline wrap-break-word">
                     {title}
                 </h2>
-                <p className="text-sm font-[350]">
+                <p className="text-sm font-[350] text-foreground/70">
                     {project.properties.Abstract?.type === "rich_text" &&
                         project.properties.Abstract.rich_text[0]?.plain_text}
                 </p>

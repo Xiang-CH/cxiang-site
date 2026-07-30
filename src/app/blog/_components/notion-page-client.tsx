@@ -3,6 +3,7 @@
 import { NotionRenderer } from "react-notion-x";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { type ReactNode } from "react";
 import { type CodeBlock, type ExtendedRecordMap } from "notion-types";
 import SponsorCard from "@/components/sponser-card";
 import CopyPageMenu from "./copy-page-menu";
@@ -34,13 +35,25 @@ interface NotionPageClientProps {
     recordMap: ExtendedRecordMap;
     slug: string;
     publishDate?: string;
+    stats?: ReactNode;
     fullPage?: boolean;
 }
 
+/**
+ * Renders a Notion page with custom navigation, content components, metadata, and sponsorship footer.
+ *
+ * @param recordMap - The Notion record map containing the page content.
+ * @param slug - The page slug used by the copy-page menu.
+ * @param publishDate - Optional publication date displayed in the page header.
+ * @param stats - Optional statistics rendered alongside the publication date.
+ * @param fullPage - Whether to render the page in full-page mode.
+ * @returns The rendered Notion page.
+ */
 export default function NotionPageClient({
     recordMap,
     slug,
     publishDate,
+    stats,
     fullPage = true,
 }: NotionPageClientProps) {
     return (
@@ -57,16 +70,19 @@ export default function NotionPageClient({
                 nextImage: Image,
             }}
             pageHeader={
-                publishDate && (
-                    <p className="notion-published-date text-muted-foreground pb-4">
-                        Published on{" "}
-                        {new Date(publishDate).toLocaleDateString(undefined, {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                        })}
-                    </p>
-                )
+                <div className="notion-published-date flex flex-wrap items-center gap-x-2.5 gap-y-1 pb-4 text-muted-foreground">
+                    {publishDate && (
+                        <span>
+                            Published on{" "}
+                            {new Date(publishDate).toLocaleDateString(undefined, {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                            })}
+                        </span>
+                    )}
+                    {stats}
+                </div>
             }
             pageFooter={<SponsorCard />}
         />
