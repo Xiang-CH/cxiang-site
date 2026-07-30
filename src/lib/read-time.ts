@@ -37,9 +37,9 @@ function getBlockText(block: NotionTextBlock): string {
  * Estimates the reading time of prose in minutes, accounting for both word- and character-based languages.
  */
 export function estimateReadTimeMinutes(text: string): number {
-    const cjkCharacterCount = (text.match(/[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/g) ?? [])
+    const cjkCharacterCount = (text.match(/[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7a3]/g) ?? [])
         .length;
-    const nonCjkText = text.replace(/[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/g, " ");
+    const nonCjkText = text.replace(/[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff\uac00-\ud7a3]/g, " ");
     const wordCount = nonCjkText.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu)?.length ?? 0;
 
     return Math.max(
