@@ -11,7 +11,7 @@
         "check": "prettier --write . && eslint .",
         "format:check": "prettier --check .",
         "test": "vitest run",
-        "db:generate": "drizzle-kit generate",
+        "db:generate": "dotenv -e .env.local -- drizzle-kit generate",
         "db:migrate": "dotenv -e .env.local -- drizzle-kit migrate",
         "db:import:vercel-views": "dotenv -e .env.local -- bun scripts/import-vercel-pageviews.ts",
         "cron:sync-blog-analytics": "dotenv -e .env.local -- bun scripts/trigger-blog-analytics-cron.ts",
