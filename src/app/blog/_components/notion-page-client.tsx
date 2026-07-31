@@ -65,7 +65,7 @@ export default function NotionPageClient({
             showTableOfContents
             recordMap={recordMap}
             fullPage={fullPage}
-            pageAside={<CopyPageMenu slug={slug} />}
+            pageAside={<><CopyPageMenu slug={slug} />{stats}</>}
             components={{
                 Code: CustomCode,
                 Collection,
@@ -86,7 +86,6 @@ export default function NotionPageClient({
                     )}
                     {publishDate && readTimeMinutes && <span aria-hidden>·</span>}
                     {readTimeMinutes && <span>{readTimeMinutes} min read</span>}
-                    {stats}
                 </div>
             }
             pageFooter={<SponsorCard />}

@@ -266,7 +266,7 @@ export default async function BlogBySlug({ params }: Props) {
             slug={slug}
             stats={
                 <Suspense fallback={null}>
-                    <BlogStatsServer slug={slug} showSeparator />
+                    <BlogStatsServer slug={slug} />
                 </Suspense>
             }
         />

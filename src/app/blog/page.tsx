@@ -180,7 +180,7 @@ export default async function Blogs() {
                                                 className="inline-flex items-center gap-1"
                                                 aria-label={`Estimated read time: ${readTimesBySlug[slug]} minutes`}
                                             >
-                                                <BookOpen className="size-3" aria-hidden />
+                                                <BookOpen className="size-3 mt-px" aria-hidden />
                                                 {readTimesBySlug[slug]} min
                                             </span>
                                         )}
