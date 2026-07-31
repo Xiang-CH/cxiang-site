@@ -57,6 +57,8 @@ async function getServerBlogStats(slugs: string[]): Promise<Record<string, Publi
     }
 }
 
+const MAX_CONCURRENT_BLOG_READ_TIME_FETCHES = 5;
+
 /**
  * Retrieves cached reading-time estimates for the specified blog posts.
  *
@@ -65,14 +67,27 @@ async function getServerBlogStats(slugs: string[]): Promise<Record<string, Publi
  */
 async function getServerBlogReadTimes(metas: PostMeta[]): Promise<Record<string, number>> {
     try {
-        const readTimes = await Promise.all(
-            metas.map(async ({ id, slug }) => {
-                const recordMap = await getBlog(id);
-                return recordMap ? ([slug, getRecordMapReadTimeMinutes(recordMap)] as const) : null;
-            })
-        );
+        const entries: Array<readonly [string, number]> = [];
 
-        return Object.fromEntries(readTimes.filter((entry) => entry !== null));
+        for (let index = 0; index < metas.length; index += MAX_CONCURRENT_BLOG_READ_TIME_FETCHES) {
+            const batch = metas.slice(index, index + MAX_CONCURRENT_BLOG_READ_TIME_FETCHES);
+            const readTimes = await Promise.allSettled(
+                batch.map(async ({ id, slug }) => {
+                    const recordMap = await getBlog(id);
+                    return recordMap
+                        ? ([slug, getRecordMapReadTimeMinutes(recordMap)] as const)
+                        : null;
+                })
+            );
+
+            for (const readTime of readTimes) {
+                if (readTime.status === "fulfilled" && readTime.value !== null) {
+                    entries.push(readTime.value);
+                }
+            }
+        }
+
+        return Object.fromEntries(entries);
     } catch (error) {
         console.error("Unable to render blog list reading times", error);
         return {};
