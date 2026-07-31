@@ -74,37 +74,27 @@ export function BlogStats({
     }
 
     return (
-        <span className="inline-flex items-center gap-1">
-            <span
-                className="inline-flex items-center gap-1 text-muted-foreground"
-                title="Views"
-                aria-label={getBlogViewCountLabel(publicStats.views)}
-            >
-                <Eye className="size-3.5" aria-hidden />
-                {formatBlogViewCount(publicStats.views)}
-            </span>
-            <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-7 gap-1 px-1.5 text-muted-foreground hover:text-foreground"
-                aria-label={
-                    likesAvailable
-                        ? liked
-                            ? "Unlike this post"
-                            : "Like this post"
-                        : "Likes are unavailable"
-                }
-                aria-pressed={likesAvailable && liked}
-                disabled={!likesAvailable || isLiking}
-                onClick={toggleLike}
-            >
-                <Heart
-                    className={liked ? "size-3.5 fill-current text-foreground" : "size-3.5"}
-                    aria-hidden
-                />
-                {formatBlogLikeCount(publicStats.likes)}
-            </Button>
-        </span>
+        <Button
+            type="button"
+            variant="ghost"
+            size="lg"
+            className="h-7 gap-1 text-muted-foreground hover:text-foreground px-2!"
+            aria-label={
+                likesAvailable
+                    ? liked
+                        ? "Unlike this post"
+                        : "Like this post"
+                    : "Likes are unavailable"
+            }
+            aria-pressed={likesAvailable && liked}
+            disabled={!likesAvailable || isLiking}
+            onClick={toggleLike}
+        >
+            <Heart
+                className={liked ? "size-3.5 fill-current text-muted-foreground" : "size-3.5"}
+                aria-hidden
+            />
+            {formatBlogLikeCount(publicStats.likes)}
+        </Button>
     );
 }

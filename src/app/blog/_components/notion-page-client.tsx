@@ -35,6 +35,7 @@ interface NotionPageClientProps {
     recordMap: ExtendedRecordMap;
     slug: string;
     publishDate?: string;
+    readTimeMinutes?: number;
     stats?: ReactNode;
     fullPage?: boolean;
 }
@@ -45,6 +46,7 @@ interface NotionPageClientProps {
  * @param recordMap - The Notion record map containing the page content.
  * @param slug - The page slug used by the copy-page menu.
  * @param publishDate - Optional publication date displayed in the page header.
+ * @param readTimeMinutes - Optional estimated reading time displayed in the page header.
  * @param stats - Optional statistics rendered alongside the publication date.
  * @param fullPage - Whether to render the page in full-page mode.
  * @returns The rendered Notion page.
@@ -53,6 +55,7 @@ export default function NotionPageClient({
     recordMap,
     slug,
     publishDate,
+    readTimeMinutes,
     stats,
     fullPage = true,
 }: NotionPageClientProps) {
@@ -62,7 +65,7 @@ export default function NotionPageClient({
             showTableOfContents
             recordMap={recordMap}
             fullPage={fullPage}
-            pageAside={<CopyPageMenu slug={slug} />}
+            pageAside={<><CopyPageMenu slug={slug} />{stats}</>}
             components={{
                 Code: CustomCode,
                 Collection,
@@ -81,7 +84,8 @@ export default function NotionPageClient({
                             })}
                         </span>
                     )}
-                    {stats}
+                    {publishDate && readTimeMinutes && <span aria-hidden>·</span>}
+                    {readTimeMinutes && <span>{readTimeMinutes} min read</span>}
                 </div>
             }
             pageFooter={<SponsorCard />}
