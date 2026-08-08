@@ -18,6 +18,18 @@ export default async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
+    // Résumé markdown mirrors proxy straight from the CDN. next-intl's
+    // canonical locale prefix is `/zh-CN`; the lowercase spelling maps to it.
+    if (pathname === "/resume.md") {
+        return NextResponse.next();
+    }
+    if (pathname === "/zh-CN/resume.md") {
+        return NextResponse.next();
+    }
+    if (pathname === "/zh-cn/resume.md") {
+        return NextResponse.rewrite(new URL("/zh-CN/resume.md", request.url));
+    }
+
     // Explicit markdown mirrors (e.g. `/blog/my-post.md`) are rewritten to the
     // same backend markdown builder as content negotiation so agents can choose
     // either URL style.
