@@ -119,7 +119,9 @@ export async function buildHomeMarkdown(locale: string): Promise<string> {
 
 > ${role}
 
-- Résumé: https://cdn.cxiang.site/resume_chen_xiang.pdf
+- English Résumé: ${absoluteUrl("/resume.md")}
+- 中文简历: ${absoluteUrl("/zh-CN/resume.md")}
+- Résumé PDF: ${absoluteUrl("/resume")}
 
 ## ${aboutLabel}
 
