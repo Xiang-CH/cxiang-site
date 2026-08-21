@@ -13,13 +13,13 @@ const menuItems = [
     { href: "/project", label: "Project" },
     { href: "/blog", label: "Blog" },
 ] as const;
-const homePaths = ["/", "/en", "/zh-CN"];
+const homePaths = Object.keys(locales).map((locale) => getLocalePath(locale));
 const LAST_LOCALE_STORAGE_KEY = "last-locale";
 
 type AppLocale = keyof typeof locales;
 
 function isAppLocale(value: string): value is AppLocale {
-    return value in locales;
+    return Object.prototype.hasOwnProperty.call(locales, value);
 }
 
 function localeFromPathname(pathname: string): AppLocale | null {
@@ -47,7 +47,15 @@ function persistLocale(locale: AppLocale): void {
     }
 }
 
-const emptySubscribe = () => () => {};
+function subscribeToStoredLocale(onStoreChange: () => void): () => void {
+    const listener = (event: StorageEvent) => {
+        if (event.key === LAST_LOCALE_STORAGE_KEY) {
+            onStoreChange();
+        }
+    };
+    window.addEventListener("storage", listener);
+    return () => window.removeEventListener("storage", listener);
+}
 
 /**
  * Renders the site's navigation bar and coordinates route transitions.
@@ -59,7 +67,11 @@ export default function MenuBar() {
     const currentPath = usePathname();
     const router = useRouter();
     const pathnameLocale = localeFromPathname(currentPath);
-    const storedLocale = useSyncExternalStore(emptySubscribe, readStoredLocale, () => null);
+    const storedLocale = useSyncExternalStore(
+        subscribeToStoredLocale,
+        readStoredLocale,
+        () => null
+    );
 
     useEffect(() => {
         if (pathnameLocale) {
