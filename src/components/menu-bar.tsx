@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useSyncExternalStore } from "react";
 import { cn } from "@/lib/utils";
 import { scrambleThen } from "@/lib/home-text-scramble";
+import { locales, routing } from "@/i18n/routing";
+import { getLocalePath } from "@/lib/seo";
 
 const menuItems = [
     { href: "/", label: "Home" },
@@ -11,6 +14,40 @@ const menuItems = [
     { href: "/blog", label: "Blog" },
 ] as const;
 const homePaths = ["/", "/en", "/zh-CN"];
+const LAST_LOCALE_STORAGE_KEY = "last-locale";
+
+type AppLocale = keyof typeof locales;
+
+function isAppLocale(value: string): value is AppLocale {
+    return value in locales;
+}
+
+function localeFromPathname(pathname: string): AppLocale | null {
+    if (pathname === "/") {
+        return routing.defaultLocale as AppLocale;
+    }
+    const segment = pathname.split("/")[1];
+    return isAppLocale(segment) ? segment : null;
+}
+
+function readStoredLocale(): AppLocale | null {
+    try {
+        const stored = window.localStorage.getItem(LAST_LOCALE_STORAGE_KEY);
+        return isAppLocale(stored ?? "") ? (stored as AppLocale) : null;
+    } catch {
+        return null;
+    }
+}
+
+function persistLocale(locale: AppLocale): void {
+    try {
+        window.localStorage.setItem(LAST_LOCALE_STORAGE_KEY, locale);
+    } catch {
+        return;
+    }
+}
+
+const emptySubscribe = () => () => {};
 
 /**
  * Renders the site's navigation bar and coordinates route transitions.
@@ -21,6 +58,16 @@ const homePaths = ["/", "/en", "/zh-CN"];
 export default function MenuBar() {
     const currentPath = usePathname();
     const router = useRouter();
+    const pathnameLocale = localeFromPathname(currentPath);
+    const storedLocale = useSyncExternalStore(emptySubscribe, readStoredLocale, () => null);
+
+    useEffect(() => {
+        if (pathnameLocale) {
+            persistLocale(pathnameLocale);
+        }
+    }, [pathnameLocale]);
+
+    const homeHref = getLocalePath(pathnameLocale ?? storedLocale ?? routing.defaultLocale);
     const isHomeRoute = homePaths.includes(currentPath);
     const isCliRoute = currentPath === "/cli" || currentPath.endsWith("/cli");
 
@@ -39,7 +86,7 @@ export default function MenuBar() {
                 <div className="flex items-center justify-between py-4 h-12 max-w-244 mx-auto">
                     <div className="flex items-center gap-4">
                         <Link
-                            href="/"
+                            href={homeHref}
                             transitionTypes={["to-home"]}
                             className={`text-xl font-bold ${isHomeRoute ? "opacity-0" : "opacity-100"} transition-opacity duration-500`}
                             id="header-name"
@@ -51,7 +98,7 @@ export default function MenuBar() {
                         {menuItems.map((item) => (
                             <Link
                                 key={item.href}
-                                href={item.href}
+                                href={item.href === "/" ? homeHref : item.href}
                                 transitionTypes={
                                     item.href === "/"
                                         ? ["to-home"]
