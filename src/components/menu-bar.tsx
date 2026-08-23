@@ -49,7 +49,7 @@ function persistLocale(locale: AppLocale): void {
 
 function subscribeToStoredLocale(onStoreChange: () => void): () => void {
     const listener = (event: StorageEvent) => {
-        if (event.key === LAST_LOCALE_STORAGE_KEY) {
+        if (event.key === null || event.key === LAST_LOCALE_STORAGE_KEY) {
             onStoreChange();
         }
     };
