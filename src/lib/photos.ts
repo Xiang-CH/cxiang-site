@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, count, eq, inArray } from "drizzle-orm";
+import { and, asc, count, eq, inArray, sql } from "drizzle-orm";
 import { cacheLife, cacheTag } from "next/cache";
 import { getDb, isDatabaseConfigured } from "@/db";
 import { photos, photosets } from "@/db/schema";
@@ -76,21 +76,37 @@ export async function getPhotoSetSummaries(): Promise<PhotoSetSummary[]> {
         .filter((id): id is string => Boolean(id));
     const setIds = rows.map((row) => row.set.id);
 
+    // Only one row per set is needed to represent it, so the database does the
+    // picking instead of loading every photo in every set: `row_number` ordered
+    // by the grid order marks the first photo of each set.
+    const firstInSet = db.$with("first_in_set").as(
+        db
+            .select({
+                id: photos.id,
+                rank: sql<number>`row_number() over (partition by ${photos.photosetId} order by ${photos.sortOrder}, ${photos.createdAt})`.as(
+                    "rank"
+                ),
+            })
+            .from(photos)
+            .where(inArray(photos.photosetId, setIds))
+    );
+
     const [coverRows, firstRows] = await Promise.all([
         explicitCoverIds.length > 0
             ? db.select().from(photos).where(inArray(photos.id, explicitCoverIds))
             : Promise.resolve([] as PhotoRow[]),
         db
-            .select()
+            .with(firstInSet)
+            .select({ photo: photos })
             .from(photos)
-            .where(inArray(photos.photosetId, setIds))
-            .orderBy(asc(photos.sortOrder), asc(photos.createdAt)),
+            .innerJoin(firstInSet, eq(firstInSet.id, photos.id))
+            .where(eq(firstInSet.rank, 1)),
     ]);
 
     const coversById = new Map(coverRows.map((row) => [row.id, row]));
     const firstBySetId = new Map<string, PhotoRow>();
-    for (const row of firstRows) {
-        if (!firstBySetId.has(row.photosetId)) firstBySetId.set(row.photosetId, row);
+    for (const { photo } of firstRows) {
+        firstBySetId.set(photo.photosetId, photo);
     }
 
     return rows.map(({ set, photoCount }) => {

@@ -263,3 +263,76 @@ describeWithDb("savePhotoSet against a real database", () => {
         expect(rows.rows[0].n).toBe(1);
     });
 });
+
+describeWithDb("collection summary query", () => {
+    let pool: Pool;
+    const SCHEMA3 = "studio_summary_test";
+
+    beforeAll(async () => {
+        pool = new Pool({
+            connectionString,
+            max: 1,
+            options: `-c search_path=${SCHEMA3},public`,
+        });
+        await pool.query(`drop schema if exists ${SCHEMA3} cascade`);
+        await pool.query(`create schema ${SCHEMA3}`);
+        await pool.query(`
+            create table ${SCHEMA3}.photosets (
+                id varchar(36) primary key, slug varchar(255) not null, title varchar(255) not null,
+                published boolean not null default false
+            )
+        `);
+        await pool.query(`
+            create table ${SCHEMA3}.photos (
+                id varchar(36) primary key,
+                photoset_id varchar(36) not null references ${SCHEMA3}.photosets(id) on delete cascade,
+                url text not null, alt varchar(500) not null default '',
+                width integer not null, height integer not null,
+                kind varchar(16) not null default 'photo',
+                size varchar(16) not null default 'medium',
+                sort_order integer not null default 0,
+                created_at timestamptz not null default now()
+            )
+        `);
+
+        await pool.query(`insert into ${SCHEMA3}.photosets (id, slug, title, published) values
+            ('s1','one','One',true), ('s2','two','Two',true), ('s3','empty','Empty',true)`);
+        // s1 has three photos; the summary must pick the lowest sort_order.
+        await pool.query(`insert into ${SCHEMA3}.photos
+            (id, photoset_id, url, alt, width, height, sort_order, created_at) values
+            ('p3','s1','u3','third',10,10,30,now()),
+            ('p1','s1','u1','first',10,10,10,now()),
+            ('p2','s1','u2','second',10,10,20,now()),
+            ('p4','s2','u4','only',10,10,5,now())`);
+    });
+
+    afterAll(async () => {
+        if (!pool) return;
+        await pool.query(`drop schema if exists ${SCHEMA3} cascade`);
+        await pool.end();
+    });
+
+    it("returns one first-photo row per set, in grid order", async () => {
+        const result = await pool.query(`
+            with first_in_set as (
+                select id,
+                       row_number() over (
+                           partition by photoset_id order by sort_order, created_at
+                       ) as rank
+                from ${SCHEMA3}.photos
+            )
+            select p.photoset_id, p.id, p.alt
+            from ${SCHEMA3}.photos p
+            join first_in_set f on f.id = p.id
+            where f.rank = 1
+            order by p.photoset_id
+        `);
+
+        // Exactly one row per set that has photos — never three for s1.
+        expect(result.rows).toEqual([
+            { photoset_id: "s1", id: "p1", alt: "first" },
+            { photoset_id: "s2", id: "p4", alt: "only" },
+        ]);
+        expect(result.rows).toHaveLength(2);
+    });
+});
