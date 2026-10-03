@@ -56,14 +56,26 @@ type EditorItem = PhotoSetPhotoInput & {
 const DEFAULT_PHOTO_RECT = { w: 6, h: 4 };
 const DEFAULT_SPACER_RECT = { w: 4, h: 3 };
 
-function slugify(value: string): string {
+/**
+ * Normalizes a slug while the user types.
+ *
+ * Leading and trailing hyphens are deliberately preserved: trimming on every
+ * keystroke would delete the hyphen the moment it is typed, so `sunset-bay`
+ * could never be typed by hand. Trimming happens on blur and again on save.
+ */
+function slugWhileTyping(value: string): string {
     return value
         .normalize("NFKD")
         .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "")
+        .replace(/[^a-z0-9-]+/g, "-")
+        .replace(/-{2,}/g, "-")
         .slice(0, 255);
+}
+
+/** Trims the hyphens the typing normalizer leaves at the edges. */
+function finalizeSlug(value: string): string {
+    return value.replace(/^-+|-+$/g, "");
 }
 
 async function uploadOne(file: File) {
@@ -151,7 +163,10 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
         return () => observer.disconnect();
     }, []);
 
-    const cellWidth = canvasWidth / GRID_COLUMNS;
+    // One column width, with the inter-column gaps removed from the total. The
+    // same value feeds the drag maths, so a dragged cell tracks the pointer and
+    // the canvas matches the public renderer's `gap`-based grid.
+    const cellWidth = Math.max(1, (canvasWidth - GRID_GAP * (GRID_COLUMNS - 1)) / GRID_COLUMNS);
 
     const commitRect = useCallback((key: string, rect: GridRect) => {
         setItems((current) =>
@@ -315,7 +330,7 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                     id: isNew ? undefined : photoset.id,
                     photoset: {
                         title: title.trim(),
-                        slug: slug.trim() || slugify(title),
+                        slug: finalizeSlug(slug.trim()) || finalizeSlug(slugWhileTyping(title)),
                         abstract: abstract.trim() || undefined,
                         shotOn: shotOn || undefined,
                         shotOnEnd: shotOnEnd || undefined,
@@ -420,7 +435,7 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                         value={title}
                         onChange={(event) => {
                             setTitle(event.target.value);
-                            if (isNew) setSlug(slugify(event.target.value));
+                            if (isNew) setSlug(finalizeSlug(slugWhileTyping(event.target.value)));
                         }}
                         className="h-9 rounded-md border bg-transparent px-3 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                     />
@@ -429,7 +444,8 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                     <span className="text-muted-foreground">URL slug</span>
                     <input
                         value={slug}
-                        onChange={(event) => setSlug(slugify(event.target.value))}
+                        onChange={(event) => setSlug(slugWhileTyping(event.target.value))}
+                        onBlur={(event) => setSlug(finalizeSlug(event.target.value))}
                         className="h-9 rounded-md border bg-transparent px-3 font-mono text-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                     />
                 </label>
@@ -554,7 +570,7 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                 <div className="overflow-x-auto rounded-xl border p-3">
                     <div style={{ width: `${zoom * 100}%`, minWidth: 420 }}>
                         <div ref={canvasRef} className="relative w-full">
-                            {showGrid ? <GridOverlay /> : null}
+                            {showGrid ? <GridOverlay cellWidth={cellWidth} /> : null}
                             <div className="relative" style={{ height: canvasHeight }}>
                                 {items.map((item, index) => {
                                     const rect = rectFor(item.key, placedRects[index]);
@@ -564,9 +580,12 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                                             key={item.key}
                                             style={{
                                                 position: "absolute",
-                                                left: rect.x * cellWidth,
+                                                // Step and size both include the
+                                                // gaps between the columns a cell
+                                                // spans, matching CSS Grid's `gap`.
+                                                left: rect.x * (cellWidth + GRID_GAP),
                                                 top: rect.y * (GRID_ROW_HEIGHT + GRID_GAP),
-                                                width: rect.w * cellWidth,
+                                                width: rect.w * cellWidth + (rect.w - 1) * GRID_GAP,
                                                 height:
                                                     rect.h * GRID_ROW_HEIGHT +
                                                     (rect.h - 1) * GRID_GAP,
@@ -734,17 +753,26 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
     );
 }
 
-/** Faint column guides so placement is easier to judge. */
-function GridOverlay() {
+/**
+ * Faint column guides so placement is easier to judge.
+ *
+ * Drawn at the real column width and step rather than as a percentage, because a
+ * percentage ignores the gaps and would drift out of line with the cells.
+ */
+function GridOverlay({ cellWidth }: { cellWidth: number }) {
+    const lines = Array.from({ length: GRID_COLUMNS }, (_, index) => index);
     return (
-        <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 rounded-lg opacity-[0.35]"
-            style={{
-                backgroundImage:
-                    "linear-gradient(to right, color-mix(in oklab, currentColor 12%, transparent) 1px, transparent 1px)",
-                backgroundSize: `${100 / GRID_COLUMNS}% 100%`,
-            }}
-        />
+        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.35]">
+            {lines.map((index) => (
+                <div
+                    key={index}
+                    className="absolute top-0 bottom-0 border-l border-current"
+                    style={{
+                        left: index * (cellWidth + GRID_GAP),
+                        width: cellWidth,
+                    }}
+                />
+            ))}
+        </div>
     );
 }

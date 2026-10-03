@@ -36,6 +36,20 @@ describe("photoset payload shot range", () => {
         );
     });
 
+    it("rejects impossible calendar dates before they reach the database", () => {
+        // A plain regex accepts these; Postgres would then fail the cast and the
+        // route would answer 500 instead of 400.
+        for (const bad of ["2025-02-30", "2025-13-01", "2025-00-10", "2025-04-31"]) {
+            expect(photosetInputSchema.safeParse({ ...base, shotOn: bad }).success, bad).toBe(
+                false
+            );
+            expect(photosetInputSchema.safeParse({ ...base, shotOnEnd: bad }).success, bad).toBe(
+                false
+            );
+        }
+        expect(photosetInputSchema.safeParse({ ...base, shotOn: "2024-02-29" }).success).toBe(true);
+    });
+
     it("rejects malformed dates at the schema level", () => {
         expect(photosetInputSchema.safeParse({ ...base, shotOnEnd: "14/03/2025" }).success).toBe(
             false

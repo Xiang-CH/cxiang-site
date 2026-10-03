@@ -12,6 +12,14 @@ export const photoSizeSchema = z.enum([...PHOTO_SIZES]);
 
 export const cellKindSchema = z.enum([PHOTO_KIND, SPACER_KIND]);
 
+/**
+ * A calendar date as `YYYY-MM-DD`.
+ *
+ * `z.iso.date()` rejects values a plain regex would accept (such as `2025-02-30`),
+ * which would otherwise reach Postgres and surface as a 500 instead of a 400.
+ */
+export const shotDateSchema = z.iso.date().optional();
+
 export const photosetPhotoInputSchema = z
     .object({
         /** Omitted for cells that do not exist yet; the server assigns the id. */
@@ -52,15 +60,9 @@ export const photosetInputSchema = z.object({
         .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers and single hyphens."),
     abstract: z.string().max(2000).optional(),
     /** Start of the shoot, or the only shoot date. */
-    shotOn: z
-        .string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD.")
-        .optional(),
+    shotOn: shotDateSchema,
     /** Optional end of the shoot when the collection spans a range. */
-    shotOnEnd: z
-        .string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD.")
-        .optional(),
+    shotOnEnd: shotDateSchema,
     published: z.boolean().default(false),
     /**
      * Preferred cover, referenced by photo id. Ignored when the photo is brand

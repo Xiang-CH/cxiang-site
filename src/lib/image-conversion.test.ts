@@ -39,6 +39,13 @@ describe("encode decision", () => {
         expect(shouldEncodeToWebp(fileOf("a.webp", "image/webp"))).toBe(false);
     });
 
+    it("skips animated formats so they keep animating", () => {
+        // A canvas keeps only the first frame, so encoding these would silently
+        // flatten an animated upload into a still image.
+        expect(shouldEncodeToWebp(fileOf("a.gif", "image/gif"))).toBe(false);
+        expect(shouldEncodeToWebp(fileOf("a.apng", "image/apng"))).toBe(false);
+    });
+
     it("skips anything that is not an image", () => {
         expect(shouldEncodeToWebp(fileOf("a.pdf", "application/pdf"))).toBe(false);
         expect(shouldEncodeToWebp(fileOf("a.txt", "text/plain"))).toBe(false);

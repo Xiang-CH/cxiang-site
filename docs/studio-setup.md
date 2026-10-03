@@ -40,15 +40,16 @@ bucket. This yields an Access Key ID and Secret Access Key. The S3 endpoint is
 
 Add these to `.env.local` and to the Vercel project:
 
-| Variable                   | Purpose                     | Example                                      |
-| -------------------------- | --------------------------- | -------------------------------------------- |
-| `CDN_S3_ENDPOINT`          | R2 S3 endpoint              | `https://<account>.r2.cloudflarestorage.com` |
-| `CDN_S3_ACCESS_KEY_ID`     | R2 token access key         |                                              |
-| `CDN_S3_SECRET_ACCESS_KEY` | R2 token secret             |                                              |
-| `CDN_S3_BUCKET`            | Bucket name                 | `cxiang-photos`                              |
-| `CDN_PUBLIC_BASE_URL`      | Public base URL for objects | `https://cdn.cxiang.site`                    |
-| `CDN_PHOTO_PREFIX`         | Optional key prefix         | `photos` (default)                           |
-| `STUDIO_PASSWORD`          | Studio password             | long random string                           |
+| Variable                   | Purpose                           | Example                                      |
+| -------------------------- | --------------------------------- | -------------------------------------------- |
+| `CDN_S3_ENDPOINT`          | R2 S3 endpoint                    | `https://<account>.r2.cloudflarestorage.com` |
+| `CDN_S3_ACCESS_KEY_ID`     | R2 token access key               |                                              |
+| `CDN_S3_SECRET_ACCESS_KEY` | R2 token secret                   |                                              |
+| `CDN_S3_BUCKET`            | Bucket name                       | `cxiang-photos`                              |
+| `CDN_PUBLIC_BASE_URL`      | Public base URL for objects       | `https://cdn.cxiang.site`                    |
+| `CDN_PHOTO_PREFIX`         | Optional key prefix               | `photos` (default)                           |
+| `STUDIO_PASSWORD`          | Studio password                   | long random string                           |
+| `STUDIO_SESSION_SECRET`    | Optional signing key for sessions | another long random string                   |
 
 Also make sure `cdn.cxiang.site` stays listed in `next.config.ts`
 `images.remotePatterns`, so `next/image` is allowed to optimize the photos.
@@ -108,7 +109,8 @@ before uploading:
 - EXIF orientation is applied when the browser decodes the source, so the stored
   WebP is upright and does not depend on the viewer honouring EXIF.
 - A file that is already WebP is uploaded untouched, to avoid losing another
-  generation of quality.
+  generation of quality, and animated formats (GIF/APNG) are passed through as-is
+  because a canvas would keep only their first frame.
 - If the browser cannot produce WebP, or the result would be larger than the
   original, the file is uploaded unchanged and a warning is shown.
 
@@ -164,8 +166,11 @@ The grid geometry, fallback and drag maths live in
 - With `STUDIO_PASSWORD` unset, the Studio and its API are **disabled on any
   deployed environment** (they 404) and enabled only during local development.
   This is deliberate: the Studio can write to the bucket.
-- The session cookie stores the password and is compared on every request, so
-  rotating `STUDIO_PASSWORD` logs out existing sessions.
+- The session cookie carries an HMAC derived from the password (or from
+  `STUDIO_SESSION_SECRET` when set), never the password itself, so a copied or
+  logged cookie does not disclose the credential. Rotating the signing key logs
+  out existing sessions; setting `STUDIO_SESSION_SECRET` lets you rotate
+  `STUDIO_PASSWORD` without ending them.
 - Deleting a photo or collection also deletes its bucket objects. Object cleanup
   is best-effort; a failure there leaves an orphaned file rather than blocking the
   database change.

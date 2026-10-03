@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import {
     checkStudioPassword,
+    createStudioSessionToken,
     isStudioEnabled,
     studioCookieName,
     studioSessionMaxAgeSeconds,
@@ -40,10 +41,17 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Incorrect password" }, { status: 401 });
     }
 
+    // The cookie carries a derived token, never the password itself, so a
+    // copied or logged cookie does not disclose the credential.
+    const token = createStudioSessionToken();
+    if (!token) {
+        return NextResponse.json({ error: "The Studio is not configured." }, { status: 503 });
+    }
+
     const response = NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
     response.cookies.set({
         name: studioCookieName(),
-        value: parsed.data.password,
+        value: token,
         httpOnly: true,
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production",

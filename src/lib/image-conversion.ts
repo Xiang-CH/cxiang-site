@@ -38,15 +38,23 @@ export function webpFilename(filename: string): string {
 }
 
 /**
+ * Image types that must never be re-encoded through a canvas.
+ *
+ * A canvas captures only the first frame, so converting one of these would
+ * silently turn an animated upload into a still image. WebP is also skipped so an
+ * already-encoded file never loses another generation of quality.
+ */
+const PASSTHROUGH_IMAGE_TYPES = new Set(["image/webp", "image/gif", "image/apng"]);
+
+/**
  * Whether a file should be re-encoded.
  *
- * WebP is skipped so an already-encoded upload never loses another generation of
- * quality, and non-images are left alone.
+ * Non-images and animated formats are passed through untouched.
  */
 export function shouldEncodeToWebp(file: File, force = false): boolean {
     if (force) return true;
     if (!file.type.startsWith("image/")) return false;
-    return file.type !== "image/webp";
+    return !PASSTHROUGH_IMAGE_TYPES.has(file.type);
 }
 
 function clampQuality(quality: number): number {

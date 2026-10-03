@@ -1,9 +1,11 @@
 import { type Metadata } from "next";
+import { cacheLife, cacheTag } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { getPhotoSetSummaries } from "@/lib/photos";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { createPageMetadata } from "@/lib/seo";
 import { formatShotRange } from "@/lib/shot-range";
 
@@ -19,6 +21,10 @@ export const metadata: Metadata = {
 /** Index of photo collections: one card per set, led by its cover photo. */
 export default async function Photos() {
     "use cache";
+    // Tagged so a Studio save or delete invalidates this page too, not just the
+    // underlying data fetch.
+    cacheLife("max");
+    cacheTag(CACHE_TAGS.photos);
     const sets = await getPhotoSetSummaries();
 
     if (sets.length === 0) {

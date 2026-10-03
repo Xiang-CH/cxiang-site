@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
+import { cacheLife, cacheTag } from "next/cache";
 import { type Metadata } from "next";
 import BreadcrumbJsonLd from "@/components/breadcrumb-json-ld";
 import { BREADCRUMB_SITE_URL } from "@/lib/breadcrumb-json-ld";
 import { getPhotoSet, getPhotoSetSummaries } from "@/lib/photos";
 import { createPageMetadata } from "@/lib/seo";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { formatShotRange } from "@/lib/shot-range";
 import PhotoLightbox from "../_components/photo-lightbox";
 
@@ -50,6 +52,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 /** One collection: its photos laid out in the bento grid, with a viewer. */
 export default async function PhotoSetPage({ params }: Props) {
     "use cache";
+    // Tagged so a Studio save or delete invalidates the cached page itself.
+    cacheLife("max");
+    cacheTag(CACHE_TAGS.photos);
     const { slug } = await params;
     const set = await getPhotoSet(slug);
 
