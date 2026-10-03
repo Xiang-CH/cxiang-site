@@ -19,12 +19,11 @@ const COOKIE_NAME = "studio_session";
 const SESSION_TTL_DAYS = 30;
 
 /**
- * Value the session HMAC is computed over.
+ * Prefix for the signed session payload.
  *
- * Signing a constant rather than a timestamp keeps verification stateless: the
- * expected token is recomputed on each request and compared.
+ * The version suffix lets the format change later without accepting old tokens.
  */
-const SESSION_PAYLOAD = "studio-session-v1";
+const SESSION_PAYLOAD_PREFIX = "studio-session-v1";
 
 function isLocalDev(): boolean {
     return process.env.NODE_ENV === "development";
@@ -43,6 +42,14 @@ export function studioSessionMaxAgeSeconds(): number {
     return SESSION_TTL_DAYS * 24 * 60 * 60;
 }
 
+/** Millisecond lifetime of a session token, matching the cookie's `maxAge`. */
+const SESSION_TTL_MS = SESSION_TTL_DAYS * 24 * 60 * 60 * 1000;
+
+/** `v1.<issuedAtMs>.<hmac>` — the issue time is signed so it cannot be edited. */
+function sessionPayload(issuedAtMs: number): string {
+    return `${SESSION_PAYLOAD_PREFIX}.${issuedAtMs}`;
+}
+
 /**
  * The key used to sign the session cookie.
  *
@@ -56,14 +63,47 @@ function sessionKey(): string | null {
 }
 
 /**
- * The cookie value a correctly authenticated session must present.
+ * Builds the cookie value for a session issued now.
  *
+ * The issue time is part of the signed payload, so a copied token stops working
+ * when it expires instead of staying valid until the signing key changes.
+ *
+ * @param nowMs - Issue time, injectable for tests.
  * @returns The token, or `null` when no key is configured.
  */
-export function createStudioSessionToken(): string | null {
+export function createStudioSessionToken(nowMs: number = Date.now()): string | null {
     const key = sessionKey();
     if (!key) return null;
-    return createHmac("sha256", key).update(SESSION_PAYLOAD).digest("hex");
+    const issuedAt = Math.floor(nowMs);
+    const signature = createHmac("sha256", key).update(sessionPayload(issuedAt)).digest("hex");
+    return `${SESSION_PAYLOAD_PREFIX}.${issuedAt}.${signature}`;
+}
+
+/**
+ * Verifies a presented token: correct signature, and still within its lifetime.
+ *
+ * @param token - The cookie value.
+ * @param nowMs - Current time, injectable for tests.
+ */
+export function verifyStudioSessionToken(
+    token: string | undefined,
+    nowMs: number = Date.now()
+): boolean {
+    if (!token) return false;
+
+    const parts = token.split(".");
+    if (parts.length !== 3 || parts[0] !== SESSION_PAYLOAD_PREFIX) return false;
+
+    const issuedAt = Number(parts[1]);
+    if (!Number.isFinite(issuedAt) || issuedAt <= 0) return false;
+    // A token from the future cannot be trusted; allow a little clock skew.
+    if (issuedAt > nowMs + 60_000) return false;
+    if (nowMs - issuedAt > SESSION_TTL_MS) return false;
+
+    const key = sessionKey();
+    if (!key) return false;
+    const expected = createHmac("sha256", key).update(sessionPayload(issuedAt)).digest("hex");
+    return timingSafeEqual(parts[2], expected);
 }
 
 /** Length-safe constant-time comparison of two strings. */
@@ -96,9 +136,7 @@ export function isStudioAuthorizedToken(cookieValue: string | undefined): boolea
         return isLocalDev();
     }
 
-    if (!cookieValue) return false;
-    const expected = createStudioSessionToken();
-    return expected !== null && timingSafeEqual(cookieValue, expected);
+    return verifyStudioSessionToken(cookieValue);
 }
 
 /** Route-handler variant, which has a `NextRequest` available. */

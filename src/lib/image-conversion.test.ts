@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
     DEFAULT_WEBP_QUALITY,
+    isAnimatedPng,
     MAX_WEBP_QUALITY,
     MIN_WEBP_QUALITY,
     formatBytes,
@@ -10,6 +11,25 @@ import {
 
 const fileOf = (name: string, type: string, size = 1000) =>
     new File([new Uint8Array(size)], name, { type });
+
+/** Builds a minimal PNG, optionally carrying the APNG animation control chunk. */
+function pngFile(name: string, { animated }: { animated: boolean }): File {
+    const chunk = (tag: string, data: Uint8Array) => {
+        const length = new Uint8Array(4);
+        new DataView(length.buffer).setUint32(0, data.length);
+        const type = new TextEncoder().encode(tag);
+        const body = new Uint8Array([...type, ...data]);
+        // CRC is not validated by the detector, so a placeholder is fine here.
+        return new Uint8Array([...length, ...body, 0, 0, 0, 0]);
+    };
+    const signature = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    const ihdr = chunk("IHDR", new Uint8Array(13));
+    // `acTL` present => APNG; absent => a still PNG.
+    const actl = animated ? chunk("acTL", new Uint8Array(8)) : new Uint8Array();
+    const idat = chunk("IDAT", new Uint8Array(16));
+    const iend = chunk("IEND", new Uint8Array(0));
+    return new File([signature, ihdr, actl, idat, iend], name, { type: "image/png" });
+}
 
 describe("webp filename", () => {
     it("swaps the extension", () => {
@@ -70,5 +90,21 @@ describe("byte formatting", () => {
         expect(formatBytes(512)).toBe("512 B");
         expect(formatBytes(2048)).toBe("2 KB");
         expect(formatBytes(5 * 1024 * 1024)).toBe("5.0 MB");
+    });
+});
+
+describe("animated PNG detection", () => {
+    it("detects an APNG that arrives typed as image/png", async () => {
+        // The MIME type cannot distinguish these, so the chunk is inspected.
+        expect(await isAnimatedPng(pngFile("anim.png", { animated: true }))).toBe(true);
+    });
+
+    it("leaves a still PNG alone", async () => {
+        expect(await isAnimatedPng(pngFile("still.png", { animated: false }))).toBe(false);
+    });
+
+    it("ignores non-PNG types", async () => {
+        expect(await isAnimatedPng(fileOf("a.jpg", "image/jpeg"))).toBe(false);
+        expect(await isAnimatedPng(fileOf("a.gif", "image/gif"))).toBe(false);
     });
 });

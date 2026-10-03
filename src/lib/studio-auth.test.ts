@@ -1,5 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createStudioSessionToken, isStudioAuthorizedToken } from "./studio-auth";
+import {
+    createStudioSessionToken,
+    isStudioAuthorizedToken,
+    studioSessionMaxAgeSeconds,
+    verifyStudioSessionToken,
+} from "./studio-auth";
 
 /**
  * The session cookie must never carry `STUDIO_PASSWORD`, and a token must stop
@@ -32,8 +37,35 @@ describe("studio session tokens", () => {
         expect(token).not.toContain("correct");
     });
 
-    it("is deterministic for a fixed key, so it can be verified statelessly", () => {
-        expect(createStudioSessionToken()).toBe(createStudioSessionToken());
+    it("embeds a signed issue time so tokens can expire", () => {
+        const token = createStudioSessionToken(1_700_000_000_000)!;
+        expect(token.startsWith("studio-session-v1.1700000000000.")).toBe(true);
+    });
+
+    it("accepts a fresh token and rejects one past its lifetime", () => {
+        const issuedAt = 1_700_000_000_000;
+        const token = createStudioSessionToken(issuedAt)!;
+        const ttlMs = studioSessionMaxAgeSeconds() * 1000;
+
+        expect(verifyStudioSessionToken(token, issuedAt)).toBe(true);
+        expect(verifyStudioSessionToken(token, issuedAt + ttlMs - 1000)).toBe(true);
+        // A copied token must stop working once the cookie would have expired.
+        expect(verifyStudioSessionToken(token, issuedAt + ttlMs + 1)).toBe(false);
+    });
+
+    it("rejects a token whose issue time was tampered with", () => {
+        const token = createStudioSessionToken(1_700_000_000_000)!;
+        const [, , signature] = token.split(".");
+        const forged = `studio-session-v1.${Date.now()}.${signature}`;
+        expect(verifyStudioSessionToken(forged)).toBe(false);
+    });
+
+    it("rejects malformed and future-dated tokens", () => {
+        expect(verifyStudioSessionToken("studio-session-v1.notanumber.abc")).toBe(false);
+        expect(verifyStudioSessionToken("studio-session-v1.1700000000000")).toBe(false);
+        expect(verifyStudioSessionToken("garbage")).toBe(false);
+        const future = createStudioSessionToken(Date.now() + 10 * 60 * 1000)!;
+        expect(verifyStudioSessionToken(future)).toBe(false);
     });
 
     it("accepts its own token and rejects anything else", () => {

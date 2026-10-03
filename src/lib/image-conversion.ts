@@ -47,6 +47,34 @@ export function webpFilename(filename: string): string {
 const PASSTHROUGH_IMAGE_TYPES = new Set(["image/webp", "image/gif", "image/apng"]);
 
 /**
+ * How much of a PNG to inspect for animation chunks.
+ *
+ * `acTL` must appear before the first `IDAT`, and in practice both sit in the
+ * first few hundred bytes.
+ */
+const PNG_HEADER_SCAN_BYTES = 4096;
+
+/** `acTL` is the PNG chunk that marks an APNG. */
+const APNG_CONTROL_CHUNK = "acTL";
+
+/**
+ * Detects an animated PNG.
+ *
+ * An APNG is an ordinary PNG with an extra control chunk, so it usually arrives
+ * as `image/png` and cannot be told apart by MIME type alone. Without this check
+ * the file would be re-encoded and lose every frame but the first.
+ */
+export async function isAnimatedPng(file: File): Promise<boolean> {
+    if (file.type !== "image/png") return false;
+    try {
+        const header = await file.slice(0, PNG_HEADER_SCAN_BYTES).text();
+        return header.includes(APNG_CONTROL_CHUNK);
+    } catch {
+        return false;
+    }
+}
+
+/**
  * Whether a file should be re-encoded.
  *
  * Non-images and animated formats are passed through untouched.
@@ -116,6 +144,9 @@ export async function encodeToWebp(
 
     if (width === 0 || height === 0) return keepOriginal(false);
     if (!shouldEncodeToWebp(file, options.force)) return keepOriginal(false);
+    // An APNG is a PNG with extra chunks, so it passes the type check above but
+    // would still be flattened to a single frame here.
+    if (!options.force && (await isAnimatedPng(file))) return keepOriginal(false);
 
     const canvas = document.createElement("canvas");
     canvas.width = width;
