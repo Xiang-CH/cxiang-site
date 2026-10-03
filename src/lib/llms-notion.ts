@@ -12,6 +12,8 @@ import {
     getProjects,
     type PostMeta,
 } from "./notion";
+import { getPhotoSet, getPhotoSetSummaries } from "./photos";
+import { formatShotRange } from "./shot-range";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cxiang.site";
 
@@ -104,13 +106,28 @@ function readDate(page: PageObjectResponse, key: string): string | undefined {
  * the same URL but with `Accept: text/markdown` (handled by the Proxy ->
  * `/api/md` rewrite).
  */
+/** `1 photo` / `3 photos`. */
+function photoCountLabel(count: number): string {
+    return `${count} photo${count === 1 ? "" : "s"}`;
+}
+
 export async function buildLlmsIndex(): Promise<string> {
     "use cache";
     cacheLife("max");
-    cacheTag(CACHE_TAGS.llms, CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs, CACHE_TAGS.projects);
+    cacheTag(
+        CACHE_TAGS.llms,
+        CACHE_TAGS.blogs,
+        CACHE_TAGS.blogSlugs,
+        CACHE_TAGS.projects,
+        CACHE_TAGS.photos
+    );
 
     // Errors must propagate so `"use cache"` does not memoize a failure.
-    const [blogsResp, projectsResp] = await Promise.all([getBlogs(), getProjects()]);
+    const [blogsResp, projectsResp, photoCollections] = await Promise.all([
+        getBlogs(),
+        getProjects(),
+        getPhotoSetSummaries(),
+    ]);
     const postMetas = await getAllPostsMeta(blogsResp);
 
     const sections: string[] = [];
@@ -148,6 +165,20 @@ export async function buildLlmsIndex(): Promise<string> {
     }
     sections.push(`## Blog\n\n${blogLines.join("\n")}`);
 
+    if (photoCollections.length > 0) {
+        const photoLines: string[] = [
+            `- [Photos index](${absMarkdownUrl("/photos")}): Photo collections by Chen Xiang.`,
+        ];
+        for (const collection of photoCollections) {
+            const url = absMarkdownUrl(`/photos/${collection.slug}`);
+            const detail = collection.abstract
+                ? `${collection.abstract} (${photoCountLabel(collection.photoCount)})`
+                : `${photoCountLabel(collection.photoCount)}.`;
+            photoLines.push(`- [${collection.title}](${url}): ${detail}`);
+        }
+        sections.push(`## Photos\n\n${photoLines.join("\n")}`);
+    }
+
     // Per spec: the "Optional" section is for secondary content that callers
     // with tight context budgets can skip.
     sections.push(`## Optional
@@ -170,9 +201,19 @@ ${sections.join("\n\n")}
 export async function buildSitemapMarkdown(): Promise<string> {
     "use cache";
     cacheLife("max");
-    cacheTag(CACHE_TAGS.sitemap, CACHE_TAGS.blogs, CACHE_TAGS.blogSlugs, CACHE_TAGS.projects);
+    cacheTag(
+        CACHE_TAGS.sitemap,
+        CACHE_TAGS.blogs,
+        CACHE_TAGS.blogSlugs,
+        CACHE_TAGS.projects,
+        CACHE_TAGS.photos
+    );
 
-    const [blogsResp, projectsResp] = await Promise.all([getBlogs(), getProjects()]);
+    const [blogsResp, projectsResp, photoCollections] = await Promise.all([
+        getBlogs(),
+        getProjects(),
+        getPhotoSetSummaries(),
+    ]);
     const postMetas = await getAllPostsMeta(blogsResp);
 
     const lines: string[] = [
@@ -189,6 +230,7 @@ export async function buildSitemapMarkdown(): Promise<string> {
         "## Main Sections",
         `- [Projects](${absMarkdownUrl("/project")})`,
         `- [Blog](${absMarkdownUrl("/blog")})`,
+        `- [Photos](${absMarkdownUrl("/photos")})`,
         "",
         "## Blog Posts",
     ];
@@ -217,7 +259,95 @@ export async function buildSitemapMarkdown(): Promise<string> {
         lines.push("- No external project links listed.");
     }
 
+    lines.push("", "## Photo Collections");
+    if (photoCollections.length === 0) {
+        lines.push("- No photo collections published yet.");
+    } else {
+        for (const collection of photoCollections) {
+            lines.push(
+                `- [${collection.title}](${absMarkdownUrl(
+                    `/photos/${collection.slug}`
+                )}) — ${photoCountLabel(collection.photoCount)}`
+            );
+        }
+    }
+
     return `${lines.join("\n")}\n`;
+}
+
+// ---------------------------------------------------------------------------
+// /photos
+// ---------------------------------------------------------------------------
+
+/** Summary of the photo collections. Photos themselves are images, so this is a link index rather than the photographs. */
+export async function buildPhotoListMarkdown(): Promise<string> {
+    "use cache";
+    cacheLife("max");
+    cacheTag(CACHE_TAGS.photos, CACHE_TAGS.llms);
+
+    const collections = await getPhotoSetSummaries();
+
+    const lines: string[] = [
+        "# Photos",
+        "",
+        "Photo collections by Chen Xiang.",
+        "",
+        `Canonical URL: ${absUrl("/photos")}`,
+        "",
+    ];
+
+    if (collections.length === 0) {
+        lines.push("No photo collections published yet.");
+    } else {
+        for (const collection of collections) {
+            lines.push(`## ${collection.title}`, "");
+            if (collection.abstract) lines.push(collection.abstract, "");
+            const meta = [
+                photoCountLabel(collection.photoCount),
+                formatShotRange(collection) ? `shot ${formatShotRange(collection)}` : undefined,
+            ]
+                .filter(Boolean)
+                .join(" · ");
+            lines.push(meta, "", `View: ${absUrl(`/photos/${collection.slug}`)}`, "");
+        }
+    }
+
+    return `${lines.join("\n")}\n${footer}`;
+}
+
+/** Markdown for a single collection, or `null` when the slug does not exist. */
+export async function buildPhotoCollectionMarkdown(slug: string): Promise<string | null> {
+    "use cache";
+    cacheLife("max");
+    cacheTag(CACHE_TAGS.photos, CACHE_TAGS.llms);
+
+    const set = await getPhotoSet(slug);
+    if (!set) return null;
+
+    const lines: string[] = [
+        `# ${set.title}`,
+        "",
+        `Part of the [photo collections](${absUrl("/photos")}) by Chen Xiang.`,
+        "",
+    ];
+
+    if (set.abstract) lines.push(set.abstract, "");
+    const shotRange = formatShotRange(set);
+    if (shotRange) lines.push(`Shot: ${shotRange}`, "");
+
+    lines.push(
+        `${photoCountLabel(set.photos.length)}. Canonical page: ${absUrl(`/photos/${set.slug}`)}`,
+        "",
+        "Each photograph:",
+        ""
+    );
+
+    set.photos.forEach((photo, index) => {
+        const label = photo.caption ?? photo.alt;
+        lines.push(`${index + 1}. ${label} — ${photo.src}`);
+    });
+
+    return `${lines.join("\n")}\n${footer}`;
 }
 
 // ---------------------------------------------------------------------------

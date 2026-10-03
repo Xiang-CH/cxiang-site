@@ -7,6 +7,16 @@ import * as schema from "./schema";
 
 type Database = ReturnType<typeof drizzle<typeof schema>>;
 
+/**
+ * PostgreSQL's OID for the `date` type.
+ *
+ * `pg` parses it into a JavaScript `Date` at local midnight, which loses the
+ * original calendar date on any non-UTC server and contradicts the `mode:
+ * "string"` the Drizzle schema declares for date columns. Returning the raw
+ * `YYYY-MM-DD` text keeps those columns timezone-proof.
+ */
+const DATE_OID = 1082;
+
 let pool: Pool | null = null;
 let database: Database | null = null;
 
@@ -34,6 +44,13 @@ export function getDb(): Database {
     }
 
     pool = new Pool({ connectionString, max: 1 });
+
+    // Each new client needs the text parser, so this is registered per
+    // connection rather than once on the pool.
+    pool.on("connect", (client) => {
+        client.setTypeParser(DATE_OID, "text", (value: string) => value);
+    });
+
     attachDatabasePool(pool);
     database = drizzle(pool, { schema });
     return database;
