@@ -59,7 +59,12 @@ export default async function middleware(request: NextRequest) {
     }
 
     // These root-level routes aren't localized; skip i18n routing for them.
-    if (pathname.startsWith("/blog") || pathname.startsWith("/project")) {
+    if (
+        pathname.startsWith("/blog") ||
+        pathname.startsWith("/project") ||
+        pathname.startsWith("/photos") ||
+        pathname.startsWith("/studio")
+    ) {
         return NextResponse.next();
     }
 

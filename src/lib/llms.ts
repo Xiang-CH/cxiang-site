@@ -212,6 +212,18 @@ export async function buildMarkdownForPath(
         return { kind: "ok", body: await mod.buildBlogListMarkdown() };
     }
 
+    if (path === "/photos") {
+        const mod = await import("./llms-notion");
+        return { kind: "ok", body: await mod.buildPhotoListMarkdown() };
+    }
+
+    const photoMatch = path.match(/^\/photos\/([^\/?#]+)$/);
+    if (photoMatch) {
+        const mod = await import("./llms-notion");
+        const body = await mod.buildPhotoCollectionMarkdown(photoMatch[1]);
+        return body ? { kind: "ok", body } : { kind: "notFound" };
+    }
+
     if (path === "/sitemap") {
         const mod = await import("./llms-notion");
         return { kind: "ok", body: await mod.buildSitemapMarkdown() };

@@ -33,8 +33,37 @@ Possible tags are:
 - content:projects
 - content:blogs
 - content:blogs:slugs
+- content:photos
 - content:sitemap
 - content:llms
+
+## Photo collections
+
+Photosets and their layout live in Postgres (Drizzle), and photos are stored in an
+S3-compatible bucket served from the CDN. They are authored in the Studio at
+`/studio`: upload photos, then drag each one around a free-form 12-column grid to
+move and resize it, leaving blank cells or inserting explicit spacers where you
+want whitespace. `/photos` lists the published collections and `/photos/[slug]`
+shows one collection's layout.
+
+Uploads are re-encoded to WebP in the browser (dimensions unchanged, quality
+adjustable) before going to the bucket — see
+[docs/studio-setup.md](docs/studio-setup.md#uploads-are-converted-to-webp).
+
+See [docs/studio-setup.md](docs/studio-setup.md) for the storage credentials,
+bucket CORS rule, and environment variables.
+
+Most of the photo code is covered by unit tests. The Studio save path additionally
+has an opt-in integration test, because its failure mode (parameter type inference
+in a batched `UPDATE ... CASE`) only appears against a real Postgres:
+
+```bash
+TEST_DATABASE_URL='postgresql://user@127.0.0.1:5432/postgres?options=-c%20search_path%3Dstudio_save_test' \
+bun run test
+```
+
+It creates and drops its own schema, so the target database is left untouched. It
+is skipped when `TEST_DATABASE_URL` is unset.
 
 ## Blog statistics
 
