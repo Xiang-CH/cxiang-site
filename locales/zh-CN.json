@@ -14,7 +14,7 @@
     "main": {
         "about": {
             "label": "关于",
-            "content": "我现在正在<a>香港大学</a>攻读<b>计算机科学</b>硕士研究生。我热爱编写代码来解决现实世界的问题，而近期更多地通过使用生成式AI来实现。\n\n最擅长使用 <b>Typescript</b> 进行全栈开发，以及使用 <b>Python</b> 编写数据/机器学习任务。",
+            "content": "我目前在 <b>HireEZ</b> 的<b>全栈团队</b>担任<b>软件工程师</b>。我热爱编写代码来解决现实世界的问题，近期更多地通过生成式 AI 来实现。\n\n最擅长使用 <b>TypeScript</b> 进行全栈开发，以及使用 <b>Python</b> 编写数据/机器学习任务。",
             "contentHref": "https://www.hku.hk"
         },
         "skills": {
@@ -27,11 +27,18 @@
             "label": "经历",
             "organizations": [
                 {
+                    "position": "软件工程师",
+                    "company": "HireEZ",
+                    "website": "https://hireez.com",
+                    "duration": "2026年10月 - 至今",
+                    "commit": "hireez"
+                },
+                {
                     "position": "AI Developer（实习）",
                     "company": "Apple Inc.",
                     "website": "https://www.apple.com",
                     "logo": "/images/apple-logo.png",
-                    "duration": "2026年5月 - 至今",
+                    "duration": "2026年5月 - 2026年9月",
                     "commit": "a7f3c2e"
                 },
                 {
@@ -69,9 +76,9 @@
         "systemInfo": "系统信息",
         "typedRole": "Developer in Progress...",
         "agentMsg": "Hi Agents, 你应该在找",
-        "sysInit": "XIANG-OS v2026.5",
+        "sysInit": "XIANG-OS v2026.11",
         "sysKernel": "▊ 内核模块已加载。等待输入...",
-        "about": "正在香港大学攻读计算机科学硕士研究生并担任兼职科研助理。热爱利用 AI 解决现实世界的问题。\n 目前在上海 Apple 实习，正在寻找 10 月左右开始的全职工作，欢迎联系！",
+        "about": "目前在 HireEZ 的全栈团队担任软件工程师。热爱利用 AI 解决现实世界的问题。",
         "stack": "最擅长使用 Typescript 进行全栈开发，以及使用 Python 编写数据/机器学习任务。",
         "contactIntro": "欢迎通过以下方式联系我。",
         "cli": {
