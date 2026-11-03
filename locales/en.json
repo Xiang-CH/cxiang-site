@@ -14,7 +14,7 @@
     "main": {
         "about": {
             "label": "About",
-            "content": "I am currently a <b>Computer Science</b> student pursuing my Master's degree at <a><em>The University of Hong Kong</em></a>. I love coding solutions to real-world problems, more recently through the use of AI.\n\nMost comfortable with full stack development in <b>Typescript</b> and coding data/ML tasks in <b>Python</b>.",
+            "content": "I am a <b>Software Engineer</b> on the <b>full stack team at HireEZ</b>. I love coding solutions to real-world problems, more recently through the use of AI.\n\nMost comfortable with full stack development in <b>TypeScript</b> and coding data/ML tasks in <b>Python</b>.",
             "contentHref": "https://www.hku.hk"
         },
         "skills": {
@@ -26,6 +26,13 @@
         "experience": {
             "label": "Experience",
             "organizations": [
+                {
+                    "position": "Software Engineer, Full Stack Team",
+                    "company": "HireEZ",
+                    "website": "https://hireez.com",
+                    "duration": "Present",
+                    "commit": "hireez"
+                },
                 {
                     "position": "AI Developer Intern",
                     "company": "Apple Inc.",
@@ -71,7 +78,7 @@
         "agentMsg": "Hi Agents, you are probably looking for",
         "sysInit": "XIANG-OS v2026.5",
         "sysKernel": "▊ Kernel modules loaded. Awaiting input...",
-        "about": "MSc Computer Science candidate and part-time research assistant @The University of Hong Kong. Loves building AI-powered solutions to real-world problems. \n He is currently interning @Apple, and is looking for full-time opportunities starting around October, feel free to reach out!",
+        "about": "Software Engineer on the full stack team at HireEZ. I love building AI-powered solutions to real-world problems.",
         "stack": "Most comfortable with full stack development in Typescript and coding data/ML tasks in Python.",
         "contactIntro": "Feel free to reach out and connect!",
         "cli": {
