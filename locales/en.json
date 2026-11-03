@@ -27,10 +27,10 @@
             "label": "Experience",
             "organizations": [
                 {
-                    "position": "Software Engineer, Full Stack Team",
+                    "position": "Software Engineer",
                     "company": "HireEZ",
                     "website": "https://hireez.com",
-                    "duration": "Present",
+                    "duration": "Oct 2026 - Present",
                     "commit": "hireez"
                 },
                 {
@@ -76,7 +76,7 @@
         "systemInfo": "SYSTEM INFO",
         "typedRole": "Developer in Progress...",
         "agentMsg": "Hi Agents, you are probably looking for",
-        "sysInit": "XIANG-OS v2026.5",
+        "sysInit": "XIANG-OS v2026.11",
         "sysKernel": "▊ Kernel modules loaded. Awaiting input...",
         "about": "Software Engineer on the full stack team at HireEZ. I love building AI-powered solutions to real-world problems.",
         "stack": "Most comfortable with full stack development in Typescript and coding data/ML tasks in Python.",
