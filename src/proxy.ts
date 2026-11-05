@@ -6,6 +6,14 @@ import { routing } from "./i18n/routing";
 
 const handleI18nRouting = createMiddleware(routing);
 
+/** Root-level routes that serve the same content for every locale. */
+const NON_LOCALIZED_PREFIXES = ["/blog", "/project", "/photos", "/studio"] as const;
+
+/** True for `/photos` and `/photos/...`, but not `/photoshoot`. */
+function matchesPathPrefix(pathname: string, prefix: string): boolean {
+    return pathname === prefix || pathname.startsWith(`${prefix}/`);
+}
+
 export default async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
@@ -59,7 +67,9 @@ export default async function middleware(request: NextRequest) {
     }
 
     // These root-level routes aren't localized; skip i18n routing for them.
-    if (pathname.startsWith("/blog") || pathname.startsWith("/project")) {
+    // Matched per path segment so a prefix cannot accidentally capture an
+    // unrelated route such as "/photoshoot".
+    if (NON_LOCALIZED_PREFIXES.some((prefix) => matchesPathPrefix(pathname, prefix))) {
         return NextResponse.next();
     }
 

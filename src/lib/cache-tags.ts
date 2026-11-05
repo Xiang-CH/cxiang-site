@@ -3,6 +3,7 @@ export const CACHE_TAGS = {
     blogSlugs: "content:blogs:slugs",
     blogStats: "content:blog-stats",
     projects: "content:projects",
+    photos: "content:photos",
     sitemap: "content:sitemap",
     llms: "content:llms",
 } as const;

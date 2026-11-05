@@ -29,6 +29,11 @@ const nextConfig: NextConfig = {
                 protocol: "https",
                 hostname: "prod-files-secure.s3.us-west-2.amazonaws.com",
             },
+            // Notion's own image proxy, used by blog covers.
+            {
+                protocol: "https",
+                hostname: "www.notion.so",
+            },
             {
                 protocol: "https",
                 hostname: "cdn.jsdelivr.net",

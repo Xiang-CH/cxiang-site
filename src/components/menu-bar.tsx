@@ -11,6 +11,7 @@ import { getLocalePath } from "@/lib/seo";
 const menuItems = [
     { href: "/", label: "Home" },
     { href: "/project", label: "Project" },
+    { href: "/photos", label: "Photos" },
     { href: "/blog", label: "Blog" },
 ] as const;
 const homePaths = Object.keys(locales).map((locale) => getLocalePath(locale));
@@ -91,7 +92,7 @@ export default function MenuBar() {
                 style={{ viewTransitionName: "site-header" }}
                 className={cn(
                     !isHomeRoute && "fixed",
-                    "w-full top-0 px-5 box-border z-1 header transition-[top] backdrop-blur-[3px] bg-background",
+                    "w-full top-0 box-border px-3 sm:px-5 z-1 header transition-[top] backdrop-blur-[3px] bg-background",
                     !isHomeRoute && "shadow-[inset_0_-1px_0_0_var(--accent)]"
                 )}
             >
@@ -106,7 +107,7 @@ export default function MenuBar() {
                             Chen Xiang
                         </Link>
                     </div>
-                    <nav className="flex items-center gap-5">
+                    <nav className="flex items-center gap-3 sm:gap-5">
                         {menuItems.map((item) => (
                             <Link
                                 key={item.href}

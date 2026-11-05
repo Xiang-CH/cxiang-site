@@ -1,0 +1,1 @@
+ALTER TABLE "photosets" ADD COLUMN "shot_on_end" date;
