@@ -13,7 +13,7 @@ const menuItems = [
     { href: "/project", label: "Project" },
     { href: "/blog", label: "Blog" },
 ] as const;
-const homePaths = Object.keys(locales).map((locale) => getLocalePath(locale));
+const homePaths = Object.keys(locales).flatMap((locale) => [getLocalePath(locale), `/${locale}`]);
 const LAST_LOCALE_STORAGE_KEY = "last-locale";
 
 type AppLocale = keyof typeof locales;
@@ -79,7 +79,7 @@ export default function MenuBar() {
         }
     }, [pathnameLocale]);
 
-    const homeHref = getLocalePath(pathnameLocale ?? storedLocale ?? routing.defaultLocale);
+    const homeHref = `/${pathnameLocale ?? storedLocale ?? routing.defaultLocale}`;
     const isHomeRoute = homePaths.includes(currentPath);
     const isCliRoute = currentPath === "/cli" || currentPath.endsWith("/cli");
 

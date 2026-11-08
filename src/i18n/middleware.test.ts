@@ -26,3 +26,21 @@ describe("explicit language selection", () => {
         expect(cookie).toBe(`NEXT_LOCALE=${target}`);
     });
 });
+
+it("serves the explicit English target without redirecting to a cookie-dependent URL", () => {
+    const response = handleI18nRouting(
+        new NextRequest("https://example.com/en", {
+            headers: { cookie: "NEXT_LOCALE=zh-CN", "accept-language": "zh-CN" },
+        })
+    );
+    expect(response.headers.get("location")).toBeNull();
+    expect(response.headers.get("x-middleware-request-x-next-intl-locale")).toBe("en");
+});
+
+it("keeps the existing unprefixed English homepage available", () => {
+    const response = handleI18nRouting(
+        new NextRequest("https://example.com/", { headers: { cookie: "NEXT_LOCALE=en" } })
+    );
+    expect(response.headers.get("location")).toBeNull();
+    expect(response.headers.get("x-middleware-request-x-next-intl-locale")).toBe("en");
+});
