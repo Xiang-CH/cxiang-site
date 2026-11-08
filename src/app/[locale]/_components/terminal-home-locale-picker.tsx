@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useTransition } from "react";
-import { useRouter as useNextRouter } from "next/navigation";
+import { useLayoutEffect, useRef, useTransition } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { locales } from "@/i18n/routing";
 import { runHomeTextScramble, type HomeScrambleController } from "@/lib/home-text-scramble";
 
 export function TerminalHomeLocalePicker({ currentLocale }: { currentLocale: string }) {
     const router = useRouter();
-    const { prefetch } = useNextRouter();
     const [isPending, startTransition] = useTransition();
     const scramble = useRef<{ locale: string; controller: HomeScrambleController } | null>(null);
 
@@ -26,14 +24,6 @@ export function TerminalHomeLocalePicker({ currentLocale }: { currentLocale: str
         };
     }, []);
 
-    // Match next-intl's explicitly prefixed locale-switch destination. Use the
-    // native prefetch so warming another locale does not change the locale cookie.
-    useEffect(() => {
-        for (const code of Object.keys(locales)) {
-            if (code !== currentLocale) prefetch(`/${code}`);
-        }
-    }, [currentLocale, prefetch]);
-
     return (
         <div className="flex gap-4 flex-wrap">
             {Object.entries(locales).map(([code, name]) => {
@@ -44,16 +34,9 @@ export function TerminalHomeLocalePicker({ currentLocale }: { currentLocale: str
                         type="button"
                         disabled={isPending}
                         aria-busy={!isActive && isPending}
-                        onPointerEnter={() => {
-                            if (!isActive) prefetch(`/${code}`);
-                        }}
-                        onFocus={() => {
-                            if (!isActive) prefetch(`/${code}`);
-                        }}
-                        onClick={() => {
+                        onClick={(event) => {
                             if (code === currentLocale || scramble.current || isPending) return;
-                            const root =
-                                document.querySelector<HTMLElement>(".home-scramble-scope");
+                            const root = event.currentTarget.closest(".home-scramble-scope");
                             if (root) {
                                 scramble.current = {
                                     locale: currentLocale,
