@@ -60,12 +60,15 @@ export function TerminalHomeLocalePicker({ currentLocale }: { currentLocale: str
                                     controller: runHomeTextScramble(root, { tickMs: 45 }),
                                 };
                             }
-                            // Start navigation immediately; keep scrambling while React
-                            // waits for the destination, rather than using a fixed timer.
-                            startTransition(() => {
+                            // Load immediately, but hold the same transition open for
+                            // at least 500ms, even when the destination is cached.
+                            startTransition(async () => {
                                 router.replace("/", {
                                     locale: code,
                                     transitionTypes: ["locale-switch"],
+                                });
+                                await new Promise<void>((resolve) => {
+                                    window.setTimeout(resolve, 500);
                                 });
                             });
                         }}
