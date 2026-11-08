@@ -1,14 +1,30 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef, useTransition } from "react";
 import { useRouter as useNextRouter } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { locales } from "@/i18n/routing";
-import { scrambleThen } from "@/lib/home-text-scramble";
+import { runHomeTextScramble, type HomeScrambleController } from "@/lib/home-text-scramble";
 
 export function TerminalHomeLocalePicker({ currentLocale }: { currentLocale: string }) {
     const router = useRouter();
     const { prefetch } = useNextRouter();
+    const [isPending, startTransition] = useTransition();
+    const scramble = useRef<{ locale: string; controller: HomeScrambleController } | null>(null);
+
+    useLayoutEffect(() => {
+        if (!isPending || scramble.current?.locale !== currentLocale) {
+            scramble.current?.controller.cancel();
+            scramble.current = null;
+        }
+    }, [currentLocale, isPending]);
+
+    useLayoutEffect(() => {
+        return () => {
+            scramble.current?.controller.cancel();
+            scramble.current = null;
+        };
+    }, []);
 
     // Match next-intl's explicitly prefixed locale-switch destination. Use the
     // native prefetch so warming another locale does not change the locale cookie.
@@ -26,6 +42,8 @@ export function TerminalHomeLocalePicker({ currentLocale }: { currentLocale: str
                     <button
                         key={code}
                         type="button"
+                        disabled={isPending}
+                        aria-busy={!isActive && isPending}
                         onPointerEnter={() => {
                             if (!isActive) prefetch(`/${code}`);
                         }}
@@ -33,23 +51,23 @@ export function TerminalHomeLocalePicker({ currentLocale }: { currentLocale: str
                             if (!isActive) prefetch(`/${code}`);
                         }}
                         onClick={() => {
-                            if (code === currentLocale) return;
-                            // Also start loading during the animation on touch devices
-                            // or when an earlier prefetch has expired.
-                            prefetch(`/${code}`);
+                            if (code === currentLocale || scramble.current || isPending) return;
                             const root =
                                 document.querySelector<HTMLElement>(".home-scramble-scope");
-                            const go = () => {
+                            if (root) {
+                                scramble.current = {
+                                    locale: currentLocale,
+                                    controller: runHomeTextScramble(root, { tickMs: 45 }),
+                                };
+                            }
+                            // Start navigation immediately; keep scrambling while React
+                            // waits for the destination, rather than using a fixed timer.
+                            startTransition(() => {
                                 router.replace("/", {
                                     locale: code,
                                     transitionTypes: ["locale-switch"],
                                 });
-                            };
-                            if (root) {
-                                scrambleThen(root, go, { tickMs: 45, holdMs: 240 });
-                            } else {
-                                go();
-                            }
+                            });
                         }}
                         className={`no-underline text-[0.88rem] transition-[color,border-color] duration-150 border-b bg-transparent cursor-pointer font-inherit ${
                             isActive
