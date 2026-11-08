@@ -40,7 +40,7 @@ function Cmd({ children }: { children: ReactNode }) {
  */
 export default function TerminalHomeClient({ content }: { content: TerminalContent }) {
     const fullText = content.typedRole;
-    const cliHref = content.locale === "en" ? "/cli" : `/${content.locale}/cli`;
+    const cliHref = `/${content.locale}/cli`;
 
     return (
         <div className="terminal-page">
