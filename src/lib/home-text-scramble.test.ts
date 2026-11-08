@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { runHomeTextScramble } from "./home-text-scramble";
+import { startHomeLocaleNavigation } from "./home-locale-navigation";
 
 // Minimal text-node fixture: exercise the animation's timers and DOM ownership
 // without introducing a browser dependency for this helper.
@@ -79,5 +80,45 @@ describe("runHomeTextScramble during locale navigation", () => {
         expect(text.data).toBe("Hello 世界");
         expect(vi.getTimerCount()).toBe(0);
         controller.cancel();
+    });
+});
+
+describe("document locale navigation", () => {
+    function setup() {
+        const replace = vi.fn();
+        const lifecycle = new EventTarget();
+        Object.assign(window, {
+            setTimeout,
+            clearTimeout,
+            location: { replace },
+            addEventListener: lifecycle.addEventListener.bind(lifecycle),
+            removeEventListener: lifecycle.removeEventListener.bind(lifecycle),
+        });
+        return { replace, lifecycle };
+    }
+
+    it("navigates to explicit English only after 500ms and keeps animating until pagehide", () => {
+        const { replace, lifecycle } = setup();
+        startHomeLocaleNavigation(document.createElement("main"), "en");
+        vi.advanceTimersByTime(499);
+        expect(replace).not.toHaveBeenCalled();
+        vi.advanceTimersByTime(1);
+        expect(replace).toHaveBeenCalledExactlyOnceWith("/en");
+        vi.advanceTimersByTime(1000);
+        expect(text.data).not.toBe("Hello 世界");
+        expect(vi.getTimerCount()).toBe(1);
+        lifecycle.dispatchEvent(new Event("pagehide"));
+        expect(text.data).toBe("Hello 世界");
+        expect(vi.getTimerCount()).toBe(0);
+    });
+
+    it("cancels pending navigation when the component leaves", () => {
+        const { replace } = setup();
+        const navigation = startHomeLocaleNavigation(document.createElement("main"), "zh-CN");
+        navigation.cancel();
+        vi.advanceTimersByTime(1000);
+        expect(replace).not.toHaveBeenCalled();
+        expect(text.data).toBe("Hello 世界");
+        expect(vi.getTimerCount()).toBe(0);
     });
 });
