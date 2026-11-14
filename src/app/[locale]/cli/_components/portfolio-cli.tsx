@@ -1169,6 +1169,8 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
                                         if (
                                             event.key.toLowerCase() === "c" &&
                                             event.ctrlKey &&
+                                            event.currentTarget.selectionStart ===
+                                                event.currentTarget.selectionEnd &&
                                             !window.getSelection()?.toString()
                                         ) {
                                             event.preventDefault();
