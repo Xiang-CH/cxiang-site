@@ -839,9 +839,6 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
     };
 
     const submit = (value: string) => {
-        const commands = splitOutsideQuotes(value, ";");
-        if (!commands.length) return;
-
         if (pendingLocale) {
             const answer = value.trim().toLocaleLowerCase();
             const confirmed = answer === "y" || answer === "yes";
@@ -859,7 +856,8 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
                     : [{ type: "text" as const, text: content.copy.localeCancelled }]),
             ];
             setOutput((previous) => [...previous, ...nextOutput]);
-            setHistory((previous) => [...previous, value]);
+            if (value.trim()) setHistory((previous) => [...previous, value]);
+            historyDraftRef.current = "";
             setHistoryIndex(null);
             setInput("");
             setSuggestions([]);
@@ -867,6 +865,9 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
             if (confirmed) window.location.assign(cliHref(pendingLocale));
             return;
         }
+
+        const commands = splitOutsideQuotes(value, ";");
+        if (!commands.length) return;
 
         const nextOutput: OutputEntry[] = [];
         let clearedTranscript = false;
