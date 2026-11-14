@@ -46,7 +46,7 @@
                     "company": "The University of Hong Kong",
                     "website": "https://www.hku.hk",
                     "logo": "/images/hku-logo.png",
-                    "duration": "June 2023 - May 2024, Sep 2024 - Present",
+                    "duration": "June 2023 - May 2024, Sep 2024 - Sep 2026",
                     "commit": "1b9d4f8"
                 },
                 {
@@ -74,7 +74,13 @@
     "terminal": {
         "onboarding": "ONBOARDING",
         "systemInfo": "SYSTEM INFO",
-        "typedRole": "Developer in Progress...",
+        "typedRole": "is a developer in progress...",
+        "typedRoles": [
+            "is rebuilding hiring",
+            "climbs plastic rocks",
+            "takes photographs",
+            "spikes volleyballs"
+        ],
         "agentMsg": "Hi Agents, you are probably looking for",
         "sysInit": "XIANG-OS v2026.11",
         "sysKernel": "▊ Kernel modules loaded. Awaiting input...",

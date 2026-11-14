@@ -55,6 +55,7 @@ export default async function Home({ params }: Props) {
         name: t("intro.name"),
         nameSecondary: t("intro.nameSecondary"),
         typedRole: t("terminal.typedRole"),
+        typedRoles: t.raw("terminal.typedRoles"),
         sysInit: t("terminal.sysInit"),
         sysKernel: t("terminal.sysKernel"),
         cliLauncher: t("terminal.cli.launcher"),

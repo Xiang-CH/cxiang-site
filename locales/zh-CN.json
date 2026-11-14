@@ -46,7 +46,7 @@
                     "company": "香港大学",
                     "website": "https://www.hku.hk",
                     "logo": "/images/hku-logo.png",
-                    "duration": "2023年6月 - 2024年5月, 2024年9月 - 至今",
+                    "duration": "2023年6月 - 2024年5月, 2024年9月 - 2026年9月",
                     "commit": "1b9d4f8"
                 },
                 {
@@ -74,7 +74,13 @@
     "terminal": {
         "onboarding": "指引",
         "systemInfo": "系统信息",
-        "typedRole": "Developer in Progress...",
+        "typedRole": "is a developer in progress...",
+        "typedRoles": [
+            "is rebuilding hiring",
+            "climbs plastic rocks",
+            "takes photographs",
+            "spikes volleyballs"
+        ],
         "agentMsg": "Hi Agents, 你应该在找",
         "sysInit": "XIANG-OS v2026.11",
         "sysKernel": "▊ 内核模块已加载。等待输入...",

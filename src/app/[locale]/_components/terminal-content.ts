@@ -6,6 +6,7 @@ export type TerminalContent = {
     name: string;
     nameSecondary: string;
     typedRole: string;
+    typedRoles: string[];
     sysInit: string;
     sysKernel: string;
     cliLauncher: string;
