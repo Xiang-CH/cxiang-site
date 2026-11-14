@@ -352,6 +352,7 @@ function matchesQuery(item: ListingItem, query: string): boolean {
 export default function PortfolioCli({ content }: { content: CliContent }) {
     const router = useRouter();
     const inputRef = useRef<HTMLInputElement>(null);
+    const historyDraftRef = useRef("");
     const transcriptRef = useRef<HTMLDivElement>(null);
     const cwdRef = useRef(HOME_DIR);
     const virtualNodesRef = useRef<Record<string, VirtualNode>>({});
@@ -908,6 +909,7 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
 
         setOutput((previous) => [...(clearedTranscript ? [] : previous), ...nextOutput]);
         setHistory((previous) => [...previous, value]);
+        historyDraftRef.current = "";
         setHistoryIndex(null);
         setInput("");
         setSuggestions([]);
@@ -1164,7 +1166,27 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
                                         setSuggestions([]);
                                     }}
                                     onKeyDown={(event) => {
-                                        if (event.key === "Tab") {
+                                        if (
+                                            event.key.toLowerCase() === "c" &&
+                                            event.ctrlKey &&
+                                            !window.getSelection()?.toString()
+                                        ) {
+                                            event.preventDefault();
+                                            setInput("");
+                                            setSuggestions([]);
+                                            setHistoryIndex(null);
+                                            historyDraftRef.current = "";
+                                            if (pendingLocale) {
+                                                setPendingLocale(null);
+                                                setOutput((previous) => [
+                                                    ...previous,
+                                                    {
+                                                        type: "text",
+                                                        text: content.copy.localeCancelled,
+                                                    },
+                                                ]);
+                                            }
+                                        } else if (event.key === "Tab") {
                                             event.preventDefault();
                                             complete();
                                         } else if (event.key === "ArrowUp") {
@@ -1174,6 +1196,8 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
                                                     ? history.length - 1
                                                     : Math.max(0, historyIndex - 1);
                                             if (history[nextIndex]) {
+                                                if (historyIndex === null)
+                                                    historyDraftRef.current = input;
                                                 setInput(history[nextIndex]);
                                                 setHistoryIndex(nextIndex);
                                             }
@@ -1182,7 +1206,7 @@ export default function PortfolioCli({ content }: { content: CliContent }) {
                                             if (historyIndex === null) return;
                                             const nextIndex = historyIndex + 1;
                                             if (nextIndex >= history.length) {
-                                                setInput("");
+                                                setInput(historyDraftRef.current);
                                                 setHistoryIndex(null);
                                             } else {
                                                 setInput(history[nextIndex]);
