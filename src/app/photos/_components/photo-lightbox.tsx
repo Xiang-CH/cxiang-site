@@ -113,7 +113,7 @@ export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
                                 height={cell.height}
                                 sizes="100vw"
                                 quality={75}
-                                className="h-auto w-full transition-transform duration-300 group-hover:scale-[1.01]"
+                                className="h-auto w-full motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-[1.01]"
                             />
                         </button>
                     )
@@ -141,10 +141,7 @@ export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
                             className="min-w-0"
                         >
                             {isSpacer(cell) ? (
-                                <div
-                                    aria-hidden
-                                    className="h-full w-full rounded-lg border border-dashed border-border/40"
-                                />
+                                <div aria-hidden className="h-full w-full" />
                             ) : (
                                 <button
                                     type="button"
@@ -158,7 +155,7 @@ export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
                                         fill
                                         sizes="(max-width: 640px) 50vw, 33vw"
                                         quality={75}
-                                        className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                                        className="object-cover motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-[1.03]"
                                     />
                                 </button>
                             )}
@@ -169,6 +166,7 @@ export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
 
             <dialog
                 ref={dialogRef}
+                aria-label="Photo viewer"
                 onClose={close}
                 onClick={(event) => {
                     if (event.target === dialogRef.current) close();
@@ -176,7 +174,7 @@ export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
                 className="m-0 h-full max-h-none w-full max-w-none bg-transparent p-0 backdrop:bg-black/90 open:flex open:items-center open:justify-center"
             >
                 {current ? (
-                    <div className="flex h-full w-full flex-col items-center justify-center gap-3 p-3 sm:p-6">
+                    <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-3 pt-16 pb-20 sm:px-6">
                         <Image
                             key={current.id}
                             src={current.src}
@@ -185,13 +183,17 @@ export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
                             height={current.height}
                             sizes="100vw"
                             quality={75}
-                            className="h-auto max-h-[82vh] w-auto max-w-full rounded-lg object-contain"
+                            className="h-auto min-h-0 max-h-full w-auto max-w-full rounded-lg object-contain"
                         />
-                        <div className="flex max-w-2xl flex-col items-center gap-1 text-center">
+                        <div className="flex max-h-[25dvh] max-w-2xl shrink-0 flex-col overflow-y-auto items-center gap-1 text-center">
                             <p className="text-sm text-white/90">
                                 {current.caption ?? current.alt}
                             </p>
-                            <p className="text-xs text-white/50">
+                            <p
+                                aria-live="polite"
+                                aria-atomic="true"
+                                className="text-xs tabular-nums text-white/75"
+                            >
                                 {currentIndex + 1} / {openableIndexes.length}
                             </p>
                         </div>
@@ -202,7 +204,7 @@ export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
                     type="button"
                     onClick={close}
                     aria-label="Close viewer"
-                    className="absolute top-3 right-3 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+                    className="absolute top-3 right-3 grid size-11 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
                 >
                     <X className="size-5" />
                 </button>
@@ -213,7 +215,7 @@ export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
                             type="button"
                             onClick={() => step(-1)}
                             aria-label="Previous photo"
-                            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20 sm:left-4"
+                            className="absolute bottom-3 right-[calc(50%+0.25rem)] grid size-11 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
                         >
                             <ChevronLeft className="size-6" />
                         </button>
@@ -221,7 +223,7 @@ export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
                             type="button"
                             onClick={() => step(1)}
                             aria-label="Next photo"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20 sm:right-4"
+                            className="absolute bottom-3 left-[calc(50%+0.25rem)] grid size-11 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
                         >
                             <ChevronRight className="size-6" />
                         </button>

@@ -51,15 +51,22 @@ export default function StudioLogin({ passwordRequired = true }: { passwordRequi
                             : "Local development has no password set. Set STUDIO_PASSWORD to enable this form (required before deploying)."}
                     </p>
                 </div>
+                <label htmlFor="studio-password" className="text-sm font-medium">
+                    Password
+                </label>
                 <input
+                    id="studio-password"
                     type="password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    placeholder="Password"
                     autoComplete="current-password"
                     className="h-9 rounded-md border bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                 />
-                {error ? <p className="text-sm text-destructive">{error}</p> : null}
+                {error ? (
+                    <p role="alert" className="text-sm text-destructive">
+                        {error}
+                    </p>
+                ) : null}
                 <Button type="submit" disabled={pending || password.length === 0}>
                     {pending ? "Signing in…" : "Sign in"}
                 </Button>
