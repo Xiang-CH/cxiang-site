@@ -13,7 +13,10 @@ const fileOf = (name: string, type: string, size = 1000) =>
     new File([new Uint8Array(size)], name, { type });
 
 /** Builds a minimal PNG, optionally carrying the APNG animation control chunk. */
-function pngFile(name: string, { animated }: { animated: boolean }): File {
+function pngFile(
+    name: string,
+    { animated, metadata = "" }: { animated: boolean; metadata?: string }
+): File {
     const chunk = (tag: string, data: Uint8Array) => {
         const length = new Uint8Array(4);
         new DataView(length.buffer).setUint32(0, data.length);
@@ -28,7 +31,11 @@ function pngFile(name: string, { animated }: { animated: boolean }): File {
     const actl = animated ? chunk("acTL", new Uint8Array(8)) : new Uint8Array();
     const idat = chunk("IDAT", new Uint8Array(16));
     const iend = chunk("IEND", new Uint8Array(0));
-    return new File([signature, ihdr, actl, idat, iend], name, { type: "image/png" });
+    return new File(
+        [signature, ihdr, chunk("tEXt", new TextEncoder().encode(metadata)), actl, idat, iend],
+        name,
+        { type: "image/png" }
+    );
 }
 
 describe("webp filename", () => {
@@ -97,6 +104,18 @@ describe("animated PNG detection", () => {
     it("detects an APNG that arrives typed as image/png", async () => {
         // The MIME type cannot distinguish these, so the chunk is inspected.
         expect(await isAnimatedPng(pngFile("anim.png", { animated: true }))).toBe(true);
+    });
+
+    it("finds animation after a large metadata chunk", async () => {
+        expect(
+            await isAnimatedPng(pngFile("anim.png", { animated: true, metadata: "x".repeat(6144) }))
+        ).toBe(true);
+    });
+
+    it("ignores animation markers in text metadata", async () => {
+        expect(
+            await isAnimatedPng(pngFile("still.png", { animated: false, metadata: "acTL" }))
+        ).toBe(false);
     });
 
     it("leaves a still PNG alone", async () => {

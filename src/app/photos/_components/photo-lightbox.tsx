@@ -174,7 +174,7 @@ export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
                 className="m-0 h-full max-h-none w-full max-w-none bg-transparent p-0 backdrop:bg-black/90 open:flex open:items-center open:justify-center"
             >
                 {current ? (
-                    <div className="flex h-full w-full flex-col items-center justify-center gap-3 px-3 pt-16 pb-20 sm:px-6">
+                    <div className="pointer-events-none flex h-full w-full flex-col items-center justify-center gap-3 px-3 pt-16 pb-20 sm:px-6">
                         <Image
                             key={current.id}
                             src={current.src}
@@ -183,9 +183,9 @@ export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
                             height={current.height}
                             sizes="100vw"
                             quality={75}
-                            className="h-auto min-h-0 max-h-full w-auto max-w-full rounded-lg object-contain"
+                            className="pointer-events-auto h-auto min-h-0 max-h-full w-auto max-w-full rounded-lg object-contain"
                         />
-                        <div className="flex max-h-[25dvh] max-w-2xl shrink-0 flex-col overflow-y-auto items-center gap-1 text-center">
+                        <div className="pointer-events-auto flex max-h-[25dvh] max-w-2xl shrink-0 flex-col overflow-y-auto items-center gap-1 text-center">
                             <p className="text-sm text-white/90">
                                 {current.caption ?? current.alt}
                             </p>

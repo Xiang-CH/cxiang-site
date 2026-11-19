@@ -47,17 +47,6 @@ export function webpFilename(filename: string): string {
 const PASSTHROUGH_IMAGE_TYPES = new Set(["image/webp", "image/gif", "image/apng"]);
 
 /**
- * How much of a PNG to inspect for animation chunks.
- *
- * `acTL` must appear before the first `IDAT`, and in practice both sit in the
- * first few hundred bytes.
- */
-const PNG_HEADER_SCAN_BYTES = 4096;
-
-/** `acTL` is the PNG chunk that marks an APNG. */
-const APNG_CONTROL_CHUNK = "acTL";
-
-/**
  * Detects an animated PNG.
  *
  * An APNG is an ordinary PNG with an extra control chunk, so it usually arrives
@@ -67,8 +56,17 @@ const APNG_CONTROL_CHUNK = "acTL";
 export async function isAnimatedPng(file: File): Promise<boolean> {
     if (file.type !== "image/png") return false;
     try {
-        const header = await file.slice(0, PNG_HEADER_SCAN_BYTES).text();
-        return header.includes(APNG_CONTROL_CHUNK);
+        // Skip the PNG signature, then walk length/type/data/CRC chunks.
+        let offset = 8;
+        while (offset + 12 <= file.size) {
+            const header = await file.slice(offset, offset + 8).arrayBuffer();
+            const length = new DataView(header).getUint32(0);
+            const type = String.fromCharCode(...new Uint8Array(header, 4, 4));
+            offset += 12 + length;
+            if (offset > file.size || type === "IDAT" || type === "IEND") return false;
+            if (type === "acTL") return true;
+        }
+        return false;
     } catch {
         return false;
     }

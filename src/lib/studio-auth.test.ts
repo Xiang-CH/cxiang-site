@@ -89,11 +89,12 @@ describe("studio session tokens", () => {
 
     it("prefers a dedicated session secret so the password can rotate alone", () => {
         process.env.STUDIO_SESSION_SECRET = "a stable signing key";
-        const token = createStudioSessionToken()!;
+        const issuedAt = Date.now();
+        const token = createStudioSessionToken(issuedAt)!;
 
         // Rotating the password keeps sessions alive while the key is unchanged.
         process.env.STUDIO_PASSWORD = "rotated";
-        expect(createStudioSessionToken()).toBe(token);
+        expect(createStudioSessionToken(issuedAt)).toBe(token);
         expect(isStudioAuthorizedToken(token)).toBe(true);
 
         // Rotating the key does invalidate them.
