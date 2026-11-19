@@ -573,7 +573,7 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                     </div>
                 </div>
 
-                <div className="overflow-x-auto rounded-xl border p-3">
+                <div className="isolate overflow-x-auto rounded-xl border p-3">
                     <div style={{ width: `${zoom * 100}%`, minWidth: 420 }}>
                         <div ref={canvasRef} className="relative w-full">
                             {showGrid ? <GridOverlay cellWidth={cellWidth} /> : null}
