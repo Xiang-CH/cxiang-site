@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import {
     ChevronDown,
     ChevronUp,
-    GripVertical,
     ImagePlus,
     Loader2,
     Maximize2,
@@ -20,6 +19,7 @@ import {
     GRID_COLUMNS,
     GRID_GAP,
     GRID_ROW_HEIGHT,
+    applyResize,
     clampRect,
     findFreeRect,
     resolveLayout,
@@ -133,6 +133,12 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
             };
         });
     });
+    const [selectedKey, setSelectedKey] = useState<string | null>(null);
+    const selectedIndex = Math.max(
+        0,
+        items.findIndex((item) => item.key === selectedKey)
+    );
+    const selectedItem = items[selectedIndex];
     const [coverKey, setCoverKey] = useState<string | null>(() => {
         if (!photoset.coverPhotoId) return null;
         return photoset.photos.some((photo) => photo.id === photoset.coverPhotoId)
@@ -176,7 +182,7 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
         );
     }, []);
 
-    const { drag, begin, move, end, rectFor } = useGridDrag({ cellWidth, onCommit: commitRect });
+    const { begin, move, end, rectFor } = useGridDrag({ cellWidth, onCommit: commitRect });
 
     const placedRects = useMemo(
         () =>
@@ -408,7 +414,7 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                         {isNew ? "New collection" : photoset.title}
                     </h1>
                     <p className="text-sm text-muted-foreground">
-                        Drag a photo to move it, or its corner to resize. Blank cells stay empty.
+                        Select a photo to adjust its layout below the canvas, or drag it into place.
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -590,9 +596,10 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                                                     rect.h * GRID_ROW_HEIGHT +
                                                     (rect.h - 1) * GRID_GAP,
                                             }}
+                                            onPointerDownCapture={() => setSelectedKey(item.key)}
                                             className={cn(
                                                 "group touch-none select-none",
-                                                drag?.id === item.key && "z-20"
+                                                selectedItem?.key === item.key && "z-10"
                                             )}
                                         >
                                             <div
@@ -607,7 +614,8 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                                                     isSpacerCell
                                                         ? "border-dashed bg-transparent"
                                                         : "border-border",
-                                                    drag?.id === item.key && "ring-2 ring-primary"
+                                                    selectedItem?.key === item.key &&
+                                                        "ring-2 ring-primary ring-offset-2"
                                                 )}
                                             >
                                                 {isSpacerCell ? (
@@ -636,14 +644,32 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                                             {/* Resize handle */}
                                             <button
                                                 type="button"
-                                                aria-label="Resize cell"
+                                                aria-label={`Resize cell ${index + 1} with arrow keys`}
+                                                onFocus={() => setSelectedKey(item.key)}
+                                                onKeyDown={(event) => {
+                                                    const dx =
+                                                        Number(event.key === "ArrowRight") -
+                                                        Number(event.key === "ArrowLeft");
+                                                    const dy =
+                                                        Number(event.key === "ArrowDown") -
+                                                        Number(event.key === "ArrowUp");
+                                                    if (!dx && !dy) return;
+                                                    event.preventDefault();
+                                                    commitRect(
+                                                        item.key,
+                                                        applyResize(rect, { dx, dy })
+                                                    );
+                                                }}
                                                 onPointerDown={(event) =>
                                                     begin(event, item.key, "resize", rect)
                                                 }
                                                 onPointerMove={move}
                                                 onPointerUp={end}
                                                 onPointerCancel={end}
-                                                className="absolute -right-1.5 -bottom-1.5 flex size-5 cursor-nwse-resize items-center justify-center rounded-full border bg-background opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+                                                className={cn(
+                                                    "absolute -right-1 -bottom-1 flex size-7 cursor-nwse-resize items-center justify-center rounded-full border bg-background opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100",
+                                                    selectedItem?.key === item.key && "opacity-100"
+                                                )}
                                             >
                                                 <Maximize2 className="size-3" />
                                             </button>
@@ -660,93 +686,128 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                         No cells yet. Add photos, then drag them into place.
                     </p>
                 ) : (
-                    <ul className="flex flex-wrap gap-2">
-                        {items.map((item, index) => (
-                            <li
-                                key={item.key}
-                                className="flex items-center gap-2 rounded-lg border px-2 py-1.5 text-xs"
+                    selectedItem && (
+                        <div className="flex flex-wrap items-center gap-2 rounded-lg border p-3 text-xs">
+                            <label htmlFor="layout-cell">Selected cell</label>
+                            <select
+                                id="layout-cell"
+                                value={selectedItem.key}
+                                onChange={(event) => setSelectedKey(event.target.value)}
+                                className="max-w-full rounded-md border bg-background p-2"
                             >
-                                <GripVertical className="size-3.5 text-muted-foreground" />
-                                <span className="text-muted-foreground">#{index + 1}</span>
-                                {item.kind === SPACER_KIND ? (
-                                    <span className="text-muted-foreground">blank</span>
-                                ) : (
-                                    <input
-                                        value={item.alt}
-                                        onChange={(event) =>
-                                            setItems((current) =>
-                                                current.map((candidate) =>
-                                                    candidate.key === item.key
-                                                        ? { ...candidate, alt: event.target.value }
-                                                        : candidate
-                                                )
+                                {items.map((cell, index) => (
+                                    <option key={cell.key} value={cell.key}>
+                                        #{index + 1} ·{" "}
+                                        {cell.kind === SPACER_KIND
+                                            ? "Blank space"
+                                            : cell.alt || "Photo"}
+                                    </option>
+                                ))}
+                            </select>
+                            {selectedItem.kind === SPACER_KIND ? (
+                                <span className="text-muted-foreground">blank</span>
+                            ) : (
+                                <input
+                                    value={selectedItem.alt}
+                                    onChange={(event) =>
+                                        setItems((current) =>
+                                            current.map((candidate) =>
+                                                candidate.key === selectedItem.key
+                                                    ? { ...candidate, alt: event.target.value }
+                                                    : candidate
                                             )
-                                        }
-                                        placeholder="Alt text"
-                                        className="h-7 w-28 rounded border bg-transparent px-1.5"
+                                        )
+                                    }
+                                    aria-label="Photo alt text"
+                                    placeholder="Alt text"
+                                    className="h-7 w-28 rounded border bg-transparent px-1.5"
+                                />
+                            )}
+                            <span className="tabular-nums text-muted-foreground">
+                                {selectedItem.w}×{selectedItem.h}
+                            </span>
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                aria-label="Move up"
+                                onClick={() => nudge(selectedItem.key, 0, -1)}
+                            >
+                                <ChevronUp className="size-3.5" />
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                aria-label="Move down"
+                                onClick={() => nudge(selectedItem.key, 0, 1)}
+                            >
+                                <ChevronDown className="size-3.5" />
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                aria-label="Move left"
+                                onClick={() => nudge(selectedItem.key, -1, 0)}
+                            >
+                                <ChevronUp className="size-3.5 -rotate-90" />
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                aria-label="Move right"
+                                onClick={() => nudge(selectedItem.key, 1, 0)}
+                            >
+                                <ChevronUp className="size-3.5 rotate-90" />
+                            </Button>
+                            {(["Width", "Height"] as const).map((axis) => (
+                                <div key={axis} className="flex items-center gap-1">
+                                    <span>{axis}</span>
+                                    {[-1, 1].map((delta) => {
+                                        const rect = placedRects[selectedIndex];
+                                        const next = applyResize(rect, {
+                                            dx: axis === "Width" ? delta : 0,
+                                            dy: axis === "Height" ? delta : 0,
+                                        });
+                                        return (
+                                            <Button
+                                                key={delta}
+                                                size="icon-sm"
+                                                variant="outline"
+                                                disabled={next.w === rect.w && next.h === rect.h}
+                                                aria-label={`${delta < 0 ? "Decrease" : "Increase"} ${axis.toLowerCase()}`}
+                                                onClick={() => commitRect(selectedItem.key, next)}
+                                            >
+                                                {delta < 0 ? "−" : "+"}
+                                            </Button>
+                                        );
+                                    })}
+                                </div>
+                            ))}
+                            {selectedItem.kind === SPACER_KIND ? null : (
+                                <Button
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    aria-label="Use as cover"
+                                    onClick={() => setCoverKey(selectedItem.key)}
+                                >
+                                    <Star
+                                        className={cn(
+                                            "size-3.5",
+                                            coverKey === selectedItem.key &&
+                                                "fill-current text-primary"
+                                        )}
                                     />
-                                )}
-                                <span className="tabular-nums text-muted-foreground">
-                                    {item.w}×{item.h}
-                                </span>
-                                <Button
-                                    variant="ghost"
-                                    size="icon-sm"
-                                    aria-label="Move up"
-                                    onClick={() => nudge(item.key, 0, -1)}
-                                >
-                                    <ChevronUp className="size-3.5" />
                                 </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="icon-sm"
-                                    aria-label="Move down"
-                                    onClick={() => nudge(item.key, 0, 1)}
-                                >
-                                    <ChevronDown className="size-3.5" />
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="icon-sm"
-                                    aria-label="Move left"
-                                    onClick={() => nudge(item.key, -1, 0)}
-                                >
-                                    <ChevronUp className="size-3.5 -rotate-90" />
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="icon-sm"
-                                    aria-label="Move right"
-                                    onClick={() => nudge(item.key, 1, 0)}
-                                >
-                                    <ChevronUp className="size-3.5 rotate-90" />
-                                </Button>
-                                {item.kind === SPACER_KIND ? null : (
-                                    <Button
-                                        variant="ghost"
-                                        size="icon-sm"
-                                        aria-label="Use as cover"
-                                        onClick={() => setCoverKey(item.key)}
-                                    >
-                                        <Star
-                                            className={cn(
-                                                "size-3.5",
-                                                coverKey === item.key && "fill-current text-primary"
-                                            )}
-                                        />
-                                    </Button>
-                                )}
-                                <Button
-                                    variant="ghost"
-                                    size="icon-sm"
-                                    aria-label="Remove cell"
-                                    onClick={() => remove(item.key)}
-                                >
-                                    <Trash2 className="size-3.5" />
-                                </Button>
-                            </li>
-                        ))}
-                    </ul>
+                            )}
+                            <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                aria-label="Remove cell"
+                                onClick={() => remove(selectedItem.key)}
+                            >
+                                <Trash2 className="size-3.5" />
+                            </Button>
+                        </div>
+                    )
                 )}
             </section>
         </div>
