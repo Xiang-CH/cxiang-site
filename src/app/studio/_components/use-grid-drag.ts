@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { GRID_GAP, applyMove, applyResize, pixelsToCells, type GridRect } from "@/lib/gallery-grid";
+import { applyMove, applyResize, pixelsToCells, type GridRect } from "@/lib/gallery-grid";
 
 /**
  * Pointer drag + resize for the Studio canvas.
@@ -93,10 +93,4 @@ export function useGridDrag({
     );
 
     return { drag, begin, move, end, rectFor };
-}
-
-/** Pixel geometry for the canvas, derived from the measured container width. */
-export function gridMetrics(containerWidth: number) {
-    const cellWidth = (containerWidth - GRID_GAP * (12 - 1)) / 12;
-    return { cellWidth, gap: GRID_GAP };
 }

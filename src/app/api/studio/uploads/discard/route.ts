@@ -1,4 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { eq } from "drizzle-orm";
+import { getDb } from "@/db";
+import { photos } from "@/db/schema";
 import { z } from "zod";
 import { deletePhotoObject, isPhotoStorageConfigured } from "@/lib/cdn-storage";
 import { isStudioAuthorized } from "@/lib/studio-auth";
@@ -34,6 +37,13 @@ export async function POST(request: NextRequest) {
     }
 
     try {
+        // A save may have committed even when its response never reached the editor.
+        const [attached] = await getDb()
+            .select({ id: photos.id })
+            .from(photos)
+            .where(eq(photos.storageKey, parsed.data.storageKey))
+            .limit(1);
+        if (attached) return NextResponse.json({ deleted: false });
         const deleted = await deletePhotoObject(parsed.data.storageKey);
         if (!deleted) {
             // The key was outside the photo prefix or otherwise unsafe.

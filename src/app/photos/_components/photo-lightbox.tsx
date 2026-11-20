@@ -121,12 +121,11 @@ export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
             </div>
 
             <div
-                className="hidden sm:grid"
+                className="relative hidden sm:grid"
                 style={{
                     gridTemplateColumns: `repeat(${GRID_COLUMNS}, minmax(0, 1fr))`,
                     gridAutoRows: `${GRID_ROW_HEIGHT}px`,
                     gap: `${GRID_GAP}px`,
-                    position: "relative",
                 }}
             >
                 {photos.map((cell, index) => {

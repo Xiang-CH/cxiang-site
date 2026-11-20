@@ -1,3 +1,4 @@
+import { isSpacer } from "@/lib/gallery-shared";
 import "server-only";
 import type { PageObjectResponse } from "@notionhq/client";
 import { cacheLife, cacheTag } from "next/cache";
@@ -336,16 +337,18 @@ export async function buildPhotoCollectionMarkdown(slug: string): Promise<string
     if (shotRange) lines.push(`Shot: ${shotRange}`, "");
 
     lines.push(
-        `${photoCountLabel(set.photos.length)}. Canonical page: ${absUrl(`/photos/${set.slug}`)}`,
+        `${photoCountLabel(set.photoCount)}. Canonical page: ${absUrl(`/photos/${set.slug}`)}`,
         "",
         "Each photograph:",
         ""
     );
 
-    set.photos.forEach((photo, index) => {
-        const label = photo.caption ?? photo.alt;
-        lines.push(`${index + 1}. ${label} — ${photo.src}`);
-    });
+    set.photos
+        .filter((cell) => !isSpacer(cell))
+        .forEach((photo, index) => {
+            const label = photo.caption ?? photo.alt;
+            lines.push(`${index + 1}. ${label} — ${photo.src}`);
+        });
 
     return `${lines.join("\n")}\n${footer}`;
 }

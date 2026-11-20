@@ -1,10 +1,10 @@
 import "server-only";
-import { asc, eq, inArray, sql } from "drizzle-orm";
+import { and, count, asc, eq, inArray, sql } from "drizzle-orm";
 import { getDb, isDatabaseConfigured } from "@/db";
 import { photos, photosets } from "@/db/schema";
 import { deletePhotoObject } from "@/lib/cdn-storage";
 import { type PhotoSetInput, type StudioPhotoSet } from "@/lib/photoset-payload";
-import { type PhotoSize } from "@/lib/gallery-shared";
+import { PHOTO_KIND, SPACER_KIND, type PhotoSize } from "@/lib/gallery-shared";
 
 /**
  * Write-side access to photosets for the Studio.
@@ -39,15 +39,11 @@ function requireDb() {
 async function countPhotosBySet(setIds: string[]): Promise<Map<string, number>> {
     if (setIds.length === 0) return new Map();
     const rows = await getDb()
-        .select({ photosetId: photos.photosetId, id: photos.id })
+        .select({ photosetId: photos.photosetId, total: count() })
         .from(photos)
-        .where(inArray(photos.photosetId, setIds));
-
-    const counts = new Map<string, number>();
-    for (const row of rows) {
-        counts.set(row.photosetId, (counts.get(row.photosetId) ?? 0) + 1);
-    }
-    return counts;
+        .where(and(inArray(photos.photosetId, setIds), eq(photos.kind, PHOTO_KIND)))
+        .groupBy(photos.photosetId);
+    return new Map(rows.map((row) => [row.photosetId, row.total]));
 }
 
 /** Every photoset, drafts included, for the Studio index. */
@@ -174,12 +170,14 @@ export async function savePhotoSet(
     const submittedIds = new Set(prepared.filter((entry) => entry.isExisting).map((e) => e.id));
     const removed = previous.filter((row) => !submittedIds.has(row.id));
 
+    const photographs = prepared.filter((entry) => entry.row.kind !== SPACER_KIND);
+    const indexedCover = input.coverIndex === undefined ? undefined : prepared[input.coverIndex];
     const coverPhotoId =
-        input.coverPhotoId && prepared.some((entry) => entry.id === input.coverPhotoId)
-            ? input.coverPhotoId
-            : input.coverIndex !== undefined && prepared[input.coverIndex]
-              ? prepared[input.coverIndex].id
-              : null;
+        photographs.find((entry) => entry.id === input.coverPhotoId)?.id ??
+        (indexedCover && indexedCover.row.kind !== SPACER_KIND
+            ? indexedCover.id
+            : photographs[0]?.id) ??
+        null;
 
     const id = existingId ?? crypto.randomUUID();
     const now = new Date();

@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { Pool } from "pg";
 
 /**
@@ -18,6 +18,13 @@ import { Pool } from "pg";
  * Everything is created in a dedicated schema and dropped afterwards, so the
  * target database is left as it was found.
  */
+vi.mock("next/cache", () => ({ cacheLife: vi.fn(), cacheTag: vi.fn() }));
+
+vi.mock("@/lib/cdn-storage", () => ({
+    isPhotoStorageConfigured: true,
+    deletePhotoObject: vi.fn().mockResolvedValue(true),
+}));
+
 const connectionString = process.env.TEST_DATABASE_URL;
 const describeWithDb = connectionString ? describe : describe.skip;
 
@@ -246,6 +253,89 @@ describeWithDb("savePhotoSet against a real database", () => {
             },
             { kind: "spacer", x: 8, y: 0, w: 4, h: 3, alt: "", url: "" },
         ]);
+    });
+
+    it("keeps spacers in the layout but excludes them from covers, counts and markdown", async () => {
+        const { getPhotoSet, getPhotoSetSummaries } = await import("./photos");
+        const { listPhotoSets } = await import("./studio");
+        const { buildPhotoCollectionMarkdown } = await import("./llms-notion");
+        const { id } = await savePhotoSet(null, {
+            title: "Spacer before cover",
+            slug: "spacer-before-cover",
+            published: true,
+            coverIndex: 0,
+            photos: [
+                { kind: "spacer", alt: "", size: "medium" },
+                {
+                    kind: "photo",
+                    url: "https://cdn.example/cover.jpg",
+                    width: 10,
+                    height: 10,
+                    alt: "Coast",
+                    size: "medium",
+                },
+            ],
+        });
+        const set = await getPhotoSet("spacer-before-cover");
+        expect(set?.photos).toHaveLength(2);
+        expect(set?.cover?.alt).toBe("Coast");
+        // Older collections may explicitly reference a spacer as their cover.
+        await pool.query("update photosets set cover_photo_id = $1 where id = $2", [
+            set?.photos[0].id,
+            id,
+        ]);
+        for (const summary of [
+            await getPhotoSet("spacer-before-cover"),
+            (await getPhotoSetSummaries()).find((row) => row.id === id),
+        ]) {
+            expect(summary?.cover?.alt).toBe("Coast");
+            expect(summary?.photoCount).toBe(1);
+        }
+        expect((await listPhotoSets()).find((row) => row.id === id)?.photoCount).toBe(1);
+        const markdown = await buildPhotoCollectionMarkdown("spacer-before-cover");
+        expect(markdown).toContain("1. Coast");
+        expect(markdown).not.toContain("2. ");
+    });
+
+    it("discards only uploads that are still unattached", async () => {
+        const { NextRequest } = await import("next/server");
+        const { POST } = await import("@/app/api/studio/uploads/discard/route");
+        const { createStudioSessionToken, studioCookieName } = await import("./studio-auth");
+        const { deletePhotoObject } = await import("./cdn-storage");
+        vi.stubEnv("STUDIO_PASSWORD", "test-studio-password");
+        try {
+            const savedKey = "photos/saved.jpg";
+            await savePhotoSet(null, {
+                title: "Saved upload",
+                slug: "saved-upload",
+                published: false,
+                photos: [
+                    {
+                        kind: "photo",
+                        url: "https://cdn.example/saved.jpg",
+                        storageKey: savedKey,
+                        width: 10,
+                        height: 10,
+                        alt: "",
+                        size: "medium",
+                    },
+                ],
+            });
+            const discard = (storageKey: string) =>
+                POST(
+                    new NextRequest("https://example.test/api/studio/uploads/discard", {
+                        method: "POST",
+                        headers: { cookie: `${studioCookieName()}=${createStudioSessionToken()}` },
+                        body: JSON.stringify({ storageKey }),
+                    })
+                );
+            expect(await (await discard(savedKey)).json()).toEqual({ deleted: false });
+            expect(deletePhotoObject).not.toHaveBeenCalledWith(savedKey);
+            expect(await (await discard("photos/unsaved.jpg")).json()).toEqual({ deleted: true });
+            expect(deletePhotoObject).toHaveBeenCalledWith("photos/unsaved.jpg");
+        } finally {
+            vi.unstubAllEnvs();
+        }
     });
 
     it("stores a spacer-only collection", async () => {

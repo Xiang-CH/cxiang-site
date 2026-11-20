@@ -1,32 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import {
-    ChevronDown,
-    ChevronUp,
-    ImagePlus,
-    Loader2,
-    Maximize2,
-    SquareDashed,
-    Star,
-    Trash2,
-} from "lucide-react";
+import { ImagePlus, Loader2, SquareDashed, Trash2 } from "lucide-react";
+import { PhotoLayout, type EditorItem } from "./photo-layout";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import {
-    GRID_COLUMNS,
-    GRID_GAP,
-    GRID_ROW_HEIGHT,
-    applyResize,
-    clampRect,
-    findFreeRect,
-    resolveLayout,
-    type GridRect,
-} from "@/lib/gallery-grid";
+import { clampRect, findFreeRect, resolveLayout } from "@/lib/gallery-grid";
 import { PHOTO_KIND, SPACER_KIND, type PhotoSize } from "@/lib/gallery-shared";
-import { type PhotoSetPhotoInput, type StudioPhotoSet } from "@/lib/photoset-payload";
+import type { StudioPhotoSet } from "@/lib/photoset-payload";
 import {
     DEFAULT_WEBP_QUALITY,
     MAX_WEBP_QUALITY,
@@ -34,24 +16,6 @@ import {
     encodeToWebp,
     formatBytes,
 } from "@/lib/image-conversion";
-import { useGridDrag } from "./use-grid-drag";
-
-/**
- * Studio editor: free-form placement on a 12-column grid.
- *
- * Cells are dragged to move and dragged by their bottom-right corner to resize.
- * Placement is stored explicitly, so any cell nobody occupies stays blank — that
- * is how whitespace appears, and an explicit spacer cell reserves a block of it.
- */
-
-type EditorItem = PhotoSetPhotoInput & {
-    /** Stable React key; equals the photo id once saved, otherwise a local key. */
-    key: string;
-    width: number;
-    height: number;
-    localPreview?: string;
-    uploadState: "ready" | "uploading" | "error";
-};
 
 const DEFAULT_PHOTO_RECT = { w: 6, h: 4 };
 const DEFAULT_SPACER_RECT = { w: 4, h: 3 };
@@ -104,8 +68,39 @@ async function uploadOne(file: File) {
     return { publicUrl: ticket.publicUrl, storageKey: ticket.storageKey };
 }
 
+async function discardUpload(storageKey: string) {
+    const response = await fetch("/api/studio/uploads/discard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ storageKey }),
+        keepalive: true,
+    });
+    if (!response.ok) throw new Error("Could not discard the upload");
+}
+
 export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet }) {
     const router = useRouter();
+    const pendingUploads = useRef(new Set<string>());
+    const mounted = useRef(true);
+    const savingCollection = useRef(false);
+    useEffect(() => {
+        mounted.current = true;
+        const pending = pendingUploads.current;
+        function discardOnExit() {
+            if (!savingCollection.current) {
+                for (const key of pending) void discardUpload(key).catch(console.error);
+            }
+        }
+        function onPageHide(event: PageTransitionEvent) {
+            if (!event.persisted) discardOnExit();
+        }
+        window.addEventListener("pagehide", onPageHide);
+        return () => {
+            window.removeEventListener("pagehide", onPageHide);
+            mounted.current = false;
+            discardOnExit();
+        };
+    }, []);
 
     const [title, setTitle] = useState(photoset.title);
     const [slug, setSlug] = useState(photoset.slug);
@@ -129,22 +124,14 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                 height: photo.height ?? 1,
                 size: (photo.size ?? "medium") as PhotoSize,
                 key: photo.id ?? crypto.randomUUID(),
-                uploadState: "ready" as const,
             };
         });
     });
-    const [selectedKey, setSelectedKey] = useState<string | null>(null);
-    const selectedIndex = Math.max(
-        0,
-        items.findIndex((item) => item.key === selectedKey)
-    );
-    const selectedItem = items[selectedIndex];
-    const [coverKey, setCoverKey] = useState<string | null>(() => {
-        if (!photoset.coverPhotoId) return null;
-        return photoset.photos.some((photo) => photo.id === photoset.coverPhotoId)
-            ? photoset.coverPhotoId
-            : null;
-    });
+    const [chosenCover, setCoverKey] = useState<string | null>(photoset.coverPhotoId ?? null);
+    const coverKey =
+        items.find((item) => item.key === chosenCover && item.kind !== SPACER_KIND)?.key ??
+        items.find((item) => item.kind !== SPACER_KIND)?.key ??
+        null;
 
     const [saving, setSaving] = useState(false);
     const [uploadingCount, setUploadingCount] = useState(0);
@@ -152,57 +139,8 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
     const [zoom, setZoom] = useState(1);
     const [showGrid, setShowGrid] = useState(true);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const canvasRef = useRef<HTMLDivElement>(null);
-    const [canvasWidth, setCanvasWidth] = useState(720);
-
     const isNew = photoset.id === "new";
     const uploading = uploadingCount > 0;
-
-    useEffect(() => {
-        const element = canvasRef.current;
-        if (!element) return;
-        const observer = new ResizeObserver((entries) => {
-            const width = entries[0]?.contentRect.width;
-            if (width) setCanvasWidth(width);
-        });
-        observer.observe(element);
-        return () => observer.disconnect();
-    }, []);
-
-    // One column width, with the inter-column gaps removed from the total. The
-    // same value feeds the drag maths, so a dragged cell tracks the pointer and
-    // the canvas matches the public renderer's `gap`-based grid.
-    const cellWidth = Math.max(1, (canvasWidth - GRID_GAP * (GRID_COLUMNS - 1)) / GRID_COLUMNS);
-
-    const commitRect = useCallback((key: string, rect: GridRect) => {
-        setItems((current) =>
-            current.map((item) =>
-                item.key === key ? { ...item, x: rect.x, y: rect.y, w: rect.w, h: rect.h } : item
-            )
-        );
-    }, []);
-
-    const { begin, move, end, rectFor } = useGridDrag({ cellWidth, onCommit: commitRect });
-
-    const placedRects = useMemo(
-        () =>
-            items.map((item) =>
-                clampRect({
-                    x: item.x ?? 0,
-                    y: item.y ?? 0,
-                    w: item.w ?? 1,
-                    h: item.h ?? 1,
-                })
-            ),
-        [items]
-    );
-
-    const rowCount = useMemo(
-        () => Math.max(6, placedRects.reduce((max, rect) => Math.max(max, rect.y + rect.h), 0) + 1),
-        [placedRects]
-    );
-
-    const canvasHeight = rowCount * GRID_ROW_HEIGHT + (rowCount - 1) * GRID_GAP;
 
     /** Places a new cell in the first free slot and returns its key. */
     function addItem(
@@ -219,10 +157,7 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                 })
             );
             const rect = findFreeRect(occupied, { x: 0, y: 0, ...size });
-            return [
-                ...current,
-                { ...partial, ...rect, size: "medium", uploadState: "ready" } as EditorItem,
-            ];
+            return [...current, { ...partial, ...rect, size: "medium" } as EditorItem];
         });
     }
 
@@ -235,6 +170,7 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
         let fallback = 0;
 
         for (const original of list) {
+            if (!mounted.current) break;
             const key = crypto.randomUUID();
             setUploadingCount((count) => count + 1);
             try {
@@ -248,6 +184,11 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                 if (encoded.fallback) fallback += 1;
 
                 const uploaded = await uploadOne(encoded.file);
+                if (!mounted.current) {
+                    await discardUpload(uploaded.storageKey);
+                    break;
+                }
+                pendingUploads.current.add(uploaded.storageKey);
                 addItem(
                     {
                         key,
@@ -260,7 +201,6 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                     },
                     DEFAULT_PHOTO_RECT
                 );
-                setCoverKey((current) => current ?? key);
             } catch (error) {
                 toast.error(error instanceof Error ? error.message : "Upload failed");
             } finally {
@@ -284,39 +224,41 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
         addItem({ key: crypto.randomUUID(), kind: SPACER_KIND, alt: "" }, DEFAULT_SPACER_RECT);
     }
 
-    const remove = useCallback(
-        (key: string) => {
-            const target = items.find((item) => item.key === key);
-            setItems((current) => current.filter((item) => item.key !== key));
-            setCoverKey((current) => (current === key ? null : current));
-
-            // A photo that was never saved has no row, so save-time cleanup can
-            // never reach its object; discard it instead of orphaning it.
-            if (target && !target.id && target.storageKey) {
-                void fetch("/api/studio/uploads/discard", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ storageKey: target.storageKey }),
-                }).catch(() => {});
+    async function remove(key: string) {
+        const item = items.find((candidate) => candidate.key === key);
+        if (item?.storageKey && pendingUploads.current.has(item.storageKey)) {
+            setSaving(true);
+            try {
+                await discardUpload(item.storageKey);
+                pendingUploads.current.delete(item.storageKey);
+            } catch {
+                toast.error("Could not discard the upload. Please retry.");
+                return;
+            } finally {
+                setSaving(false);
             }
-        },
-        [items]
-    );
+        }
+        setItems((current) => current.filter((candidate) => candidate.key !== key));
+        setCoverKey((current) => (current === key ? null : current));
+    }
 
-    /** Nudge a cell by whole grid units; keeps placement keyboard-accessible. */
-    function nudge(key: string, dx: number, dy: number) {
-        setItems((current) =>
-            current.map((item) => {
-                if (item.key !== key) return item;
-                const rect = clampRect({
-                    x: (item.x ?? 0) + dx,
-                    y: (item.y ?? 0) + dy,
-                    w: item.w ?? 1,
-                    h: item.h ?? 1,
-                });
-                return { ...item, ...rect };
-            })
-        );
+    async function discardPendingUploads() {
+        for (const key of pendingUploads.current) {
+            await discardUpload(key);
+            pendingUploads.current.delete(key);
+            setItems((current) => current.filter((item) => item.storageKey !== key));
+        }
+    }
+
+    async function leaveEditor() {
+        setSaving(true);
+        try {
+            await discardPendingUploads();
+            router.push("/studio");
+        } catch {
+            toast.error("Could not discard the uploads. Please retry.");
+            setSaving(false);
+        }
     }
 
     async function onSave() {
@@ -328,6 +270,7 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
 
         setSaving(true);
         try {
+            savingCollection.current = true;
             const coverIndex = coverKey ? items.findIndex((item) => item.key === coverKey) : -1;
             const response = await fetch("/api/studio/photosets", {
                 method: "POST",
@@ -368,25 +311,32 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
             };
             if (!response.ok) throw new Error(result.error ?? "Could not save");
 
+            pendingUploads.current.clear();
             toast.success(published ? "Published" : "Saved as a draft");
             router.push("/studio");
             router.refresh();
         } catch (error) {
+            if (!mounted.current) {
+                for (const key of pendingUploads.current)
+                    void discardUpload(key).catch(console.error);
+            }
             toast.error(error instanceof Error ? error.message : "Could not save");
         } finally {
+            savingCollection.current = false;
             setSaving(false);
         }
     }
 
     async function onDelete() {
         if (isNew) {
-            router.push("/studio");
+            await leaveEditor();
             return;
         }
         if (!window.confirm(`Delete "${title}" and its photos? This cannot be undone.`)) return;
 
         setSaving(true);
         try {
+            await discardPendingUploads();
             const response = await fetch(`/api/studio/photosets?id=${photoset.id}`, {
                 method: "DELETE",
             });
@@ -418,7 +368,7 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" onClick={() => router.push("/studio")}>
+                    <Button variant="outline" onClick={leaveEditor} disabled={busy}>
                         Back
                     </Button>
                     {!isNew ? (
@@ -561,7 +511,7 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                             variant="outline"
                             size="sm"
                             onClick={() => fileInputRef.current?.click()}
-                            disabled={uploading}
+                            disabled={busy}
                         >
                             {uploading ? (
                                 <Loader2 className="size-4 animate-spin" />
@@ -573,267 +523,18 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                     </div>
                 </div>
 
-                <div className="isolate overflow-x-auto rounded-xl border p-3">
-                    <div style={{ width: `${zoom * 100}%`, minWidth: 420 }}>
-                        <div ref={canvasRef} className="relative w-full">
-                            {showGrid ? <GridOverlay cellWidth={cellWidth} /> : null}
-                            <div className="relative" style={{ height: canvasHeight }}>
-                                {items.map((item, index) => {
-                                    const rect = rectFor(item.key, placedRects[index]);
-                                    const isSpacerCell = item.kind === SPACER_KIND;
-                                    return (
-                                        <div
-                                            key={item.key}
-                                            style={{
-                                                position: "absolute",
-                                                // Step and size both include the
-                                                // gaps between the columns a cell
-                                                // spans, matching CSS Grid's `gap`.
-                                                left: rect.x * (cellWidth + GRID_GAP),
-                                                top: rect.y * (GRID_ROW_HEIGHT + GRID_GAP),
-                                                width: rect.w * cellWidth + (rect.w - 1) * GRID_GAP,
-                                                height:
-                                                    rect.h * GRID_ROW_HEIGHT +
-                                                    (rect.h - 1) * GRID_GAP,
-                                            }}
-                                            onPointerDownCapture={() => setSelectedKey(item.key)}
-                                            className={cn(
-                                                "group touch-none select-none",
-                                                selectedItem?.key === item.key && "z-10"
-                                            )}
-                                        >
-                                            <div
-                                                onPointerDown={(event) =>
-                                                    begin(event, item.key, "move", rect)
-                                                }
-                                                onPointerMove={move}
-                                                onPointerUp={end}
-                                                onPointerCancel={end}
-                                                className={cn(
-                                                    "relative h-full w-full cursor-grab overflow-hidden rounded-lg border bg-neutral-100 active:cursor-grabbing dark:bg-neutral-900",
-                                                    isSpacerCell
-                                                        ? "border-dashed bg-transparent"
-                                                        : "border-border",
-                                                    selectedItem?.key === item.key &&
-                                                        "ring-2 ring-primary ring-offset-2"
-                                                )}
-                                            >
-                                                {isSpacerCell ? (
-                                                    <span className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">
-                                                        Blank space
-                                                    </span>
-                                                ) : (
-                                                    /* eslint-disable-next-line @next/next/no-img-element */
-                                                    <img
-                                                        src={item.url}
-                                                        alt={item.alt || "Photo"}
-                                                        draggable={false}
-                                                        className="h-full w-full object-cover"
-                                                    />
-                                                )}
-
-                                                {!isSpacerCell ? (
-                                                    <div className="absolute top-1 left-1 flex items-center gap-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] text-white">
-                                                        {coverKey === item.key
-                                                            ? "Cover"
-                                                            : `#${index + 1}`}
-                                                    </div>
-                                                ) : null}
-                                            </div>
-
-                                            {/* Resize handle */}
-                                            <button
-                                                type="button"
-                                                aria-label={`Resize cell ${index + 1} with arrow keys`}
-                                                onFocus={() => setSelectedKey(item.key)}
-                                                onKeyDown={(event) => {
-                                                    const dx =
-                                                        Number(event.key === "ArrowRight") -
-                                                        Number(event.key === "ArrowLeft");
-                                                    const dy =
-                                                        Number(event.key === "ArrowDown") -
-                                                        Number(event.key === "ArrowUp");
-                                                    if (!dx && !dy) return;
-                                                    event.preventDefault();
-                                                    commitRect(
-                                                        item.key,
-                                                        applyResize(rect, { dx, dy })
-                                                    );
-                                                }}
-                                                onPointerDown={(event) =>
-                                                    begin(event, item.key, "resize", rect)
-                                                }
-                                                onPointerMove={move}
-                                                onPointerUp={end}
-                                                onPointerCancel={end}
-                                                className={cn(
-                                                    "absolute -right-1 -bottom-1 flex size-7 cursor-nwse-resize items-center justify-center rounded-full border bg-background opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100",
-                                                    selectedItem?.key === item.key && "opacity-100"
-                                                )}
-                                            >
-                                                <Maximize2 className="size-3" />
-                                            </button>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {items.length === 0 ? (
-                    <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-                        No cells yet. Add photos, then drag them into place.
-                    </p>
-                ) : (
-                    selectedItem && (
-                        <div className="flex flex-wrap items-center gap-2 rounded-lg border p-3 text-xs">
-                            <label htmlFor="layout-cell">Selected cell</label>
-                            <select
-                                id="layout-cell"
-                                value={selectedItem.key}
-                                onChange={(event) => setSelectedKey(event.target.value)}
-                                className="max-w-full rounded-md border bg-background p-2"
-                            >
-                                {items.map((cell, index) => (
-                                    <option key={cell.key} value={cell.key}>
-                                        #{index + 1} ·{" "}
-                                        {cell.kind === SPACER_KIND
-                                            ? "Blank space"
-                                            : cell.alt || "Photo"}
-                                    </option>
-                                ))}
-                            </select>
-                            {selectedItem.kind === SPACER_KIND ? (
-                                <span className="text-muted-foreground">blank</span>
-                            ) : (
-                                <input
-                                    value={selectedItem.alt}
-                                    onChange={(event) =>
-                                        setItems((current) =>
-                                            current.map((candidate) =>
-                                                candidate.key === selectedItem.key
-                                                    ? { ...candidate, alt: event.target.value }
-                                                    : candidate
-                                            )
-                                        )
-                                    }
-                                    aria-label="Photo alt text"
-                                    placeholder="Alt text"
-                                    className="h-7 w-28 rounded border bg-transparent px-1.5"
-                                />
-                            )}
-                            <span className="tabular-nums text-muted-foreground">
-                                {selectedItem.w}×{selectedItem.h}
-                            </span>
-                            <Button
-                                variant="ghost"
-                                size="icon-sm"
-                                aria-label="Move up"
-                                onClick={() => nudge(selectedItem.key, 0, -1)}
-                            >
-                                <ChevronUp className="size-3.5" />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon-sm"
-                                aria-label="Move down"
-                                onClick={() => nudge(selectedItem.key, 0, 1)}
-                            >
-                                <ChevronDown className="size-3.5" />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon-sm"
-                                aria-label="Move left"
-                                onClick={() => nudge(selectedItem.key, -1, 0)}
-                            >
-                                <ChevronUp className="size-3.5 -rotate-90" />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon-sm"
-                                aria-label="Move right"
-                                onClick={() => nudge(selectedItem.key, 1, 0)}
-                            >
-                                <ChevronUp className="size-3.5 rotate-90" />
-                            </Button>
-                            {(["Width", "Height"] as const).map((axis) => (
-                                <div key={axis} className="flex items-center gap-1">
-                                    <span>{axis}</span>
-                                    {[-1, 1].map((delta) => {
-                                        const rect = placedRects[selectedIndex];
-                                        const next = applyResize(rect, {
-                                            dx: axis === "Width" ? delta : 0,
-                                            dy: axis === "Height" ? delta : 0,
-                                        });
-                                        return (
-                                            <Button
-                                                key={delta}
-                                                size="icon-sm"
-                                                variant="outline"
-                                                disabled={next.w === rect.w && next.h === rect.h}
-                                                aria-label={`${delta < 0 ? "Decrease" : "Increase"} ${axis.toLowerCase()}`}
-                                                onClick={() => commitRect(selectedItem.key, next)}
-                                            >
-                                                {delta < 0 ? "−" : "+"}
-                                            </Button>
-                                        );
-                                    })}
-                                </div>
-                            ))}
-                            {selectedItem.kind === SPACER_KIND ? null : (
-                                <Button
-                                    variant="ghost"
-                                    size="icon-sm"
-                                    aria-label="Use as cover"
-                                    onClick={() => setCoverKey(selectedItem.key)}
-                                >
-                                    <Star
-                                        className={cn(
-                                            "size-3.5",
-                                            coverKey === selectedItem.key &&
-                                                "fill-current text-primary"
-                                        )}
-                                    />
-                                </Button>
-                            )}
-                            <Button
-                                variant="ghost"
-                                size="icon-sm"
-                                aria-label="Remove cell"
-                                onClick={() => remove(selectedItem.key)}
-                            >
-                                <Trash2 className="size-3.5" />
-                            </Button>
-                        </div>
-                    )
-                )}
+                <fieldset disabled={saving} className="contents">
+                    <PhotoLayout
+                        items={items}
+                        setItems={setItems}
+                        coverKey={coverKey}
+                        setCoverKey={setCoverKey}
+                        remove={remove}
+                        zoom={zoom}
+                        showGrid={showGrid}
+                    />
+                </fieldset>
             </section>
-        </div>
-    );
-}
-
-/**
- * Faint column guides so placement is easier to judge.
- *
- * Drawn at the real column width and step rather than as a percentage, because a
- * percentage ignores the gaps and would drift out of line with the cells.
- */
-function GridOverlay({ cellWidth }: { cellWidth: number }) {
-    const lines = Array.from({ length: GRID_COLUMNS }, (_, index) => index);
-    return (
-        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.35]">
-            {lines.map((index) => (
-                <div
-                    key={index}
-                    className="absolute top-0 bottom-0 border-l border-current"
-                    style={{
-                        left: index * (cellWidth + GRID_GAP),
-                        width: cellWidth,
-                    }}
-                />
-            ))}
         </div>
     );
 }

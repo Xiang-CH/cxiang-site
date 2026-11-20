@@ -4,7 +4,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { getDb, isDatabaseConfigured } from "@/db";
 import { photos, photosets } from "@/db/schema";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-import { type GalleryCell, type PhotoSize } from "@/lib/gallery-shared";
+import { PHOTO_KIND, isSpacer, type GalleryCell, type PhotoSize } from "@/lib/gallery-shared";
 
 /** A collection card on `/photos`: the photoset plus the one image that represents it. */
 export type PhotoSetSummary = {
@@ -64,7 +64,7 @@ export async function getPhotoSetSummaries(): Promise<PhotoSetSummary[]> {
             photoCount: count(photos.id),
         })
         .from(photosets)
-        .leftJoin(photos, eq(photos.photosetId, photosets.id))
+        .leftJoin(photos, and(eq(photos.photosetId, photosets.id), eq(photos.kind, PHOTO_KIND)))
         .where(eq(photosets.published, true))
         .groupBy(photosets.id)
         .orderBy(asc(photosets.sortOrder), asc(photosets.title));
@@ -88,12 +88,15 @@ export async function getPhotoSetSummaries(): Promise<PhotoSetSummary[]> {
                 ),
             })
             .from(photos)
-            .where(inArray(photos.photosetId, setIds))
+            .where(and(inArray(photos.photosetId, setIds), eq(photos.kind, PHOTO_KIND)))
     );
 
     const [coverRows, firstRows] = await Promise.all([
         explicitCoverIds.length > 0
-            ? db.select().from(photos).where(inArray(photos.id, explicitCoverIds))
+            ? db
+                  .select()
+                  .from(photos)
+                  .where(and(inArray(photos.id, explicitCoverIds), eq(photos.kind, PHOTO_KIND)))
             : Promise.resolve([] as PhotoRow[]),
         db
             .with(firstInSet)
@@ -111,7 +114,7 @@ export async function getPhotoSetSummaries(): Promise<PhotoSetSummary[]> {
 
     return rows.map(({ set, photoCount }) => {
         const explicit = set.coverPhotoId ? coversById.get(set.coverPhotoId) : undefined;
-        const coverRow = explicit ?? firstBySetId.get(set.id);
+        const coverRow = explicit?.photosetId === set.id ? explicit : firstBySetId.get(set.id);
 
         return {
             id: set.id,
@@ -150,8 +153,9 @@ export async function getPhotoSet(slug: string): Promise<PhotoSet | null> {
         .orderBy(asc(photos.sortOrder), asc(photos.createdAt));
 
     const galleryPhotos = rows.map(toGalleryCell);
+    const photographs = galleryPhotos.filter((cell) => !isSpacer(cell));
     const explicitCover = set.coverPhotoId
-        ? galleryPhotos.find((photo) => photo.id === set.coverPhotoId)
+        ? photographs.find((photo) => photo.id === set.coverPhotoId)
         : undefined;
 
     return {
@@ -161,8 +165,8 @@ export async function getPhotoSet(slug: string): Promise<PhotoSet | null> {
         abstract: set.abstract ?? undefined,
         shotOn: set.shotOn ?? undefined,
         shotOnEnd: set.shotOnEnd ?? undefined,
-        photoCount: galleryPhotos.length,
-        cover: explicitCover ?? galleryPhotos[0],
+        photoCount: photographs.length,
+        cover: explicitCover ?? photographs[0],
         photos: galleryPhotos,
     };
 }
