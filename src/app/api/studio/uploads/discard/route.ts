@@ -1,9 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { eq } from "drizzle-orm";
-import { getDb } from "@/db";
-import { photos } from "@/db/schema";
+import { discardUnattachedUpload } from "@/lib/studio";
+import { assertSafeStorageKey, normalizePhotoPrefix } from "@/lib/cdn-storage-keys";
 import { z } from "zod";
-import { deletePhotoObject, isPhotoStorageConfigured } from "@/lib/cdn-storage";
+import { isPhotoStorageConfigured } from "@/lib/cdn-storage";
 import { isStudioAuthorized } from "@/lib/studio-auth";
 
 const payloadSchema = z.object({ storageKey: z.string().min(1).max(1000) });
@@ -37,19 +36,14 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-        // A save may have committed even when its response never reached the editor.
-        const [attached] = await getDb()
-            .select({ id: photos.id })
-            .from(photos)
-            .where(eq(photos.storageKey, parsed.data.storageKey))
-            .limit(1);
-        if (attached) return NextResponse.json({ deleted: false });
-        const deleted = await deletePhotoObject(parsed.data.storageKey);
-        if (!deleted) {
-            // The key was outside the photo prefix or otherwise unsafe.
+        const key = assertSafeStorageKey(
+            parsed.data.storageKey,
+            normalizePhotoPrefix(process.env.CDN_PHOTO_PREFIX)
+        );
+        if (!key)
             return NextResponse.json({ error: "Refused to delete that key" }, { status: 400 });
-        }
-        return NextResponse.json({ deleted: true }, { headers: { "Cache-Control": "no-store" } });
+        const deleted = await discardUnattachedUpload(key);
+        return NextResponse.json({ deleted }, { headers: { "Cache-Control": "no-store" } });
     } catch (error) {
         console.error("Failed to discard upload", error);
         return NextResponse.json({ error: "Could not discard the upload" }, { status: 502 });

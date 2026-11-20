@@ -226,27 +226,33 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
 
     async function remove(key: string) {
         const item = items.find((candidate) => candidate.key === key);
+        setItems((current) => current.filter((candidate) => candidate.key !== key));
+        setCoverKey((current) => (current === key ? null : current));
         if (item?.storageKey && pendingUploads.current.has(item.storageKey)) {
             setSaving(true);
             try {
                 await discardUpload(item.storageKey);
                 pendingUploads.current.delete(item.storageKey);
             } catch {
-                toast.error("Could not discard the upload. Please retry.");
-                return;
+                toast.error("Photo removed. Cleanup will retry when you save or leave.");
             } finally {
                 setSaving(false);
             }
         }
-        setItems((current) => current.filter((candidate) => candidate.key !== key));
-        setCoverKey((current) => (current === key ? null : current));
     }
 
     async function discardPendingUploads() {
-        for (const key of pendingUploads.current) {
+        const discarded = new Set(pendingUploads.current);
+        setItems((current) =>
+            current.filter((item) => !item.storageKey || !discarded.has(item.storageKey))
+        );
+        await discardKeys(discarded);
+    }
+
+    async function discardKeys(keys: Iterable<string>) {
+        for (const key of keys) {
             await discardUpload(key);
             pendingUploads.current.delete(key);
-            setItems((current) => current.filter((item) => item.storageKey !== key));
         }
     }
 
@@ -270,6 +276,9 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
 
         setSaving(true);
         try {
+            const retained = new Set(items.map((item) => item.storageKey));
+            await discardKeys([...pendingUploads.current].filter((key) => !retained.has(key)));
+            if (!mounted.current) return;
             savingCollection.current = true;
             const coverIndex = coverKey ? items.findIndex((item) => item.key === coverKey) : -1;
             const response = await fetch("/api/studio/photosets", {
@@ -525,6 +534,7 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
 
                 <fieldset disabled={saving} className="contents">
                     <PhotoLayout
+                        disabled={saving}
                         items={items}
                         setItems={setItems}
                         coverKey={coverKey}

@@ -156,3 +156,8 @@ export const photos = pgTable(
         check("photos_height_positive", sql`${table.height} > 0`),
     ]
 );
+
+// Storage keys are immutable. A committed discard must also reject delayed saves.
+export const discardedPhotoUploads = pgTable("discarded_photo_uploads", {
+    storageKey: text("storage_key").primaryKey(),
+});

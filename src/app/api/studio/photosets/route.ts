@@ -5,6 +5,7 @@ import { photosetInputSchema, validateShotRange } from "@/lib/photoset-payload";
 import {
     deletePhotoSet,
     DuplicateSlugError,
+    DiscardedUploadError,
     listPhotoSets,
     savePhotoSet,
     StudioUnavailableError,
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
         revalidateTag(CACHE_TAGS.sitemap, { expire: 0 });
         return NextResponse.json({ id }, { headers: { "Cache-Control": "no-store" } });
     } catch (error) {
-        if (error instanceof DuplicateSlugError) {
+        if (error instanceof DuplicateSlugError || error instanceof DiscardedUploadError) {
             return NextResponse.json({ error: error.message }, { status: 409 });
         }
         if (error instanceof StudioUnavailableError) {

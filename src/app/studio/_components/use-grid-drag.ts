@@ -22,9 +22,11 @@ export type DragState = {
 };
 
 export function useGridDrag({
+    disabled,
     cellWidth,
     onCommit,
 }: {
+    disabled: boolean;
     /** Width of one column in pixels, needed to convert movement into cells. */
     cellWidth: number;
     onCommit: (id: string, rect: GridRect) => void;
@@ -35,7 +37,7 @@ export function useGridDrag({
     const begin = useCallback(
         (event: React.PointerEvent, id: string, mode: DragMode, origin: GridRect) => {
             // Ignore secondary buttons and let the handle keep receiving moves.
-            if (event.button !== 0) return;
+            if (disabled || event.button !== 0) return;
             event.preventDefault();
             event.stopPropagation();
             (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
@@ -43,12 +45,12 @@ export function useGridDrag({
             startRef.current = { x: event.clientX, y: event.clientY };
             setDrag({ id, mode, origin, current: origin });
         },
-        []
+        [disabled]
     );
 
     const move = useCallback(
         (event: React.PointerEvent) => {
-            if (!drag || !startRef.current) return;
+            if (disabled || !drag || !startRef.current) return;
             const delta = pixelsToCells(
                 {
                     dx: event.clientX - startRef.current.x,
@@ -64,7 +66,7 @@ export function useGridDrag({
 
             setDrag((current) => (current ? { ...current, current: next } : current));
         },
-        [drag, cellWidth]
+        [disabled, drag, cellWidth]
     );
 
     const end = useCallback(
@@ -74,6 +76,7 @@ export function useGridDrag({
             startRef.current = null;
             const finished = drag.current;
             setDrag(null);
+            if (disabled) return;
             if (
                 finished.x !== drag.origin.x ||
                 finished.y !== drag.origin.y ||
@@ -83,7 +86,7 @@ export function useGridDrag({
                 onCommit(drag.id, finished);
             }
         },
-        [drag, onCommit]
+        [disabled, drag, onCommit]
     );
 
     /** The rect to draw for a cell while it is being dragged. */

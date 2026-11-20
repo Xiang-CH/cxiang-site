@@ -17,6 +17,7 @@ import { isSpacer, type GalleryCell } from "@/lib/gallery-shared";
  */
 export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
     const [active, setActive] = useState<number | null>(null);
+    const pressedBackdrop = useRef(false);
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     const rects = useMemo(() => resolveLayout(photos), [photos]);
@@ -167,8 +168,16 @@ export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
                 ref={dialogRef}
                 aria-label="Photo viewer"
                 onClose={close}
+                onPointerDown={(event) => {
+                    pressedBackdrop.current =
+                        event.button === 0 && event.target === event.currentTarget;
+                }}
+                onPointerCancel={() => {
+                    pressedBackdrop.current = false;
+                }}
                 onClick={(event) => {
-                    if (event.target === dialogRef.current) close();
+                    if (pressedBackdrop.current && event.target === event.currentTarget) close();
+                    pressedBackdrop.current = false;
                 }}
                 className="m-0 h-full max-h-none w-full max-w-none bg-transparent p-0 backdrop:bg-black/90 open:flex open:items-center open:justify-center"
             >

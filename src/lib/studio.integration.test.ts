@@ -83,6 +83,10 @@ describeWithDb("savePhotoSet against a real database", () => {
             )
         `);
 
+        await pool.query(
+            `create table ${SCHEMA}.discarded_photo_uploads (storage_key text primary key)`
+        );
+
         ({ savePhotoSet } = await import("./studio"));
     });
 
@@ -335,6 +339,75 @@ describeWithDb("savePhotoSet against a real database", () => {
             expect(deletePhotoObject).toHaveBeenCalledWith("photos/unsaved.jpg");
         } finally {
             vi.unstubAllEnvs();
+        }
+    });
+
+    it("reconciles an id-less retry and rejects a delayed attach after discard", async () => {
+        const { discardUnattachedUpload, DiscardedUploadError } = await import("./studio");
+        const { deletePhotoObject } = await import("./cdn-storage");
+        const key = "photos/retry.jpg";
+        const payload = {
+            title: "Retry",
+            slug: "retry",
+            published: false,
+            photos: [
+                {
+                    kind: "photo" as const,
+                    url: "https://cdn.example/retry.jpg",
+                    storageKey: key,
+                    width: 10,
+                    height: 10,
+                    alt: "",
+                    size: "medium" as const,
+                },
+            ],
+        };
+        const { id } = await savePhotoSet(null, payload);
+        const readIds = async () =>
+            (await pool.query("select id from photos where photoset_id=$1", [id])).rows;
+        const before = await readIds();
+        await savePhotoSet(id, payload);
+        expect(await readIds()).toEqual(before);
+        expect(deletePhotoObject).not.toHaveBeenCalledWith(key);
+        const discarded = "photos/discard-first.jpg";
+        await discardUnattachedUpload(discarded);
+        await expect(
+            savePhotoSet(id, {
+                ...payload,
+                photos: [{ ...payload.photos[0], storageKey: discarded }],
+            })
+        ).rejects.toBeInstanceOf(DiscardedUploadError);
+        expect(await readIds()).toEqual(before);
+    });
+
+    it("waits for an in-flight save before checking whether discard owns the upload", async () => {
+        const { discardUnattachedUpload } = await import("./studio");
+        const { deletePhotoObject } = await import("./cdn-storage");
+        const key = "photos/in-flight.jpg";
+        const client = await pool.connect();
+        try {
+            await client.query("begin");
+            await client.query("select pg_advisory_xact_lock(hashtextextended($1, 0))", [key]);
+            const pending = discardUnattachedUpload(key);
+            await vi.waitFor(async () => {
+                const { rows } = await client.query(
+                    "select pid from pg_stat_activity where pg_backend_pid() = any(pg_blocking_pids(pid))"
+                );
+                expect(rows.length).toBeGreaterThan(0);
+            });
+            await client.query(
+                "insert into photosets(id, slug, title) values ('in-flight', 'in-flight', 'In flight')"
+            );
+            await client.query(
+                "insert into photos(id, photoset_id, url, storage_key, width, height) values ('in-flight-photo', 'in-flight', 'https://cdn.example/in-flight.jpg', $1, 10, 10)",
+                [key]
+            );
+            await client.query("commit");
+            expect(await pending).toBe(false);
+            expect(deletePhotoObject).not.toHaveBeenCalledWith(key);
+        } finally {
+            await client.query("rollback");
+            client.release();
         }
     });
 

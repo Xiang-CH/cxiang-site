@@ -1,7 +1,7 @@
 import "server-only";
 import { and, count, asc, eq, inArray, sql } from "drizzle-orm";
 import { getDb, isDatabaseConfigured } from "@/db";
-import { photos, photosets } from "@/db/schema";
+import { discardedPhotoUploads, photos, photosets } from "@/db/schema";
 import { deletePhotoObject } from "@/lib/cdn-storage";
 import { type PhotoSetInput, type StudioPhotoSet } from "@/lib/photoset-payload";
 import { PHOTO_KIND, SPACER_KIND, type PhotoSize } from "@/lib/gallery-shared";
@@ -28,6 +28,42 @@ export class DuplicateSlugError extends Error {
         super(`A photoset with the slug "${slug}" already exists`);
         this.name = "DuplicateSlugError";
     }
+}
+
+export class DiscardedUploadError extends Error {
+    constructor() {
+        super("An upload was discarded. Remove it and upload the photo again.");
+    }
+}
+
+type StudioTransaction = Parameters<Parameters<ReturnType<typeof getDb>["transaction"]>[0]>[0];
+
+// Both writers lock the same keys in a stable order. The tombstone survives the
+// transaction so a delayed save cannot attach a deleted (or deletion-pending) file.
+async function lockUploadKeys(tx: StudioTransaction, keys: string[]) {
+    await tx.execute(sql`select pg_advisory_xact_lock(lock_id) from (
+        select distinct hashtextextended(key, 0) as lock_id
+        from unnest(array[${sql.join(
+            keys.map((key) => sql`${key}`),
+            sql`, `
+        )}]::text[]) as keys(key)
+        order by lock_id
+    ) ordered_locks`);
+}
+
+export async function discardUnattachedUpload(storageKey: string) {
+    const claimed = await requireDb().transaction(async (tx) => {
+        await lockUploadKeys(tx, [storageKey]);
+        const [attached] = await tx
+            .select({ id: photos.id })
+            .from(photos)
+            .where(eq(photos.storageKey, storageKey))
+            .limit(1);
+        if (attached) return false;
+        await tx.insert(discardedPhotoUploads).values({ storageKey }).onConflictDoNothing();
+        return true;
+    });
+    return claimed && (await deletePhotoObject(storageKey));
 }
 
 function requireDb() {
@@ -137,52 +173,87 @@ export async function savePhotoSet(
         throw new DuplicateSlugError(input.slug);
     }
 
-    const previous = existingId
-        ? await db.select().from(photos).where(eq(photos.photosetId, existingId))
-        : [];
-    const existingIds = new Set(previous.map((row) => row.id));
-
-    // Assign ids before writing so the cover can be resolved from either an id
-    // or an array index, even when it points at a photo created right now.
-    const prepared = input.photos.map((photo, index) => ({
-        id: photo.id && existingIds.has(photo.id) ? photo.id : crypto.randomUUID(),
-        isExisting: Boolean(photo.id && existingIds.has(photo.id)),
-        row: {
-            photosetId: existingId ?? "",
-            url: photo.url ?? "",
-            storageKey: photo.storageKey ?? null,
-            alt: photo.alt,
-            caption: photo.caption ?? null,
-            // Spacers carry no image; the columns are NOT NULL, so store a
-            // placeholder size that nothing reads.
-            width: photo.width ?? 1,
-            height: photo.height ?? 1,
-            kind: photo.kind,
-            x: photo.x ?? null,
-            y: photo.y ?? null,
-            w: photo.w ?? null,
-            h: photo.h ?? null,
-            size: photo.size,
-            sortOrder: index,
-        },
-    }));
-
-    const submittedIds = new Set(prepared.filter((entry) => entry.isExisting).map((e) => e.id));
-    const removed = previous.filter((row) => !submittedIds.has(row.id));
-
-    const photographs = prepared.filter((entry) => entry.row.kind !== SPACER_KIND);
-    const indexedCover = input.coverIndex === undefined ? undefined : prepared[input.coverIndex];
-    const coverPhotoId =
-        photographs.find((entry) => entry.id === input.coverPhotoId)?.id ??
-        (indexedCover && indexedCover.row.kind !== SPACER_KIND
-            ? indexedCover.id
-            : photographs[0]?.id) ??
-        null;
-
     const id = existingId ?? crypto.randomUUID();
     const now = new Date();
+    const removed = await db.transaction(async (tx) => {
+        if (existingId)
+            await tx
+                .select({ id: photosets.id })
+                .from(photosets)
+                .where(eq(photosets.id, existingId))
+                .for("update");
+        const previous = existingId
+            ? await tx.select().from(photos).where(eq(photos.photosetId, existingId))
+            : [];
+        const byId = new Map(previous.map((row) => [row.id, row]));
+        const explicitIds = new Set(input.photos.map((photo) => photo.id));
+        const byKey = new Map<string, typeof previous>();
+        for (const row of previous) {
+            if (!row.storageKey || explicitIds.has(row.id)) continue;
+            const matches = byKey.get(row.storageKey) ?? [];
+            matches.push(row);
+            byKey.set(row.storageKey, matches);
+        }
+        const incomingKeys = [
+            ...new Set(
+                input.photos.flatMap((photo) => (photo.storageKey ? [photo.storageKey] : []))
+            ),
+        ];
+        if (incomingKeys.length) {
+            await lockUploadKeys(tx, incomingKeys);
+            const [discarded] = await tx
+                .select()
+                .from(discardedPhotoUploads)
+                .where(inArray(discardedPhotoUploads.storageKey, incomingKeys))
+                .limit(1);
+            if (discarded) throw new DiscardedUploadError();
+        }
 
-    await db.transaction(async (tx) => {
+        // Assign ids before writing so the cover can be resolved from either an id
+        // or an array index, even when it points at a photo created right now.
+        const prepared = input.photos.map((photo, index) => {
+            const previousRow = photo.id
+                ? byId.get(photo.id)
+                : photo.storageKey
+                  ? byKey.get(photo.storageKey)?.pop()
+                  : undefined;
+            return {
+                id: previousRow?.id ?? crypto.randomUUID(),
+                isExisting: Boolean(previousRow),
+                row: {
+                    photosetId: existingId ?? "",
+                    url: photo.url ?? "",
+                    storageKey: photo.storageKey ?? null,
+                    alt: photo.alt,
+                    caption: photo.caption ?? null,
+                    // Spacers carry no image; the columns are NOT NULL, so store a
+                    // placeholder size that nothing reads.
+                    width: photo.width ?? 1,
+                    height: photo.height ?? 1,
+                    kind: photo.kind,
+                    x: photo.x ?? null,
+                    y: photo.y ?? null,
+                    w: photo.w ?? null,
+                    h: photo.h ?? null,
+                    size: photo.size,
+                    sortOrder: index,
+                },
+            };
+        });
+
+        const submittedIds = new Set(prepared.filter((entry) => entry.isExisting).map((e) => e.id));
+        const removed = previous.filter((row) => !submittedIds.has(row.id));
+
+        const photographs = prepared.filter((entry) => entry.row.kind !== SPACER_KIND);
+        const indexedCover =
+            input.coverIndex === undefined ? undefined : prepared[input.coverIndex];
+        const coverPhotoId =
+            photographs.find((entry) => entry.id === input.coverPhotoId)?.id ??
+            (indexedCover && indexedCover.row.kind !== SPACER_KIND
+                ? indexedCover.id
+                : photographs[0]?.id) ??
+            null;
+
         if (existingId) {
             await tx
                 .update(photosets)
@@ -270,6 +341,7 @@ export async function savePhotoSet(
                     )
                 );
         }
+        return removed;
     });
 
     // Object cleanup is best-effort: a failure here must not undo a save that
@@ -277,7 +349,7 @@ export async function savePhotoSet(
     for (const row of removed) {
         if (!row.storageKey) continue;
         try {
-            await deletePhotoObject(row.storageKey);
+            await discardUnattachedUpload(row.storageKey);
         } catch (error) {
             console.error(`Failed to delete CDN object ${row.storageKey}`, error);
         }
@@ -300,7 +372,7 @@ export async function deletePhotoSet(id: string): Promise<boolean> {
     for (const row of rows) {
         if (!row.storageKey) continue;
         try {
-            await deletePhotoObject(row.storageKey);
+            await discardUnattachedUpload(row.storageKey);
         } catch (error) {
             console.error(`Failed to delete CDN object ${row.storageKey}`, error);
         }

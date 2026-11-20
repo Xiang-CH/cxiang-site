@@ -37,6 +37,7 @@ export type EditorItem = PhotoSetPhotoInput & {
 };
 
 type PhotoLayoutProps = {
+    disabled: boolean;
     items: EditorItem[];
     setItems: Dispatch<SetStateAction<EditorItem[]>>;
     coverKey: string | null;
@@ -47,6 +48,7 @@ type PhotoLayoutProps = {
 };
 
 export function PhotoLayout({
+    disabled,
     items,
     setItems,
     coverKey,
@@ -93,7 +95,11 @@ export function PhotoLayout({
         [setItems]
     );
 
-    const { begin, move, end, rectFor } = useGridDrag({ cellWidth, onCommit: commitRect });
+    const { begin, move, end, rectFor } = useGridDrag({
+        disabled,
+        cellWidth,
+        onCommit: commitRect,
+    });
 
     const placedRects = useMemo(
         () =>
