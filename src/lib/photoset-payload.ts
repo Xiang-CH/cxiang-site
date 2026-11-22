@@ -32,6 +32,7 @@ export const photosetPhotoInputSchema = z
         caption: z.string().max(500).optional(),
         width: z.number().int().positive().max(100000).optional(),
         height: z.number().int().positive().max(100000).optional(),
+        originalAspect: z.boolean().optional(),
         /** Explicit grid rect supplied by the editor. */
         x: z.number().int().min(0).max(1000).optional(),
         y: z.number().int().min(0).max(10000).optional(),

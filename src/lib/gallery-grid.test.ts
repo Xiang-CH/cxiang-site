@@ -1,3 +1,4 @@
+import { photoAspectRows } from "./gallery-grid";
 import { describe, expect, it } from "vitest";
 import {
     GRID_COLUMNS,
@@ -190,5 +191,14 @@ describe("row count", () => {
         expect(layoutRowCount([])).toBe(6);
         expect(layoutRowCount([{ x: 0, y: 0, w: 4, h: 3 }])).toBe(6);
         expect(layoutRowCount([{ x: 0, y: 10, w: 4, h: 5 }])).toBe(16);
+    });
+});
+
+describe("original photo aspect", () => {
+    it("fits portrait and landscape images to the grid without zero-height cells", () => {
+        expect(photoAspectRows(600, 1200, 6, 50)).toBeGreaterThan(
+            photoAspectRows(1200, 600, 6, 50)
+        );
+        expect(photoAspectRows(1200, 100, 6, 50)).toBe(2);
     });
 });

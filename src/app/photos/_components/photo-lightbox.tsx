@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState, startTransition } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { GRID_COLUMNS, GRID_GAP, GRID_ROW_HEIGHT, resolveLayout } from "@/lib/gallery-grid";
 import { isSpacer, type GalleryCell } from "@/lib/gallery-shared";
 
@@ -155,7 +156,10 @@ export default function PhotoLightbox({ photos }: { photos: GalleryCell[] }) {
                                         fill
                                         sizes="(max-width: 640px) 50vw, 33vw"
                                         quality={75}
-                                        className="object-cover motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-[1.03]"
+                                        className={cn(
+                                            cell.originalAspect ? "object-contain" : "object-cover",
+                                            "motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-[1.03]"
+                                        )}
                                     />
                                 </button>
                             )}

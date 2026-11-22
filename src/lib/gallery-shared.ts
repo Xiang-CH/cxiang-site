@@ -27,6 +27,7 @@ export type GalleryCell = {
     /** Intrinsic pixel size, used for the image element. */
     width: number;
     height: number;
+    originalAspect?: boolean;
     /** `photo` or `spacer`. */
     kind: string;
     /** Explicit grid rect; null on rows written before free-form placement. */

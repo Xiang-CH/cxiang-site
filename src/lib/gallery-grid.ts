@@ -36,6 +36,20 @@ export type GridRect = {
     h: number;
 };
 
+/** Height in grid rows that best fits a photo at the current grid width. */
+export function photoAspectRows(
+    width: number,
+    height: number,
+    columns: number,
+    cellWidth: number
+): number {
+    const pixelWidth = columns * cellWidth + (columns - 1) * GRID_GAP;
+    return Math.max(
+        MIN_CELL_H,
+        Math.round(((pixelWidth * height) / width + GRID_GAP) / (GRID_ROW_HEIGHT + GRID_GAP))
+    );
+}
+
 /**
  * Placement as stored: coordinates may be absent on rows written before
  * free-form placement existed, in which case the legacy `size` preset is used.

@@ -72,6 +72,7 @@ describeWithDb("savePhotoSet against a real database", () => {
                 caption varchar(500),
                 width integer not null,
                 height integer not null,
+                original_aspect boolean not null default false,
                 kind varchar(16) not null default 'photo',
                 x integer,
                 y integer,
@@ -276,6 +277,7 @@ describeWithDb("savePhotoSet against a real database", () => {
                     width: 10,
                     height: 10,
                     alt: "Coast",
+                    originalAspect: true,
                     size: "medium",
                 },
             ],
@@ -283,6 +285,7 @@ describeWithDb("savePhotoSet against a real database", () => {
         const set = await getPhotoSet("spacer-before-cover");
         expect(set?.photos).toHaveLength(2);
         expect(set?.cover?.alt).toBe("Coast");
+        expect(set?.cover?.originalAspect).toBe(true);
         // Older collections may explicitly reference a spacer as their cover.
         await pool.query("update photosets set cover_photo_id = $1 where id = $2", [
             set?.photos[0].id,

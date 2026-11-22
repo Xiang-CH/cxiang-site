@@ -32,6 +32,7 @@ function toGalleryCell(row: PhotoRow): GalleryCell {
         caption: row.caption ?? undefined,
         width: row.width,
         height: row.height,
+        originalAspect: row.originalAspect,
         size: row.size as PhotoSize,
         kind: row.kind,
         x: row.x,

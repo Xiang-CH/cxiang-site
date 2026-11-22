@@ -139,6 +139,7 @@ export const photos = pgTable(
         caption: varchar("caption", { length: 500 }),
         width: integer("width").notNull(),
         height: integer("height").notNull(),
+        originalAspect: boolean("original_aspect").notNull().default(false),
         /** `photo` or `spacer`. */
         kind: varchar("kind", { length: 16 }).notNull().default("photo"),
         /** Grid cell origin and size. Null on rows written before free-form placement. */

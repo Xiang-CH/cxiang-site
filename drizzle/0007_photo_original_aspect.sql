@@ -1,0 +1,1 @@
+ALTER TABLE "photos" ADD COLUMN "original_aspect" boolean DEFAULT false NOT NULL;

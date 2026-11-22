@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { ImagePlus, Loader2, SquareDashed, Trash2 } from "lucide-react";
 import { PhotoLayout, type EditorItem } from "./photo-layout";
 import { Button } from "@/components/ui/button";
-import { clampRect, findFreeRect, resolveLayout } from "@/lib/gallery-grid";
+import { clampRect, findFreeRect, photoAspectRows, resolveLayout } from "@/lib/gallery-grid";
 import { PHOTO_KIND, SPACER_KIND, type PhotoSize } from "@/lib/gallery-shared";
 import type { StudioPhotoSet } from "@/lib/photoset-payload";
 import {
@@ -198,8 +198,17 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                         alt: "",
                         width: encoded.width,
                         height: encoded.height,
+                        originalAspect: true,
                     },
-                    DEFAULT_PHOTO_RECT
+                    {
+                        w: DEFAULT_PHOTO_RECT.w,
+                        h: photoAspectRows(
+                            encoded.width,
+                            encoded.height,
+                            DEFAULT_PHOTO_RECT.w,
+                            (720 - 11 * 12) / 12
+                        ),
+                    }
                 );
             } catch (error) {
                 toast.error(error instanceof Error ? error.message : "Upload failed");
@@ -304,6 +313,7 @@ export default function PhotosetEditor({ photoset }: { photoset: StudioPhotoSet 
                             caption: item.caption,
                             width: item.kind === SPACER_KIND ? undefined : item.width,
                             height: item.kind === SPACER_KIND ? undefined : item.height,
+                            originalAspect: item.originalAspect,
                             x: item.x,
                             y: item.y,
                             w: item.w,

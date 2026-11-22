@@ -23,6 +23,7 @@ import {
     GRID_ROW_HEIGHT,
     applyResize,
     clampRect,
+    photoAspectRows,
     type GridRect,
 } from "@/lib/gallery-grid";
 import { SPACER_KIND } from "@/lib/gallery-shared";
@@ -192,7 +193,12 @@ export function PhotoLayout({
                                                     src={item.url}
                                                     alt={item.alt || "Photo"}
                                                     draggable={false}
-                                                    className="h-full w-full object-cover"
+                                                    className={cn(
+                                                        "h-full w-full",
+                                                        item.originalAspect
+                                                            ? "object-contain"
+                                                            : "object-cover"
+                                                    )}
                                                 />
                                             )}
 
@@ -343,6 +349,38 @@ export function PhotoLayout({
                                 })}
                             </div>
                         ))}
+                        {selectedItem.kind !== SPACER_KIND && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                aria-pressed={selectedItem.originalAspect}
+                                onClick={() => {
+                                    const useOriginal = !selectedItem.originalAspect;
+                                    setItems((current) =>
+                                        current.map((item) =>
+                                            item.key === selectedItem.key
+                                                ? {
+                                                      ...item,
+                                                      originalAspect: useOriginal,
+                                                      h: useOriginal
+                                                          ? photoAspectRows(
+                                                                item.width,
+                                                                item.height,
+                                                                placedRects[selectedIndex].w,
+                                                                cellWidth
+                                                            )
+                                                          : item.h,
+                                                  }
+                                                : item
+                                        )
+                                    );
+                                }}
+                            >
+                                {selectedItem.originalAspect
+                                    ? "Original ratio"
+                                    : "Use original ratio"}
+                            </Button>
+                        )}
                         {selectedItem.kind === SPACER_KIND ? null : (
                             <Button
                                 variant="ghost"

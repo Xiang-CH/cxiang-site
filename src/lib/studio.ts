@@ -21,7 +21,7 @@ export class StudioUnavailableError extends Error {
 }
 
 /** SQL type names used to annotate parameter branches of a batched CASE update. */
-type SqlCast = "int" | "text" | "varchar";
+type SqlCast = "int" | "text" | "varchar" | "boolean";
 
 export class DuplicateSlugError extends Error {
     constructor(slug: string) {
@@ -141,6 +141,7 @@ export async function getPhotoSetForEditing(id: string): Promise<StudioPhotoSet 
             caption: row.caption ?? undefined,
             width: row.width,
             height: row.height,
+            originalAspect: row.originalAspect,
             x: row.x ?? undefined,
             y: row.y ?? undefined,
             w: row.w ?? undefined,
@@ -230,6 +231,7 @@ export async function savePhotoSet(
                     // placeholder size that nothing reads.
                     width: photo.width ?? 1,
                     height: photo.height ?? 1,
+                    originalAspect: photo.originalAspect ?? false,
                     kind: photo.kind,
                     x: photo.x ?? null,
                     y: photo.y ?? null,
@@ -308,7 +310,7 @@ export async function savePhotoSet(
             // annotated with its destination type. A null branch needs the cast
             // too, or the CASE would have no type at all.
             const buildCase = (
-                values: Array<{ id: string; value: string | number | null }>,
+                values: Array<{ id: string; value: string | number | boolean | null }>,
                 cast: SqlCast
             ) => {
                 const branches = values.map((entry) =>
@@ -319,8 +321,18 @@ export async function savePhotoSet(
                 return sql`case ${sql.join(branches, sql` `)} end`;
             };
 
-            const column = (key: "sortOrder" | "size" | "alt" | "x" | "y" | "w" | "h" | "kind") =>
-                updates.map((entry) => ({ id: entry.id, value: entry.row[key] ?? null }));
+            const column = (
+                key:
+                    | "sortOrder"
+                    | "size"
+                    | "alt"
+                    | "x"
+                    | "y"
+                    | "w"
+                    | "h"
+                    | "kind"
+                    | "originalAspect"
+            ) => updates.map((entry) => ({ id: entry.id, value: entry.row[key] ?? null }));
 
             await tx
                 .update(photos)
@@ -329,6 +341,7 @@ export async function savePhotoSet(
                     size: buildCase(column("size"), "varchar"),
                     alt: buildCase(column("alt"), "text"),
                     kind: buildCase(column("kind"), "varchar"),
+                    originalAspect: buildCase(column("originalAspect"), "boolean"),
                     x: buildCase(column("x"), "int"),
                     y: buildCase(column("y"), "int"),
                     w: buildCase(column("w"), "int"),
