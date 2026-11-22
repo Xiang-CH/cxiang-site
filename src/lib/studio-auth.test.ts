@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
     createStudioSessionToken,
     isStudioAuthorizedToken,
+    isStudioAuthorizedCookie,
     studioSessionMaxAgeSeconds,
     verifyStudioSessionToken,
 } from "./studio-auth";
@@ -100,6 +101,11 @@ describe("studio session tokens", () => {
         // Rotating the key does invalidate them.
         process.env.STUDIO_SESSION_SECRET = "a new signing key";
         expect(isStudioAuthorizedToken(token)).toBe(false);
+    });
+
+    it("returns an immediate authorization result for page guards", () => {
+        expect(isStudioAuthorizedCookie(undefined)).toBe(false);
+        expect(isStudioAuthorizedCookie(createStudioSessionToken()!)).toBe(true);
     });
 
     it("has no token when nothing is configured", () => {

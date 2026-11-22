@@ -148,6 +148,6 @@ export function isStudioAuthorized(request: NextRequest): boolean {
  * Cookie-based variant for server components, which read cookies through
  * `next/headers` rather than a `NextRequest`.
  */
-export async function isStudioAuthorizedCookie(cookieValue: string | undefined): Promise<boolean> {
+export function isStudioAuthorizedCookie(cookieValue: string | undefined): boolean {
     return isStudioAuthorizedToken(cookieValue);
 }
