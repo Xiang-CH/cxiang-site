@@ -74,11 +74,23 @@ export function runHomeTextScramble(
         return { cancel: () => {} };
     }
 
+    const lastFrames = new Map<Text, string>();
     let stopped = false;
     const interval = window.setInterval(() => {
         if (stopped) return;
         for (const [tn, orig] of originals) {
-            if (tn.parentNode) tn.data = scrambleString(orig);
+            // React or a typewriter may update this node while navigation is pending.
+            // Once another owner writes it, leave its new content alone.
+            if (tn.data !== (lastFrames.get(tn) ?? orig)) {
+                originals.delete(tn);
+                lastFrames.delete(tn);
+                continue;
+            }
+            if (tn.parentNode) {
+                const frame = scrambleString(orig);
+                tn.data = frame;
+                lastFrames.set(tn, frame);
+            }
         }
     }, tickMs);
 
@@ -89,7 +101,9 @@ export function runHomeTextScramble(
         const restore = opts?.restore !== false;
         if (!restore) return;
         for (const [tn, orig] of originals) {
-            if (tn.parentNode) tn.data = orig;
+            // Navigation may already have committed translated text into reused
+            // DOM nodes. Only restore text that still belongs to this animation.
+            if (tn.parentNode && tn.data === lastFrames.get(tn)) tn.data = orig;
         }
     };
 

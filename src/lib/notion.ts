@@ -39,6 +39,12 @@ export const getProjects = async () => {
     }
     return notion.dataSources.query({
         data_source_id: projectsDataSourceId!,
+        filter: {
+            property: "Archieve",
+            checkbox: {
+                equals: false,
+            },
+        },
         sorts: [
             {
                 property: "Date",

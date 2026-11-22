@@ -40,7 +40,7 @@ function Cmd({ children }: { children: ReactNode }) {
  */
 export default function TerminalHomeClient({ content }: { content: TerminalContent }) {
     const fullText = content.typedRole;
-    const cliHref = content.locale === "en" ? "/cli" : `/${content.locale}/cli`;
+    const cliHref = `/${content.locale}/cli`;
 
     return (
         <div className="terminal-page">
@@ -93,7 +93,11 @@ export default function TerminalHomeClient({ content }: { content: TerminalConte
                                     </h2>
                                 )}
                                 <p className="text-[clamp(0.8rem,1.8vw,1rem)] text-(--th-accent) mt-1">
-                                    <TypewriterText key={fullText} text={fullText} />
+                                    <TypewriterText
+                                        key={fullText}
+                                        text={fullText}
+                                        phrases={content.typedRoles}
+                                    />
                                 </p>
                             </div>
                             <div className="flex gap-2 sm:gap-3 flex-wrap mt-5 text-sm sm:text-base">

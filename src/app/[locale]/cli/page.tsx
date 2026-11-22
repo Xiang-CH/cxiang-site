@@ -79,7 +79,7 @@ export default async function CliPage({ params }: Props) {
 
     const content: CliContent = {
         locale,
-        homeHref: locale === "en" ? "/" : `/${locale}`,
+        homeHref: `/${locale}`,
         name: t("intro.name"),
         role: t("intro.role"),
         about: t("terminal.about"),

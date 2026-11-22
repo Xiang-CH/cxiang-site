@@ -1,10 +1,7 @@
-import createMiddleware from "next-intl/middleware";
+import { handleI18nRouting } from "./i18n/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { prefersMarkdown } from "./lib/accept";
 import { htmlPathnameFromMarkdown } from "./lib/llms";
-import { routing } from "./i18n/routing";
-
-const handleI18nRouting = createMiddleware(routing);
 
 /** Root-level routes that serve the same content for every locale. */
 const NON_LOCALIZED_PREFIXES = ["/blog", "/project", "/photos", "/studio"] as const;
